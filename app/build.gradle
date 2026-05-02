@@ -51,6 +51,7 @@ android {
             applicationId "com.limelight"
 //            applicationId "com.miHoYo.GenshinImpact"
 //            applicationId "com.antutu.ABenchMark"
+//            applicationId "ru.andr7e.deviceinfohw"
             dimension "root"
             buildConfigField "boolean", "ROOT_BUILD", "false"
         }

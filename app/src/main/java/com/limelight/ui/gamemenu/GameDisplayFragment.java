@@ -6,7 +6,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioGroup;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,9 +13,6 @@ import com.limelight.R;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.ui.BaseFragmentDialog.BaseGameMenuDialog;
 import com.limelight.utils.UiHelper;
-
-import java.util.Locale;
-
 
 /**
  * Description
@@ -74,17 +70,9 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
 
     private View v_game_display_fsr_details;
 
-    private SeekBar sb_game_display_fsr_sharpness;
+    private RadioGroup rg_game_display_fsr_sharpness;
 
-    private SeekBar sb_game_display_fsr_hdr_highlight_compression;
-
-    private SeekBar sb_game_display_fsr_hdr_shadow_lift;
-
-    private TextView tx_game_display_fsr_sharpness;
-
-    private TextView tx_game_display_fsr_hdr_highlight_compression;
-
-    private TextView tx_game_display_fsr_hdr_shadow_lift;
+    private RadioGroup rg_game_display_fsr_hdr_output;
 
     private int width;
 
@@ -98,13 +86,11 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
 
     private boolean exDiaplay;
 
-    private boolean fsrEnabledPending;
+    private String fsrTargetPending = "off";
 
-    private int fsrSharpnessPending;
+    private String fsrSharpnessPending = "standard";
 
-    private int fsrHdrHighlightCompressionPending;
-
-    private int fsrHdrShadowLiftPending;
+    private String fsrHdrOutputPending = "native";
 
     private boolean showLock=true;
     @Override
@@ -136,12 +122,8 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         rg_game_display_ignore_hdr=v.findViewById(R.id.rg_game_display_ignore_hdr);
         rg_game_display_fsr=v.findViewById(R.id.rg_game_display_fsr);
         v_game_display_fsr_details=v.findViewById(R.id.v_game_display_fsr_details);
-        sb_game_display_fsr_sharpness=v.findViewById(R.id.sb_game_display_fsr_sharpness);
-        sb_game_display_fsr_hdr_highlight_compression=v.findViewById(R.id.sb_game_display_fsr_hdr_highlight_compression);
-        sb_game_display_fsr_hdr_shadow_lift=v.findViewById(R.id.sb_game_display_fsr_hdr_shadow_lift);
-        tx_game_display_fsr_sharpness=v.findViewById(R.id.tx_game_display_fsr_sharpness);
-        tx_game_display_fsr_hdr_highlight_compression=v.findViewById(R.id.tx_game_display_fsr_hdr_highlight_compression);
-        tx_game_display_fsr_hdr_shadow_lift=v.findViewById(R.id.tx_game_display_fsr_hdr_shadow_lift);
+        rg_game_display_fsr_sharpness=v.findViewById(R.id.rg_game_display_fsr_sharpness);
+        rg_game_display_fsr_hdr_output=v.findViewById(R.id.rg_game_display_fsr_hdr_output);
 
         if(!TextUtils.isEmpty(title)){
             tx_title.setText(title);
@@ -157,14 +139,12 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
             direction=prefConfig.enablePortrait;
             exDiaplay=prefConfig.enableExDisplay;
         }
-        fsrEnabledPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getBoolean("checkbox_enable_fsr", false);
+        fsrTargetPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("list_fsr_target", "off");
         fsrSharpnessPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getInt("seekbar_fsr_sharpness", 100);
-        fsrHdrHighlightCompressionPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getInt("seekbar_fsr_hdr_highlight_compression", 100);
-        fsrHdrShadowLiftPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
-                .getInt("seekbar_fsr_hdr_shadow_lift", 100);
+                .getString("list_fsr_sharpness", "standard");
+        fsrHdrOutputPending = PreferenceManager.getDefaultSharedPreferences(getActivity())
+                .getString("list_fsr_hdr_output", "native");
         initViewData();
         initLock();
         initAudio();
@@ -176,8 +156,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         initEnfoce();
         initFsr();
         initFsrSharpness();
-        initFsrHdrHighlightCompression();
-        initFsrHdrShadowLift();
+        initFsrHdrOutput();
         ibtn_back.setOnClickListener(this);
         bt_display_screen.setOnClickListener(this);
         bt_display_exchange.setOnClickListener(this);
@@ -326,66 +305,44 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 if (checkedId == R.id.rbt_game_display_fsr_1) {
-                    fsrEnabledPending = true;
+                    fsrTargetPending = "off";
                 }
                 else if (checkedId == R.id.rbt_game_display_fsr_2) {
-                    fsrEnabledPending = false;
+                    fsrTargetPending = "2k";
+                }
+                else if (checkedId == R.id.rbt_game_display_fsr_3) {
+                    fsrTargetPending = "4k";
                 }
                 updateFsrDetailState();
             }
         });
 
-        sb_game_display_fsr_sharpness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        rg_game_display_fsr_sharpness.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                fsrSharpnessPending = progress;
-                initFsrSharpness();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
-        sb_game_display_fsr_hdr_highlight_compression.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                fsrHdrHighlightCompressionPending = progress;
-                initFsrHdrHighlightCompression();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rbt_game_display_fsr_sharpness_1) {
+                    fsrSharpnessPending = "soft";
+                }
+                else if (checkedId == R.id.rbt_game_display_fsr_sharpness_2) {
+                    fsrSharpnessPending = "standard";
+                }
+                else if (checkedId == R.id.rbt_game_display_fsr_sharpness_3) {
+                    fsrSharpnessPending = "strong";
+                }
+                else if (checkedId == R.id.rbt_game_display_fsr_sharpness_4) {
+                    fsrSharpnessPending = "max";
+                }
             }
         });
 
-        sb_game_display_fsr_hdr_shadow_lift.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        rg_game_display_fsr_hdr_output.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                fsrHdrShadowLiftPending = progress;
-                initFsrHdrShadowLift();
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                if (checkedId == R.id.rbt_game_display_fsr_hdr_output_2) {
+                    fsrHdrOutputPending = "native";
+                } else {
+                    fsrHdrOutputPending = "sdr";
+                }
             }
         });
 
@@ -474,46 +431,43 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
     }
 
     private void initFsr() {
-        rg_game_display_fsr.check(fsrEnabledPending ? R.id.rbt_game_display_fsr_1 : R.id.rbt_game_display_fsr_2);
+        if ("2k".equalsIgnoreCase(fsrTargetPending)) {
+            rg_game_display_fsr.check(R.id.rbt_game_display_fsr_2);
+        }
+        else if ("4k".equalsIgnoreCase(fsrTargetPending)) {
+            rg_game_display_fsr.check(R.id.rbt_game_display_fsr_3);
+        }
+        else {
+            rg_game_display_fsr.check(R.id.rbt_game_display_fsr_1);
+        }
         updateFsrDetailState();
     }
 
     private void initFsrSharpness() {
-        tx_game_display_fsr_sharpness.setText("FSR锐化强度：" + formatSharpness(fsrSharpnessPending));
-        sb_game_display_fsr_sharpness.setProgress(fsrSharpnessPending);
+        if ("soft".equalsIgnoreCase(fsrSharpnessPending)) {
+            rg_game_display_fsr_sharpness.check(R.id.rbt_game_display_fsr_sharpness_1);
+        }
+        else if ("strong".equalsIgnoreCase(fsrSharpnessPending)) {
+            rg_game_display_fsr_sharpness.check(R.id.rbt_game_display_fsr_sharpness_3);
+        }
+        else if ("max".equalsIgnoreCase(fsrSharpnessPending)) {
+            rg_game_display_fsr_sharpness.check(R.id.rbt_game_display_fsr_sharpness_4);
+        }
+        else {
+            rg_game_display_fsr_sharpness.check(R.id.rbt_game_display_fsr_sharpness_2);
+        }
     }
 
-    private void initFsrHdrHighlightCompression() {
-        tx_game_display_fsr_hdr_highlight_compression.setText("HDR高亮压缩：" + formatPercent(fsrHdrHighlightCompressionPending));
-        sb_game_display_fsr_hdr_highlight_compression.setProgress(fsrHdrHighlightCompressionPending);
-    }
-
-    private void initFsrHdrShadowLift() {
-        tx_game_display_fsr_hdr_shadow_lift.setText("HDR暗部提升：" + formatPercent(fsrHdrShadowLiftPending));
-        sb_game_display_fsr_hdr_shadow_lift.setProgress(fsrHdrShadowLiftPending);
+    private void initFsrHdrOutput() {
+        rg_game_display_fsr_hdr_output.check("native".equalsIgnoreCase(fsrHdrOutputPending)
+                ? R.id.rbt_game_display_fsr_hdr_output_2
+                : R.id.rbt_game_display_fsr_hdr_output_1);
     }
 
     private void updateFsrDetailState() {
+        boolean fsrEnabledPending = !"off".equalsIgnoreCase(fsrTargetPending);
         int visibility = fsrEnabledPending ? View.VISIBLE : View.GONE;
         v_game_display_fsr_details.setVisibility(visibility);
-        tx_game_display_fsr_sharpness.setEnabled(fsrEnabledPending);
-        sb_game_display_fsr_sharpness.setEnabled(fsrEnabledPending);
-        tx_game_display_fsr_hdr_highlight_compression.setEnabled(fsrEnabledPending);
-        sb_game_display_fsr_hdr_highlight_compression.setEnabled(fsrEnabledPending);
-        tx_game_display_fsr_hdr_shadow_lift.setEnabled(fsrEnabledPending);
-        sb_game_display_fsr_hdr_shadow_lift.setEnabled(fsrEnabledPending);
-    }
-
-    private String formatSharpness(int progress) {
-        String formatted = String.format(Locale.US, "%.2f", progress / 100.0f);
-        while (formatted.contains(".") && (formatted.endsWith("0") || formatted.endsWith("."))) {
-            formatted = formatted.substring(0, formatted.length() - 1);
-        }
-        return formatted + "x";
-    }
-
-    private String formatPercent(int progress) {
-        return progress + "%";
     }
 
     public void setShowLock(boolean showLock) {
@@ -610,10 +564,9 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
                     .putString("edit_diy_w_h",width+"x"+height)
                     .putBoolean("checkbox_enable_exdisplay",exDiaplay)
                     .putBoolean(PreferenceConfiguration.CHECKBOX_ENABLE_PORTRAIT,direction)
-                    .putBoolean("checkbox_enable_fsr", fsrEnabledPending)
-                    .putInt("seekbar_fsr_sharpness", fsrSharpnessPending)
-                    .putInt("seekbar_fsr_hdr_highlight_compression", fsrHdrHighlightCompressionPending)
-                    .putInt("seekbar_fsr_hdr_shadow_lift", fsrHdrShadowLiftPending)
+                    .putString("list_fsr_target", fsrTargetPending)
+                    .putString("list_fsr_sharpness", fsrSharpnessPending)
+                    .putString("list_fsr_hdr_output", fsrHdrOutputPending)
                     .commit();
             if(prefConfig!=null){
                 prefConfig.width=width;

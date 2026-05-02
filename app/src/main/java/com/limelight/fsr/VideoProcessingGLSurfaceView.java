@@ -8,6 +8,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.util.concurrent.CountDownLatch;
@@ -23,10 +24,15 @@ import javax.microedition.khronos.opengles.GL10;
 
 @SuppressLint("ViewConstructor")
 public class VideoProcessingGLSurfaceView extends GLSurfaceView {
+    private static final String TAG = "VideoProcessingGL";
     public static final int EGL_PROTECTED_CONTENT_EXT = 0x32C0;
+    private static final int EGL_EXTENSIONS = 0x3055;
+    private static final int EGL_GL_COLORSPACE_KHR = 0x309D;
+    private static final int EGL_GL_COLORSPACE_BT2020_PQ_EXT = 0x3340;
 
     private final VideoProcessor videoProcessor;
     private final SurfaceListener surfaceListener;
+    private final boolean hdrOutputEnabled;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final VideoRenderer renderer = new VideoRenderer();
 
@@ -42,17 +48,27 @@ public class VideoProcessingGLSurfaceView extends GLSurfaceView {
                                         boolean requireSecureContext,
                                         VideoProcessor videoProcessor,
                                         SurfaceListener surfaceListener) {
+        this(context, requireSecureContext, false, videoProcessor, surfaceListener);
+    }
+
+    public VideoProcessingGLSurfaceView(Context context,
+                                        boolean requireSecureContext,
+                                        boolean hdrOutputEnabled,
+                                        VideoProcessor videoProcessor,
+                                        SurfaceListener surfaceListener) {
         super(context);
         this.videoProcessor = videoProcessor;
         this.surfaceListener = surfaceListener;
+        this.hdrOutputEnabled = hdrOutputEnabled;
         init(requireSecureContext);
     }
 
     private void init(boolean requireSecureContext) {
         setEGLContextClientVersion(2);
+        setPreserveEGLContextOnPause(true);
         setEGLConfigChooser(8, 8, 8, 8, 0, 0);
         setEGLContextFactory(new ContextFactory(requireSecureContext));
-        setEGLWindowSurfaceFactory(new WindowSurfaceFactory(requireSecureContext));
+        setEGLWindowSurfaceFactory(new WindowSurfaceFactory(requireSecureContext, hdrOutputEnabled));
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
     }
@@ -377,23 +393,55 @@ public class VideoProcessingGLSurfaceView extends GLSurfaceView {
 
     private static final class WindowSurfaceFactory implements EGLWindowSurfaceFactory {
         private final boolean requireSecure;
+        private final boolean hdrOutputEnabled;
 
-        private WindowSurfaceFactory(boolean requireSecure) {
+        private WindowSurfaceFactory(boolean requireSecure, boolean hdrOutputEnabled) {
             this.requireSecure = requireSecure;
+            this.hdrOutputEnabled = hdrOutputEnabled;
         }
 
         @Override
         public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
                                               Object nativeWindow) {
+            if (hdrOutputEnabled && supportsBt2020PqSurface(egl, display)) {
+                int[] hdrAttribs = requireSecure
+                        ? new int[] {
+                                EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_BT2020_PQ_EXT,
+                                EGL_PROTECTED_CONTENT_EXT, EGL14.EGL_TRUE,
+                                EGL10.EGL_NONE
+                        }
+                        : new int[] {
+                                EGL_GL_COLORSPACE_KHR, EGL_GL_COLORSPACE_BT2020_PQ_EXT,
+                                EGL10.EGL_NONE
+                        };
+                EGLSurface hdrSurface = egl.eglCreateWindowSurface(display, config, nativeWindow, hdrAttribs);
+                int error = egl.eglGetError();
+                if (hdrSurface != null && hdrSurface != EGL10.EGL_NO_SURFACE && error == EGL10.EGL_SUCCESS) {
+                    Log.i(TAG, "HDR validation: GLES EGL surface colorspace=BT2020_PQ");
+                    return hdrSurface;
+                }
+                Log.w(TAG, "Failed to create GLES HDR EGL surface, error=0x"
+                        + Integer.toHexString(error) + "; falling back to default colorspace");
+            }
+
             int[] attribList = requireSecure
                     ? new int[] {EGL_PROTECTED_CONTENT_EXT, EGL14.EGL_TRUE, EGL10.EGL_NONE}
                     : new int[] {EGL10.EGL_NONE};
-            return egl.eglCreateWindowSurface(display, config, nativeWindow, attribList);
+            EGLSurface surface = egl.eglCreateWindowSurface(display, config, nativeWindow, attribList);
+            Log.i(TAG, "HDR validation: GLES EGL surface colorspace=DEFAULT, hdrRequested=" + hdrOutputEnabled);
+            return surface;
         }
 
         @Override
         public void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface) {
             egl.eglDestroySurface(display, surface);
+        }
+
+        private boolean supportsBt2020PqSurface(EGL10 egl, EGLDisplay display) {
+            String extensions = egl.eglQueryString(display, EGL_EXTENSIONS);
+            return extensions != null
+                    && extensions.contains("EGL_KHR_gl_colorspace")
+                    && extensions.contains("EGL_EXT_gl_colorspace_bt2020_pq");
         }
     }
 

@@ -1,9 +1,11 @@
+#version 310 es
+
 // 顶点属性
-attribute vec4 aPosition;
-attribute vec4 aTexCoords;
+in vec4 aPosition;
+in vec4 aTexCoords;
 
 // 输出到片段着色器
-varying vec2 vTexCoord;
+out vec2 vTexCoord;
 
 void main() {
     gl_Position = aPosition;

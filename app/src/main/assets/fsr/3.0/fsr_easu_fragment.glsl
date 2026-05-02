@@ -1,3 +1,4 @@
+#version 300 es
 // Copyright (c) 2021 Advanced Micro Devices, Inc. All rights reserved.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,15 +22,16 @@
 // FidelityFX FSR v1.0.2 by AMD
 // Reference https://github.com/GPUOpen-Effects/FidelityFX-FSR/tree/master/ffx-fsr
 
-#extension GL_OES_EGL_image_external : require
+#extension GL_OES_EGL_image_external_essl3 : require
 precision mediump float;
 
 uniform samplerExternalOES inputTexture; // 纹理
-uniform vec2 inputTextureSize; // 输入纹理大小
+// uniform vec2 inputTextureSize; // 输入纹理大小
 uniform vec2 outputTextureSize; // 输出纹理大小
 uniform float uHdrToneMap; // HDR tone mapping 开关
 
-varying vec2 vTexCoord; // 从顶点着色器传过来的纹理坐标
+in vec2 vTexCoord; // 从顶点着色器传过来的纹理坐标
+out vec4 fragColor; // 输出颜色
 
 vec3 applyHdrToneMap(vec3 color) {
     if (uHdrToneMap < 0.5) {
@@ -63,7 +65,7 @@ vec3 applyHdrToneMap(vec3 color) {
 }
 
 vec3 sampleInput(vec2 uv) {
-    return applyHdrToneMap(texture2D(inputTexture, uv).rgb);
+    return applyHdrToneMap(texture(inputTexture, uv).rgb);
 }
 
 //==============================================================================================================================
@@ -98,14 +100,12 @@ vec3 sampleInput(vec2 uv) {
 // but before film grain or composite of the UI.
 //------------------------------------------------------------------------------------------------------------------------------
 
-// TODO 需要一个近似代替
 float APrxLoRcpF1(float a) {
-	return 1.0 / a;
+    return uintBitsToFloat(uint(0x7ef07ebb) - floatBitsToUint(a));
 }
 
-// TODO 需要一个近似代替
 float APrxLoRsqF1(float a) {
-	return 1.0 / sqrt(a);
+    return uintBitsToFloat(uint(0x5f347d74) - (floatBitsToUint(a) >> uint(1)));
 }
 
 vec3 AMin3F3(vec3 x, vec3 y, vec3 z) {
@@ -126,20 +126,6 @@ void FsrEasuCon(
     // This is the display resolution which the input image gets upscaled to
     float outputSizeInPixelsX, float outputSizeInPixelsY
 ) {
-    // Centers of gather4, first offset from upper-left of 'F'.
-    //      +---+---+
-    //      |   |   |
-    //      +--(0)--+
-    //      | b | c |
-    //  +---F---+---+---+
-    //  | e | f | g | h |
-    //  +--(1)--+--(2)--+
-    //  | i | j | k | l |
-    //  +---+---+---+---+
-    //      | n | o |
-    //      +--(3)--+
-    //      |   |   |
-    //      +---+---+
     con0 = vec4(
       inputViewportInPixelsX / outputSizeInPixelsX,
       inputViewportInPixelsY / outputSizeInPixelsY,
@@ -290,7 +276,6 @@ void FsrEasuF(
     //    r g    <- unused (z)
     // Allowing dead-code removal to remove the 'z's.
 
-
     //      +---+---+
     //      |   |   |
     //      +--(0)--+
@@ -318,18 +303,19 @@ void FsrEasuF(
     vec3 n = sampleInput((fp + vec2( 0.5,  2.5)) * con1.xy);
     vec3 o = sampleInput((fp + vec2( 1.5,  2.5)) * con1.xy);
 
-    // vec3 b = texture2D(tex, vTexCoord + vec2( 0.5, -0.5) * con1.xy).rgb;
-    // vec3 c = texture2D(tex, vTexCoord + vec2( 1.5, -0.5) * con1.xy).rgb;
-    // vec3 e = texture2D(tex, vTexCoord + vec2(-0.5,  0.5) * con1.xy).rgb;
-    // vec3 f = texture2D(tex, vTexCoord + vec2( 0.5,  0.5) * con1.xy).rgb;
-    // vec3 g = texture2D(tex, vTexCoord + vec2( 1.5,  0.5) * con1.xy).rgb;
-    // vec3 h = texture2D(tex, vTexCoord + vec2( 2.5,  0.5) * con1.xy).rgb;
-    // vec3 i = texture2D(tex, vTexCoord + vec2(-0.5,  1.5) * con1.xy).rgb;
-    // vec3 j = texture2D(tex, vTexCoord + vec2( 0.5,  1.5) * con1.xy).rgb;
-    // vec3 k = texture2D(tex, vTexCoord + vec2( 1.5,  1.5) * con1.xy).rgb;
-    // vec3 l = texture2D(tex, vTexCoord + vec2( 2.5,  1.5) * con1.xy).rgb;
-    // vec3 n = texture2D(tex, vTexCoord + vec2( 0.5,  2.5) * con1.xy).rgb;
-    // vec3 o = texture2D(tex, vTexCoord + vec2( 1.5,  2.5) * con1.xy).rgb;
+    // vec3 b = texture(tex, vTexCoord + vec2( 0.5, -0.5) * con1.xy).rgb;
+    // vec3 c = texture(tex, vTexCoord + vec2( 1.5, -0.5) * con1.xy).rgb;
+    // vec3 e = texture(tex, vTexCoord + vec2(-0.5,  0.5) * con1.xy).rgb;
+    // vec3 f = texture(tex, vTexCoord + vec2( 0.5,  0.5) * con1.xy).rgb;
+    // vec3 g = texture(tex, vTexCoord + vec2( 1.5,  0.5) * con1.xy).rgb;
+    // vec3 h = texture(tex, vTexCoord + vec2( 2.5,  0.5) * con1.xy).rgb;
+    // vec3 i = texture(tex, vTexCoord + vec2(-0.5,  1.5) * con1.xy).rgb;
+    // vec3 j = texture(tex, vTexCoord + vec2( 0.5,  1.5) * con1.xy).rgb;
+    // vec3 k = texture(tex, vTexCoord + vec2( 1.5,  1.5) * con1.xy).rgb;
+    // vec3 l = texture(tex, vTexCoord + vec2( 2.5,  1.5) * con1.xy).rgb;
+    // vec3 n = texture(tex, vTexCoord + vec2( 0.5,  2.5) * con1.xy).rgb;
+    // vec3 o = texture(tex, vTexCoord + vec2( 1.5,  2.5) * con1.xy).rgb;
+
 
     vec4 bczzR = vec4(b.r, c.r, 0.0, 0.0);
     vec4 bczzG = vec4(b.g, c.g, 0.0, 0.0);
@@ -346,7 +332,7 @@ void FsrEasuF(
 
     // Simplest multi-channel approximate luma possible (luma times 2, in 2 FMA/MAD).
     vec4 bczzL = bczzB * 0.5 + bczzG * 0.5 + bczzR;
-    vec4 ijfeL = ijfeB * 0.5 + ijfeG * 0.5 + ijfeR;
+    vec4 ijfeL = ijfeB * 0.5 + ijfeG * 0.5 + ijfeR ;
     vec4 klhgL = klhgB * 0.5 + klhgG * 0.5 + klhgR;
     vec4 zzonL = zzonB * 0.5 + zzonG * 0.5 + zzonR;
 
@@ -435,13 +421,14 @@ void FsrEasuF(
 }
 
 void main() {
+    vec2 texSize = vec2(textureSize(inputTexture, 0));
     vec4 con0, con1, con2, con3;
     FsrEasuCon(con0, con1, con2, con3,
-                inputTextureSize.x, inputTextureSize.y,
-                inputTextureSize.x, inputTextureSize.y,
+                texSize.x, texSize.y,
+                texSize.x, texSize.y,
                 outputTextureSize.x, outputTextureSize.y);
     vec3 pix;
     vec2 ip = floor(vTexCoord * outputTextureSize);
     FsrEasuF(pix, ip, con0, con1, con2, con3, inputTexture);
-    gl_FragColor = vec4(pix, 1.0);
+    fragColor = vec4(pix, 1.0);
 }

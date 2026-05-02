@@ -69,6 +69,7 @@ import android.graphics.Outline;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.hardware.display.DisplayManager;
 import android.hardware.input.InputManager;
@@ -81,6 +82,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Rational;
 import android.util.TypedValue;
@@ -310,6 +314,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         streamView.setInputCallbacks(this);
 
         fsrEnabled = isFsrEnabled();
+        configureFsrWindowColorMode();
 
         performanceRumble=findViewById(R.id.performanceRumble);
         switchPerformanceRumbleHUD();
@@ -346,9 +351,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (fsrEnabled) {
             fsrVideoProcessor = new FsrVideoProcessor(this);
             fsrVideoProcessor.setSharpness(getFsrSharpness());
-            fsrVideoProcessor.setHdrWhiteScale(getFsrHdrWhiteScale());
-            fsrVideoProcessor.setHdrShadowLiftScale(getFsrHdrShadowLiftScale());
-            fsrView = new VideoProcessingGLSurfaceView(this, false, fsrVideoProcessor,
+            fsrVideoProcessor.setFsrEnabled(true);
+            fsrView = new VideoProcessingGLSurfaceView(this, false, isFsrNativeHdrOutputEnabled(), fsrVideoProcessor,
                     new VideoProcessingGLSurfaceView.SurfaceListener() {
                         @Override
                         public void onInputSurfaceAvailable(android.graphics.SurfaceTexture surfaceTexture) {
@@ -390,6 +394,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             streamView.setZOrderMediaOverlay(true);
             fsrView.getHolder().addCallback(this);
             fsrView.setFrameInputSize(prefConfig.width, prefConfig.height);
+            int[] fsrOutputSize = getFsrOutputSize();
+            fsrView.setFixedSurfacePixelSize(fsrOutputSize[0], fsrOutputSize[1]);
         }
 
         // Listen for touch events on the background touch view to enable trackpad mode
@@ -575,7 +581,6 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             willStreamHdr = false;
             Toast.makeText(this, "Decoder does not support HDR10 profile", Toast.LENGTH_LONG).show();
         }
-
         // Display a message to the user if HEVC was forced on but we still didn't find a decoder
         if (prefConfig.videoFormat == PreferenceConfiguration.FormatOption.FORCE_HEVC && !decoderRenderer.isHevcSupported()) {
             Toast.makeText(this, "No HEVC decoder found", Toast.LENGTH_LONG).show();
@@ -3301,10 +3306,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             @Override
             public void run() {
                 String displayText = appendMicPerfInfo(appendFsrPerfInfo(text));
+                CharSequence styledDisplayText = applyFsrPerfColor(displayText);
                 if(prefConfig.enablePerfOverlayLite){
-                    performanceOverlayLite.setText(displayText);
+                    performanceOverlayLite.setText(styledDisplayText);
                 }else{
-                    performanceOverlayBig.setText(displayText);
+                    performanceOverlayBig.setText(styledDisplayText);
                 }
             }
         });
@@ -3337,15 +3343,35 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     private String buildFsrPerfLabel() {
-        return "FSR：" + formatPerfMultiplier(getFsrSharpness());
+        String target = getFsrTargetDisplayName();
+        if(prefConfig.enablePerfOverlayLite){
+            return "FSR " + target;
+        }
+        return "FSR " + target + " / 锐化 " + getFsrSharpnessDisplayName();
     }
 
-    private String formatPerfMultiplier(float value) {
-        String formatted = String.format(Locale.US, "%.2f", value);
-        while (formatted.contains(".") && (formatted.endsWith("0") || formatted.endsWith("."))) {
-            formatted = formatted.substring(0, formatted.length() - 1);
+    private CharSequence applyFsrPerfColor(String text) {
+        if (!fsrEnabled || text == null || text.isEmpty()) {
+            return text;
         }
-        return formatted + "x";
+
+        int start = text.indexOf("FSR ");
+        if (start < 0) {
+            return text;
+        }
+
+        int end = text.indexOf('\n', start);
+        if (end < 0) {
+            end = text.indexOf("  ", start);
+        }
+        if (end < 0) {
+            end = text.length();
+        }
+
+        SpannableString spannable = new SpannableString(text);
+        spannable.setSpan(new ForegroundColorSpan(Color.rgb(250, 191, 2)),
+                start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return spannable;
     }
 
     @Override
@@ -3668,23 +3694,86 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (prefConfig.enableExDisplay) {
             return false;
         }
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getBoolean("checkbox_enable_fsr", false);
+        return !"off".equalsIgnoreCase(getFsrTarget());
     }
 
     private float getFsrSharpness() {
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getInt("seekbar_fsr_sharpness", 100) / 100.0f;
+        String value = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("list_fsr_sharpness", "standard");
+        if ("soft".equalsIgnoreCase(value)) {
+            return 0.55f;
+        }
+        if ("strong".equalsIgnoreCase(value)) {
+            return 1.45f;
+        }
+        if ("max".equalsIgnoreCase(value)) {
+            return 1.85f;
+        }
+        return 0.85f;
     }
 
-    private float getFsrHdrWhiteScale() {
-        return PreferenceManager.getDefaultSharedPreferences(this)
-                .getInt("seekbar_fsr_hdr_highlight_compression", 100) / 100.0f;
+    private int[] getFsrOutputSize() {
+        String target = getFsrTarget();
+        int targetHeight = "4k".equalsIgnoreCase(target) ? 2160 : 1440;
+        float aspect = prefConfig.width > 0 && prefConfig.height > 0
+                ? (prefConfig.width / (float) prefConfig.height)
+                : (16f / 9f);
+        int targetWidth = Math.round(targetHeight * aspect);
+        if ("4k".equalsIgnoreCase(target)) {
+            targetWidth = Math.max(targetWidth, 3840);
+        } else {
+            targetWidth = Math.max(targetWidth, 2560);
+        }
+        return new int[] {targetWidth, targetHeight};
     }
 
-    private float getFsrHdrShadowLiftScale() {
+    private String getFsrTarget() {
         return PreferenceManager.getDefaultSharedPreferences(this)
-                .getInt("seekbar_fsr_hdr_shadow_lift", 100) / 100.0f;
+                .getString("list_fsr_target", "off");
+    }
+
+    private String getFsrTargetDisplayName() {
+        String target = getFsrTarget();
+        if ("4k".equalsIgnoreCase(target)) {
+            return "4K";
+        }
+        if ("2k".equalsIgnoreCase(target)) {
+            return "2K";
+        }
+        return "关闭";
+    }
+
+    private String getFsrSharpnessDisplayName() {
+        String value = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("list_fsr_sharpness", "standard");
+        if ("soft".equalsIgnoreCase(value)) {
+            return "柔和";
+        }
+        if ("strong".equalsIgnoreCase(value)) {
+            return "强";
+        }
+        if ("max".equalsIgnoreCase(value)) {
+            return "极强";
+        }
+        return "标准";
+    }
+
+    private boolean isFsrNativeHdrOutputEnabled() {
+        String value = PreferenceManager.getDefaultSharedPreferences(this)
+                .getString("list_fsr_hdr_output", "native");
+        return prefConfig.enableHdr && "native".equalsIgnoreCase(value);
+    }
+
+    private void configureFsrWindowColorMode() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O || !fsrEnabled) {
+            return;
+        }
+        boolean nativeHdrOutput = isFsrNativeHdrOutputEnabled();
+        getWindow().setColorMode(nativeHdrOutput
+                ? ActivityInfo.COLOR_MODE_HDR
+                : ActivityInfo.COLOR_MODE_DEFAULT);
+        LimeLog.info("HDR validation: FSR window color mode="
+                + (nativeHdrOutput ? "HDR (native output)" : "DEFAULT (software tone-map)"));
     }
 
     private void startConnectionIfReady() {

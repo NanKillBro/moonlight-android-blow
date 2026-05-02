@@ -1,3 +1,4 @@
+#version 310 es
 //==============================================================================================================================
 // An optimized AMD FSR 1.0 implementation for Mobiles
 // EASU and RCAS are combined in a single pass.
@@ -7,7 +8,7 @@
 // -- FsrEasuSampleH should be implemented by calling shader, like following:
 //    AH3 FsrEasuSampleH(AF2 p) { return MyTex.SampleLevel(LinearSampler, p, 0).xyz; }
 //==============================================================================================================================
-#extension GL_OES_EGL_image_external : require
+#extension GL_OES_EGL_image_external_essl3 : require
 #ifdef GL_FRAGMENT_PRECISION_HIGH
 precision highp float;
 #else
@@ -15,12 +16,12 @@ precision mediump float;
 #endif
 
 uniform samplerExternalOES inputTexture; // 纹理
-uniform vec2 inputTextureSize; // 输入纹理大小
+// uniform vec2 inputTextureSize; // 输入纹理大小
 uniform vec2 outputTextureSize; // 输出纹理大小
 uniform float uHdrToneMap; // 是否启用 HDR 色调映射
-uniform float sharpness; // 锐化强度，1.0 表示默认
 
-varying vec2 vTexCoord; // 从顶点着色器传过来的纹理坐标
+in vec2 vTexCoord; // 从顶点着色器传过来的纹理坐标
+out vec4 fragColor; // 输出颜色
 //------------------------------------------------------------------------------------------------------------------------------
 float AMin3H1(float x, float y, float z) {
 	return min(x, min(y, z));
@@ -47,7 +48,6 @@ vec3 applyHdrToneMap(vec3 color) {
         return color;
     }
 
-    // Align HDR -> SDR tone mapping with desktop pipeline.
     const float m1 = 0.1593017578125;
     const float m2 = 78.84375;
     const float c1 = 0.8359375;
@@ -58,16 +58,13 @@ vec3 applyHdrToneMap(vec3 color) {
     vec3 numerator = max(powered - vec3(c1), vec3(0.0));
     vec3 denominator = max(vec3(c2) - vec3(c3) * powered, vec3(1e-6));
 
-    // Decode PQ (BT.2020) to linear nits.
     vec3 linearHdr2020 = pow(numerator / denominator, vec3(1.0 / m1)) * 10000.0;
-    // Map BT.2020 primaries into BT.709 before SDR tone mapping.
     vec3 linearHdr709 = max(vec3(
         dot(linearHdr2020, vec3(1.6605, -0.5876, -0.0728)),
         dot(linearHdr2020, vec3(-0.1246, 1.1329, -0.0083)),
         dot(linearHdr2020, vec3(-0.0182, -0.1006, 1.1187))
     ), vec3(0.0));
     vec3 linearScene = linearHdr709 / 400.0;
-    //conservative HDR compression: avoid clipped highlights and crushed shadows.
     vec3 linearSdr = linearScene / (vec3(1.0) + linearScene);
     linearSdr = clamp(linearSdr, 0.0, 1.0);
 
@@ -78,8 +75,7 @@ vec3 applyHdrToneMap(vec3 color) {
 }
 
 vec3 sampleInput(vec2 uv) {
-    vec3 color = texture2D(inputTexture, uv).rgb;
-    return applyHdrToneMap(color);
+    return applyHdrToneMap(texture(inputTexture, uv).rgb);
 }
 
 #define FSR_RCAS_LIMIT (0.25 - (1.0 / 16.0))
@@ -97,7 +93,7 @@ void FsrEasuCon(
         inputViewportInPixelsX / outputSizeInPixelsX,
         inputViewportInPixelsY / outputSizeInPixelsY,
         0.5 * inputViewportInPixelsX / outputSizeInPixelsX - 0.5,
-        0.5 * inputViewportInPixelsY / outputSizeInPixelsY - 0.5
+         0.5 * inputViewportInPixelsY / outputSizeInPixelsY - 0.5
     );
 
     con1 = vec4(
@@ -178,21 +174,6 @@ void FsrMobile(
     vec3 sB = sampleInput(tc - vec2(con1.x, 0));
     vec3 sD = sampleInput(tc + vec2(con1.x, 0));
     vec3 sE = sampleInput(tc + vec2(0, con1.y));
-    float lA = sA.r * 0.5 + sA.g;
-    float lB = sB.r * 0.5 + sB.g;
-    float lC = sC.r * 0.5 + sC.g;
-    float lD = sD.r * 0.5 + sD.g;
-    float lE = sE.r * 0.5 + sE.g;
-    float localVariance = max(max(abs(lC - lA), abs(lC - lB)), max(abs(lC - lD), abs(lC - lE)));
-    float detailStrength = smoothstep(0.02, 0.32, localVariance);
-    float edgeGuard = smoothstep(0.28, 0.75, localVariance);
-    float clampedSharpness = clamp(sharpness, 0.0, 2.0);
-    // Adaptive sharpness keeps text crisp while damping halos on smooth skin tones.
-    float adaptiveSharpness = mix(0.68, 1.05, detailStrength);
-    adaptiveSharpness = mix(adaptiveSharpness, adaptiveSharpness * 0.82, edgeGuard);
-    float detailBlend = mix(0.40, 0.99, detailStrength);
-    detailBlend *= mix(1.0, 0.78, edgeGuard);
-    float ringingLimiter = mix(0.07, 0.18, detailStrength);
 //------------------------------------------------------------------------------------------------------------------------------ 
     // Combined RCAS: Min and max of ring.
     float mn4R = min(AMin3H1(sA.r, sB.r, sD.r), sE.r);
@@ -213,11 +194,16 @@ void FsrMobile(
     float lobeR = max(-hitMinR, hitMaxR);
     float lobeG = max(-hitMinG, hitMaxG);
     float lobeB = max(-hitMinB, hitMaxB);
-    float lobe = max(-FSR_RCAS_LIMIT, min(AMax3H1(lobeR, lobeG, lobeB), 0.0)) * con0.x * clampedSharpness * adaptiveSharpness;
+    float lobe = max(-FSR_RCAS_LIMIT, min(AMax3H1(lobeR, lobeG, lobeB), 0.0)) * con0.x;
     // Resolve, which needs the medium precision rcp approximation to avoid visible tonality changes.
     float rcpL = ARcpH1(4.0 * lobe + 1.0);
     vec3 contrast = (lobe * sA+ lobe * sB + lobe * sD + lobe * sE) * rcpL;
 //------------------------------------------------------------------------------------------------------------------------------
+    float lA = sA.r * 0.5 + sA.g;
+    float lB = sB.r * 0.5 + sB.g;
+    float lC = sC.r * 0.5 + sC.g;
+    float lD = sD.r * 0.5 + sD.g;
+    float lE = sE.r * 0.5 + sE.g;
     // Then takes magnitude from abs average of both sides of 'C'.
     // Length converts gradient reversal to 0, smoothly to non-reversal at 1, shaped, then adding horz and vert terms.
     float dc = lD - lC;
@@ -239,20 +225,22 @@ void FsrMobile(
     //------------------------------------------------------------------------------------------------------------------------------ 
     vec2 dir2 = dir * dir;
     float dirR = dir2.x + dir2.y;
-    float invDirR = dirR > 1e-6 ? ARsqH1(dirR) : 0.0;
-    dir *= vec2(invDirR);
-    float lenShape = len * 0.5;
-    lenShape *= lenShape;
-    float dirMax = max(abs(dir.x), abs(dir.y));
-    float stretch = (dir.x * dir.x + dir.y * dir.y) * (dirMax > 1e-6 ? ARcpH1(dirMax) : 0.0);
-    vec2 len2 = vec2(1.0 + (stretch - 1.0) * lenShape, 1.0 + (-0.5 * lenShape));
-    float lob = float(0.5) + ((1.0 / 4.0- 0.04) -0.5) * lenShape;
-    float clp = ARcpH1(max(lob, 1e-4));
+    if (dirR < float(1.0 / 64.0)) {
+        pix = contrast + sC * rcpL;
+        return;
+    }
+    dirR = ARsqH1(dirR);
+    dir *= vec2(dirR);
+    len = len * 0.5;
+    len *= len;
+    float stretch = (dir.x * dir.x + dir.y * dir.y) * ARcpH1(max(abs(dir.x), abs(dir.y)));
+    vec2 len2 = vec2(1.0 + (stretch - 1.0) * len, 1.0 + (-0.5 * len));
+    float lob = float(0.5) + ((1.0 / 4.0- 0.04) -0.5) * len;
+    float clp = ARcpH1(lob);
 //------------------------------------------------------------------------------------------------------------------------------
     vec2 fp = floor(pp);
     pp -= fp;
     vec2 ppp = vec2(pp);
-
     // vec2 p0 = fp * con1.xy + con1.zw;
     // vec2 p1 = p0 + con2.xy;
     // vec2 p2 = p0 + con2.zw;
@@ -271,8 +259,7 @@ void FsrMobile(
     // vec4 nokjR = FsrEasuRH(p3);
     // vec4 nokjG = FsrEasuGH(p3);
     // vec4 nokjB = FsrEasuBH(p3);
-
-    // 由于 textureGather 仅在3.1版本中可用，所以这里(OpenGL ES 2.0)使用 texture2D 代替
+    // Driver compatibility path: use texture() sampling to avoid external texture overload issues.
     vec3 b = sampleInput((fp + vec2( 0.5, -0.5)) * con1.xy);
     vec3 c = sampleInput((fp + vec2( 1.5, -0.5)) * con1.xy);
     vec3 e = sampleInput((fp + vec2(-0.5,  0.5)) * con1.xy);
@@ -285,7 +272,6 @@ void FsrMobile(
     vec3 l = sampleInput((fp + vec2( 2.5,  1.5)) * con1.xy);
     vec3 n = sampleInput((fp + vec2( 0.5,  2.5)) * con1.xy);
     vec3 o = sampleInput((fp + vec2( 1.5,  2.5)) * con1.xy);
-
     vec4 fgcbR = vec4(f.r, g.r, c.r, b.r);
     vec4 fgcbG = vec4(f.g, g.g, c.g, b.g);
     vec4 fgcbB = vec4(f.b, g.b, c.b, b.b);
@@ -298,7 +284,6 @@ void FsrMobile(
     vec4 nokjR = vec4(n.r, o.r, k.r, j.r);
     vec4 nokjG = vec4(n.g, o.g, k.g, j.g);
     vec4 nokjB = vec4(n.b, o.b, k.b, j.b);
-
 //------------------------------------------------------------------------------------------------------------------------------
     // This part is different for FP16, working pairs of taps at a time.
     vec2 pR = vec2(0.0);
@@ -314,30 +299,22 @@ void FsrMobile(
     vec3 aC = vec3(pR.x + pR.y, pG.x + pG.y, pB.x + pB.y);
     float aW =  pW.x + pW.y;
 //------------------------------------------------------------------------------------------------------------------------------
-    float invW = ARcpH1(max(aW, 1e-4));
-    vec3 upscaled = aC * vec3(invW);
-    vec3 fsrResult = contrast + upscaled * rcpL;
-    vec3 ringMin = vec3(mn4R, mn4G, mn4B);
-    vec3 ringMax = vec3(mx4R, mx4G, mx4B);
-    vec3 ringRange = max(ringMax - ringMin, vec3(1e-3));
-    vec3 ringPad = ringRange * vec3(ringingLimiter);
-    vec3 clamped = clamp(fsrResult, ringMin - ringPad, ringMax + ringPad);
-    pix = mix(upscaled, clamped, detailBlend);
+    pix = contrast + aC * vec3(ARcpH1(aW) * rcpL);
 }
 
 void main() {
+    vec2 texSize = vec2(textureSize(inputTexture, 0));
     vec4 con0, con1, con2, con3;
     FsrEasuCon(con0, con1, con2, con3,
-        inputTextureSize.x, inputTextureSize.y,
-        inputTextureSize.x, inputTextureSize.y,
-        outputTextureSize.x, outputTextureSize.y
-    );
+                texSize.x, texSize.y,
+                texSize.x, texSize.y,
+                outputTextureSize.x, outputTextureSize.y);
     if (con0.x > 1.0 || con0.y > 1.0) {
-        gl_FragColor = vec4(sampleInput(vTexCoord), 1.0);
+        fragColor = vec4(sampleInput(vTexCoord), 1.0);
     } else {
         vec3 pix;
         vec2 ip = vTexCoord * outputTextureSize;
         FsrMobile(pix, ip, con0, con1, con2, con3);
-        gl_FragColor = vec4(pix, 1.0);
+        fragColor = vec4(pix, 1.0);
     }
 }

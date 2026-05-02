@@ -477,7 +477,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="FSR1.0 超分Beta"
+                    android:text="FSR 超分"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -487,7 +487,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="HDR模式有色偏，使用下方选项手动微调。"
+                    android:text="选择超分输出目标，HDR由渲染链路自动处理。"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -513,7 +513,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_fsr_1"
                     android:button="@null"
-                    android:text="开启"
+                    android:text="关闭"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -526,7 +526,20 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_fsr_2"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="2K"
+                    android:textSize="10dp" />
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:id="@+id/rbt_game_display_fsr_3"
+                    android:button="@null"
+                    android:text="4K"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -544,84 +557,124 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:text="FSR锐化强度：1x"
+                android:text="锐化程度"
                 android:textStyle="italic|bold"
                 android:visibility="visible"
-                android:id="@+id/tx_game_display_fsr_sharpness"
                 android:textColor="@android:color/white"
                 android:textSize="8dp" />
 
-            <SeekBar
-                android:max="200"
-                android:min="0"
-                android:layout_marginTop="4dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:padding="0dp"
-                android:thumbOffset="0dp"
-                android:progress="100"
-                android:splitTrack="false"
-                android:id="@+id/sb_game_display_fsr_sharpness"
-                android:thumb="@android:color/transparent"
-                android:progressDrawable="@drawable/ic_game_menu_seek_bg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                <RadioGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="27dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/rg_game_display_fsr_sharpness"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_sharpness_1"
+                        android:button="@null"
+                        android:text="柔和"
+                        android:textSize="10dp" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_sharpness_2"
+                        android:button="@null"
+                        android:text="标准"
+                        android:textSize="10dp" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_sharpness_3"
+                        android:button="@null"
+                        android:text="强"
+                        android:textSize="10dp" />
+
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_sharpness_4"
+                        android:button="@null"
+                        android:text="极强"
+                        android:textSize="10dp" />
+
+                </RadioGroup>
 
                 <TextView
-                    android:id="@+id/tx_game_display_fsr_hdr_highlight_compression"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="HDR高亮压缩：100%"
+                    android:text="FSR HDR输出"
+                    android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
-                    android:textSize="8dp"
-                    android:textStyle="italic|bold" />
+                    android:textSize="8dp" />
 
-                <SeekBar
-                    android:id="@+id/sb_game_display_fsr_hdr_highlight_compression"
+                <RadioGroup
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="27dp"
                     android:layout_marginTop="4dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:max="160"
-                    android:min="70"
-                    android:padding="0dp"
-                    android:progress="100"
-                    android:progressDrawable="@drawable/ic_game_menu_seek_bg"
-                    android:splitTrack="false"
-                    android:thumb="@android:color/transparent"
-                    android:thumbOffset="0dp" />
+                    android:layout_marginBottom="5dp"
+                    android:id="@+id/rg_game_display_fsr_hdr_output"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tx_game_display_fsr_hdr_shadow_lift"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:text="HDR暗部提升：100%"
-                    android:textColor="@android:color/white"
-                    android:textSize="8dp"
-                    android:textStyle="italic|bold" />
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_hdr_output_1"
+                        android:button="@null"
+                        android:text="SDR映射"
+                        android:textSize="10dp" />
 
-                <SeekBar
-                    android:id="@+id/sb_game_display_fsr_hdr_shadow_lift"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:max="150"
-                    android:min="0"
-                    android:padding="0dp"
-                    android:progress="100"
-                    android:progressDrawable="@drawable/ic_game_menu_seek_bg"
-                    android:splitTrack="false"
-                    android:thumb="@android:color/transparent"
-                    android:thumbOffset="0dp" />
+                    <RadioButton
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:id="@+id/rbt_game_display_fsr_hdr_output_2"
+                        android:button="@null"
+                        android:text="HDR直出"
+                        android:textSize="10dp" />
+
+                </RadioGroup>
 
             </LinearLayout>
 
