@@ -9,6 +9,7 @@ import android.app.UiModeManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Insets;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 
+import com.limelight.LimeLog;
 import com.limelight.R;
 import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.preferences.PreferenceConfiguration;
@@ -73,6 +75,45 @@ public class UiHelper {
 
     public static void notifyStreamEnded(Context context) {
         setGameModeStatus(context, false, false);
+    }
+
+    public static boolean isColorOS() {
+        String manufacturer = String.valueOf(Build.MANUFACTURER).toLowerCase(Locale.US);
+        String brand = String.valueOf(Build.BRAND).toLowerCase(Locale.US);
+        String model = String.valueOf(Build.MODEL).toLowerCase(Locale.US);
+
+        return manufacturer.contains("oppo") || brand.contains("oppo") || model.contains("oppo") ||
+                manufacturer.contains("oneplus") || brand.contains("oneplus") || model.contains("oneplus") ||
+                manufacturer.contains("realme") || brand.contains("realme") || model.contains("realme");
+    }
+
+    public static void notifyColorOsHdrStatus(final Activity activity, final boolean hdrEnabled) {
+        if (activity == null || !isColorOS()) {
+            return;
+        }
+
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        activity.getWindow().setColorMode(hdrEnabled
+                                ? ActivityInfo.COLOR_MODE_HDR
+                                : ActivityInfo.COLOR_MODE_DEFAULT);
+                    }
+
+                    WindowManager.LayoutParams params = activity.getWindow().getAttributes();
+                    params.screenBrightness = hdrEnabled
+                            ? WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_FULL
+                            : WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
+                    activity.getWindow().setAttributes(params);
+
+                    LimeLog.info("ColorOS HDR status updated: " + (hdrEnabled ? "enabled" : "disabled"));
+                } catch (Throwable t) {
+                    LimeLog.warning("Failed to update ColorOS HDR status: " + t.getMessage());
+                }
+            }
+        });
     }
 
     public static void setLocale(Activity activity)

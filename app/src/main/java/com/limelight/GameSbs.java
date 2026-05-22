@@ -953,6 +953,7 @@ public class GameSbs extends Activity implements TextureView.SurfaceTextureListe
         super.onDestroy();
 
         instance = null;
+        UiHelper.notifyColorOsHdrStatus(this, false);
 
         if (controllerHandler != null) {
             controllerHandler.destroy();
@@ -2047,6 +2048,7 @@ public class GameSbs extends Activity implements TextureView.SurfaceTextureListe
 
         if (connecting || connected) {
             connecting = connected = false;
+            UiHelper.notifyColorOsHdrStatus(this, false);
             controllerHandler.stop();
 
             // Update GameManager state to indicate we're no longer in game
@@ -2264,6 +2266,7 @@ public class GameSbs extends Activity implements TextureView.SurfaceTextureListe
     public void setHdrMode(boolean enabled, byte[] hdrMetadata) {
         LimeLog.info("Display HDR mode: " + (enabled ? "enabled" : "disabled"));
         decoderRenderer.setHdrMode(enabled, hdrMetadata);
+        UiHelper.notifyColorOsHdrStatus(this, enabled);
     }
 
     @Override
