@@ -1,32 +1,37 @@
-# 月光·阿西西
-## 此项目实现对官方Moonlight安卓端功能修改<br>
-### 如果你有更好的想法或者功能实现也欢迎提交PR<br>
-### 如果喜欢数码和游戏，可以关注我的社交媒体账号
-### B站(https://space.bilibili.com/16893379) 、Youtube(https://www.youtube.com/@AxixiTV)
+> [!NOTE]
+> **English Translation version of Moonlight Assisi (Moonlight Android Blow)**: All custom Chinese UI elements, layout attributes, settings, and Java overlays have been fully localized to English in this repository. The original Chinese localizations are preserved under `app/src/main/res/values-zh-rCN`.
+> *Note: The translation was performed automatically by AI utilizing the Google Translate API.*
 
-此项目版本主要实现如下功能：<br>
-1、全新游戏菜单UI<br>
-2、自定义虚拟按键 支持导入导出<br>
-3、自定义分辨率<br>
-4、自定义码率<br>
-5、多种鼠标模式切换（普通鼠标、多点触控、触控板、禁用触屏操作、本地鼠标模式）<br>
-6、虚拟手柄皮肤优化、自由摇杆<br>
-7、外接显示器模式<br>
-8、适配ds4、ds5、nspro usb手柄驱动<br>
-9、精简的性能信息显示<br>
-10、自定义快捷指令<br>
-11、方便切换软键盘<br>
-12、竖屏模式<br>
-13、SBS娱乐模式<br>
-14、画面置顶显示 折叠屏有点用<br>
-15、虚拟触控板空间及灵敏度调节，游玩右键转视角游戏。例如魔兽<br>
-16、强制使用设备本身的震动马达（可能你的手柄震动效果不佳）<br>
-17、阿西西手柄调试页面 查看手柄震动及陀螺仪信息、安卓内核版本信息<br>
+# Moonlight Assisi (Moonlight Android Blow)
+## This project modifies and extends the features of the official Moonlight Android client.
+### If you have better ideas or feature implementations, feel free to submit a Pull Request!
+### If you enjoy tech, gadgets, and gaming, follow the developer's social media accounts:
+### Bilibili (https://space.bilibili.com/16893379) | YouTube (https://www.youtube.com/@AxixiTV)
+
+This custom fork includes the following additional features:
+1. **Brand New In-Game Menu UI**: A completely redesigned UI style for in-game configuration.
+2. **Custom Virtual Buttons**: Full support for custom layout buttons, including import and export capabilities.
+3. **Custom Resolution Settings**: Set custom streaming resolutions.
+4. **Custom Bitrate Settings**: Force set custom video bitrates overriding default ranges.
+5. **Advanced Mouse Emulation**: Toggle between multiple mouse modes (normal mouse, multi-touch surface mode, touchpad, disable touch screen operation, and local system cursor display).
+6. **Virtual Controller Enhancements**: Optimized virtual gamepads skins and free joysticks.
+7. **External Monitor Mode**: Show streaming screens on external monitors while keeping controller overlays on the phone screen.
+8. **Gamepad Driver Support**: Native integration for DualShock 4 (DS4), DualSense (DS5), and Nintendo Switch Pro USB controller drivers.
+9. **Streamlined Performance HUD**: Simplified overlay listing key stats: network speed, latency, decoding time, packet loss, and FPS.
+10. **Custom Shortcut Key Commands**: Easily bind and send PC keyboard commands/combinations.
+11. **Convenient Keyboard Access**: Easily trigger/toggle the phone's soft keyboard.
+12. **Portrait Display Support**: Support for vertical streams and layouts.
+13. **Side-by-Side (SBS) Mode**: Left-and-right 3D format for compatible VR/entertainment setups.
+14. **Folding Screen Optimization**: Always-on-top display layout customizations.
+15. **Virtual Touchpad Customization**: Set margins and speed for touchpad emulation, making camera-rotation games (e.g. World of Warcraft) playable.
+16. **Force Device Vibration**: Route game vibration feedback directly to the phone's native vibration motor.
+17. **Controller Debugging Tool**: Dedicated debugging screen to inspect vibration, gyroscope telemetry, and kernel info.
 
 <img width="2560" height="1600" alt="Screenshot_20250409-180147" src="https://github.com/user-attachments/assets/25fc1ad2-c804-4597-a832-48ec1717cf9a" />
 
+---
 
-# Moonlight Android
+# Moonlight Android (Original Readme)
 
 [![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/232a8tadrrn8jv0k/branch/master?svg=true)](https://ci.appveyor.com/project/cgutman/moonlight-android/branch/master)
 [![Translation Status](https://hosted.weblate.org/widgets/moonlight/-/moonlight-android/svg-badge.svg)](https://hosted.weblate.org/projects/moonlight/moonlight-android/)
