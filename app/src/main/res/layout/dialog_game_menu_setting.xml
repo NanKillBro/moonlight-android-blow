@@ -106,7 +106,7 @@
 <!--                        android:padding="4dp"-->
 <!--                        android:button="@null"-->
 <!--                        android:id="@+id/btn_game_float_ball_quick"-->
-<!--                        android:text="悬浮球\n打开软键盘"-->
+<!--                        android:text="@string/xml_dialog_game_menu_setting_5"-->
 <!--                        android:textSize="8dp" />-->
 
                     <CheckBox
@@ -119,7 +119,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_float_ball_postion"
-                        android:text="悬浮球\n记住位置"
+                        android:text="@string/xml_dialog_game_menu_setting_6"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -220,7 +220,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_lite_ext"
-                        android:text="显示更多\n扩展参数"
+                        android:text="@string/xml_dialog_game_menu_setting_13"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -233,7 +233,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_lite_click"
-                        android:text="点击打开\n游戏菜单"
+                        android:text="@string/xml_dialog_game_menu_setting_14"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -255,7 +255,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="游戏菜单 摇杆鼠标 快捷键"
+                    android:text="@string/xml_dialog_game_menu_setting_16"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -441,7 +441,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="手柄陀螺仪模拟右摇杆 Beta"
+                    android:text="@string/xml_dialog_game_menu_setting_29"
                     android:textStyle="italic|bold"
                     android:visibility="visible"
                     android:textColor="@android:color/white"
@@ -527,7 +527,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="性能信息 缩放：100%"
+                    android:text="@string/xml_dialog_game_menu_setting_34"
                     android:textStyle="italic|bold"
                     android:visibility="visible"
                     android:id="@+id/tx_game_setting_pref_zoom"
@@ -553,7 +553,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="性能信息 边距：4"
+                    android:text="@string/xml_dialog_game_menu_setting_35"
                     android:textStyle="italic|bold"
                     android:visibility="visible"
                     android:id="@+id/tx_game_setting_pref_magin_top"
@@ -653,7 +653,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="其中原装DS5有线驱动接管模式，有特殊优化."
+                            android:text="@string/xml_dialog_game_menu_setting_41"
                             android:textStyle="italic|bold"
                             android:textColor="#FFC107"
                             android:textSize="6dp" />

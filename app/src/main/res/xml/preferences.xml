@@ -35,8 +35,8 @@
             android:defaultValue="20"
             android:singleLine="true"
             android:dialogTitle="@string/xml_preferences_1"
-            android:summary="如果你感觉Seek控件滑动不太好用，可以选择手动输入。\n超过Seek滑动最大值，可能不显示但是串流时是生效的~"
-            android:dialogMessage="请输入数字，小数点只能识别到x.5，超过会四舍五入~"
+            android:summary="@string/xml_preferences_2"
+            android:dialogMessage="@string/xml_preferences_3"
             android:title="@string/xml_preferences_4" />
 
         <ListPreference
@@ -49,8 +49,8 @@
 
         <CheckBoxPreference
             android:key="enable_lowLatency_experiment"
-            android:title="优化解码低延迟模式(Beta)"
-            android:summary="(实验性) 高通8Gen1及以上和联发科9300及以下芯片机型生效。"
+            android:title="@string/xml_preferences_5"
+            android:summary="@string/xml_preferences_6"
             android:defaultValue="true" />
 
         <ListPreference
@@ -58,7 +58,7 @@
             android:title="@string/xml_preferences_7"
             android:entries="@array/fsr_target_names"
             android:entryValues="@array/fsr_target_values"
-            android:summary="GLES 渲染下启用 FSR 超分到 2K 或 4K。"
+            android:summary="@string/xml_preferences_8"
             android:defaultValue="off" />
 
         <ListPreference
@@ -67,16 +67,16 @@
             android:title="@string/xml_preferences_9"
             android:entries="@array/fsr_sharpness_names"
             android:entryValues="@array/fsr_sharpness_values"
-            android:summary="仅在启用 FSR 超分时生效，数值越高边缘越锐利。"
+            android:summary="@string/xml_preferences_10"
             android:defaultValue="standard" />
 
         <ListPreference
             android:key="list_fsr_hdr_output"
             android:dependency="list_fsr_target"
-            android:title="FSR HDR输出"
+            android:title="@string/xml_preferences_11"
             android:entries="@array/fsr_hdr_output_names"
             android:entryValues="@array/fsr_hdr_output_values"
-            android:summary="兼容 SDR 映射更稳定；原生 HDR 直出为实验性，需要设备支持 BT2020 PQ。"
+            android:summary="@string/xml_preferences_12"
             android:defaultValue="native" />
         <CheckBoxPreference
             android:key="checkbox_stretch_video"
@@ -207,7 +207,7 @@
         <CheckBoxPreference
             android:key="checkbox_disable_trigger_deadzone"
             android:title="@string/xml_preferences_21"
-            android:summary="勾选后 手柄扳机死区 Moonlight不做限制【某些ASUS Gamepad设备除外】。"
+            android:summary="@string/xml_preferences_22"
             android:defaultValue="false"/>
 
     </PreferenceCategory>
@@ -216,8 +216,8 @@
 
         <ListPreference
             android:key="mouse_model_list_axi"
-            android:title="触控/鼠标模式 【默认多点触控】"
-            android:summary="可选择一种鼠标模式，多点触控需要搭配sunshine使用~"
+            android:title="@string/xml_preferences_23"
+            android:summary="@string/xml_preferences_24"
             android:entries="@array/mouse_model_names_axi"
             android:entryValues="@array/mouse_model_values_axi"
             android:defaultValue="0" />
@@ -311,13 +311,13 @@
         <Preference
             android:key="import_gamepad_file"
             android:title="@string/xml_preferences_33"
-            android:summary="选择一个配置文件，覆盖默认选择的布局方案。(仅横屏模式)"
+            android:summary="@string/xml_preferences_90"
             />
 
         <Preference
             android:key="export_gamepad_file"
             android:title="@string/xml_preferences_35"
-            android:summary="导出默认选择的布局方案的配置文件。(仅横屏模式)"
+            android:summary="@string/xml_preferences_92"
             />
 
     </PreferenceCategory>
@@ -437,8 +437,7 @@
         <CheckBoxPreference
             android:key="checkbox_enable_quit_dialog"
             android:title="@string/xml_preferences_47"
-            android:summary="开启后，串流界面点击手机物理返回键 展示相关选项！
-            \n软键盘、性能信息、触控模式切换、发送特殊按键"
+            android:summary="@string/xml_preferences_48"
             android:defaultValue="true"/>
 
         <CheckBoxPreference
@@ -449,7 +448,7 @@
 
         <CheckBoxPreference
             android:key="checkbox_enable_sbs"
-            android:title="Side-By-Side模式"
+            android:title="@string/xml_preferences_51"
             android:summary="@string/xml_preferences_52"
             android:defaultValue="false"/>
 
@@ -457,11 +456,8 @@
             android:key="edit_diy_w_h"
             android:defaultValue="1920x1080"
             android:singleLine="true"
-            android:dialogTitle="设置完分辨率后，退出设置页面 重新打开生效！"
-            android:summary="添加一个自定义分辨率,x号分割,比较奇怪的分辨率可能无法生效。
-            \n例如：1920x1080
-            \n非原生分辨率如果是刘海屏可能不会默认填充刘海区域，
-            \n如果画面比例一样，可手动设置拉伸画面来充满全屏"
+            android:dialogTitle="@string/xml_preferences_53"
+            android:summary="@string/xml_preferences_54"
             android:title="@string/xml_preferences_55" />
 
         <CheckBoxPreference
@@ -472,13 +468,13 @@
 
         <CheckBoxPreference
             android:key="checkbox_enable_joyconfix"
-            android:title="兼容Switch JoyCon手柄"
-            android:summary="如果你的JoyCon无法使用或识别按键有问题，可以尝试开启此功能。适配Android 10及以上"
+            android:title="@string/xml_preferences_58"
+            android:summary="@string/xml_preferences_59"
             android:defaultValue="false"/>
 
         <CheckBoxPreference
             android:key="checkbox_gamepad_enable_battery_report"
-            android:summary="在可用时汇报手柄电池状态。\n如果在使用触摸屏/触摸板/手写笔/鼠标时偶尔有卡顿现象发生，关闭此选项可能会有用。"
+            android:summary="@string/xml_preferences_60"
             android:title="@string/xml_preferences_61"
             android:defaultValue="true"
             />
@@ -530,19 +526,19 @@
         <CheckBoxPreference
             android:key="checkbox_enable_virtual_motion"
             android:title="@string/xml_preferences_73"
-            android:summary="如果你希望虚拟手柄支持陀螺仪功能，开启此选项。\n可能需要在sunshine后台设置手柄强制为ps4手柄。\n建议连接物理手柄时关闭此选项。"
+            android:summary="@string/xml_preferences_74"
             android:defaultValue="false"/>
 
         <CheckBoxPreference
             android:key="checkbox_enable_clear_default_special_button"
-            android:title="禁用默认的特殊按键指令(快捷键)"
+            android:title="@string/xml_preferences_75"
             android:summary="@string/xml_preferences_76"
             android:defaultValue="false"/>
 
         <CheckBoxPreference
             android:key="checkbox_enable_game_manager_quest"
             android:title="@string/xml_preferences_77"
-            android:summary="可能对Quest 安卓13及以上版本有用"
+            android:summary="@string/xml_preferences_78"
             android:defaultValue="false"/>
 
         <Preference
@@ -587,13 +583,13 @@
         <Preference
             android:key="import_keyboard_file"
             android:title="@string/xml_preferences_89"
-            android:summary="选择一个配置文件，覆盖默认选择的布局方案。(仅横屏模式)"
+            android:summary="@string/xml_preferences_90"
             />
 
         <Preference
             android:key="export_keyboard_file"
             android:title="@string/xml_preferences_91"
-            android:summary="导出默认选择的布局方案的配置文件。(仅横屏模式)"
+            android:summary="@string/xml_preferences_92"
             />
 
     </PreferenceCategory>
@@ -694,7 +690,7 @@
         <Preference
             android:key="import_image_file_key"
             android:title="@string/xml_preferences_120"
-            android:summary="选择一张图片，旋转屏幕生效~\n容错率不是很高，所以图片大小和类型别太过分，小心崩溃~\n如果崩溃了清除数据可解决~"
+            android:summary="@string/xml_preferences_121"
             />
 
         <CheckBoxPreference
@@ -709,7 +705,7 @@
             android:singleLine="true"
             android:dialogTitle="@string/xml_preferences_124"
             android:summary="@string/xml_preferences_125"
-            android:dialogMessage="输入你喜欢的文本~"
+            android:dialogMessage="@string/xml_preferences_126"
             android:title="@string/xml_preferences_127" />
 
         <CheckBoxPreference

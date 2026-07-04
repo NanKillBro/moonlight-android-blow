@@ -315,7 +315,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="手柄键鼠模式 鼠标指针灵敏度"
+                android:text="@string/xml_dialog_game_menu_touch_16"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
                 android:textSize="12dp" />

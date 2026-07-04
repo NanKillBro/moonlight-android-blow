@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="输入宽和高 (保存并使用)"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_4"
                     android:textStyle="italic"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -223,7 +223,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="10dp"
-                    android:text="自定义分辨率 (长按删除)"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_9"
                     android:textStyle="bold"
                     android:textSize="10dp"
                     android:visibility="gone" />
