@@ -1,6 +1,6 @@
 > [!NOTE]
 > **English Translation version of Moonlight Assisi (Moonlight Android Blow)**: All custom Chinese UI elements, layout attributes, settings, and Java overlays have been fully localized to English in this repository. The original Chinese localizations are preserved under `app/src/main/res/values-zh-rCN`.
-> *Note: The translation was performed automatically by AI utilizing the Google Translate API.*
+> *Note: The translation was performed automatically by AI (Gemini 3.5 Flash)*
 
 # Moonlight Assisi (Moonlight Android Blow)
 ## This project modifies and extends the features of the official Moonlight Android client.

@@ -33,7 +33,7 @@
     </string-array>
 
     <string-array name="fsr_target_names">
-        <item>closure</item>
+        <item>Off</item>
         <item>2K</item>
         <item>4K</item>
     </string-array>
@@ -44,10 +44,10 @@
     </string-array>
 
     <string-array name="fsr_sharpness_names">
-        <item>soft</item>
-        <item>standard</item>
-        <item>powerful</item>
-        <item>Extremely strong</item>
+        <item>Soft</item>
+        <item>Standard</item>
+        <item>Strong</item>
+        <item>Maximum</item>
     </string-array>
     <string-array name="fsr_sharpness_values" translatable="false">
         <item>soft</item>
@@ -57,8 +57,8 @@
     </string-array>
 
     <string-array name="fsr_hdr_output_names">
-        <item>Compatible with SDR mapping</item>
-        <item>Native HDR straight out</item>
+        <item>SDR Tone Mapping</item>
+        <item>Native HDR Output</item>
     </string-array>
     <string-array name="fsr_hdr_output_values" translatable="false">
         <item>sdr</item>
@@ -77,10 +77,10 @@
     </string-array>
 
     <string-array name="audio_haptics_voice_filter_names">
-        <item>closure</item>
+        <item>Off</item>
         <item>Low</item>
-        <item>middle</item>
-        <item>high</item>
+        <item>Medium</item>
+        <item>High</item>
     </string-array>
     <string-array name="audio_haptics_voice_filter_values" translatable="false">
         <item>off</item>
@@ -90,8 +90,8 @@
     </string-array>
 
     <string-array name="audio_haptics_output_target_names">
-        <item>cell phone</item>
-        <item>handle</item>
+        <item>Phone</item>
+        <item>Controller</item>
     </string-array>
     <string-array name="audio_haptics_output_target_values" translatable="false">
         <item>phone</item>
@@ -189,11 +189,11 @@
 
 
     <string-array name="keyboard_axi_names">
-        <item>Option 1</item>
-        <item>Option 2</item>
-        <item>Option 3</item>
-        <item>Option 4</item>
-        <item>Option 5</item>
+        <item>Layout 1</item>
+        <item>Layout 2</item>
+        <item>Layout 3</item>
+        <item>Layout 4</item>
+        <item>Layout 5</item>
     </string-array>
     <string-array name="keyboard_axi_values" translatable="false">
         <item>OSC_Keyboard</item>
@@ -204,13 +204,13 @@
     </string-array>
 
     <string-array name="mouse_model_names_axi">
-        <item>Multi-touch mode</item>
-        <item>Normal mouse mode</item>
-        <item>trackpad mode</item>
-        <item>Disable mouse/touch</item>
-        <item>Ordinary mouse "left and right button swap"</item>
-        <item>Touchpad "mobile only"</item>
-        <item>Touchpad "move + left click"</item>
+        <item>Multi-touch Mode</item>
+        <item>Standard Mouse Mode</item>
+        <item>Trackpad Mode</item>
+        <item>Disable Mouse &amp; Touch</item>
+        <item>Standard Mouse (Swap Left/Right Click)</item>
+        <item>Trackpad (Move Only)</item>
+        <item>Trackpad (Move + Left Click)</item>
     </string-array>
 
     <string-array name="mouse_model_values_axi" translatable="false">
@@ -225,13 +225,13 @@
 
 
     <string-array name="screen_gravity_list_names">
-        <item>Centered by default</item>
-        <item>top center</item>
-        <item>top left</item>
-        <item>top right</item>
-        <item>center bottom</item>
-        <item>bottom left</item>
-        <item>bottom right</item>
+        <item>Default Center</item>
+        <item>Top Center</item>
+        <item>Top Left</item>
+        <item>Top Right</item>
+        <item>Bottom Center</item>
+        <item>Bottom Left</item>
+        <item>Bottom Right</item>
     </string-array>
 
     <string-array name="screen_gravity_list_values" translatable="false">
@@ -245,11 +245,11 @@
     </string-array>
 
     <string-array name="gamepad_axi_names">
-        <item>Option 1</item>
-        <item>Option 2</item>
-        <item>Option 3</item>
-        <item>Option 4</item>
-        <item>Option 5</item>
+        <item>Layout 1</item>
+        <item>Layout 2</item>
+        <item>Layout 3</item>
+        <item>Layout 4</item>
+        <item>Layout 5</item>
     </string-array>
     <string-array name="gamepad_axi_values" translatable="false">
         <item>gamePad</item>

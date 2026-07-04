@@ -231,8 +231,7 @@
 <!--        <CheckBoxPreference-->
 <!--            android:key="checkbox_multi_touch_screen"-->
 <!--            android:title="@string/xml_preferences_27"-->
-<!--            android:summary="开启此选项可以实现surface一样多点触控操作windows系统效果。-->
-<!--            \n仅支持sunshine 0.21及以上版本"-->
+<!--            android:summary="@string/xml_preferences_28"-->
 <!--            android:disableDependentsState="true"-->
 <!--            android:defaultValue="false" />-->
 
@@ -562,8 +561,7 @@
         <CheckBoxPreference
             android:key="checkbox_enable_keyboard"
             android:title="@string/xml_preferences_84"
-            android:summary="在触摸屏上显示一层虚拟特殊按键。
-            \n按键透明度与上方选项中虚拟手柄共用。"
+            android:summary="@string/xml_preferences_85"
             android:defaultValue="false"/>
 
         <ListPreference
