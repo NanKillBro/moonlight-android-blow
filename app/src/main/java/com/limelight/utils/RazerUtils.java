@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import com.limelight.LimeLog;
 import com.limelight.nvstream.StreamConfiguration;
 
-import java.text.DecimalFormat;
+
 
 /**
  * Description
@@ -70,8 +70,8 @@ public class RazerUtils {
         double x = Math.pow(wi, 2.0);
         double y = Math.pow(hi, 2.0);
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.#");
-        return Double.parseDouble(decimalFormat.format(Math.sqrt(x + y)));
+        // Round to 1 decimal place without locale-dependent string formatting
+        return Math.round(Math.sqrt(x + y) * 10.0) / 10.0;
     }
 
     // 获取设备的PPI值
