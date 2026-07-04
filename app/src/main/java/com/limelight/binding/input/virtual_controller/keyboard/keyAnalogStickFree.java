@@ -39,7 +39,7 @@ public class keyAnalogStickFree extends keyBoardVirtualControllerElement {
     private float touchStartX;
     private float touchStartY;
 
-    protected String strStickSide = "摇杆";
+    protected String strStickSide = "joystick";
     protected String[] textTipValues = {"▲", "◀", "▼", "▶"};
 
     private enum STICK_STATE { NO_MOVEMENT, MOVED_IN_DEAD_ZONE, MOVED_ACTIVE }

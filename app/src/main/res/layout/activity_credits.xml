@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="鸣谢"
+            android:text="@string/xml_activity_credits_1"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -39,7 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="赞赏"
+            android:text="@string/xml_activity_credits_2"
             android:id="@+id/tx_sponsored"
             android:textColor="@android:color/white"
             android:textSize="14sp"
@@ -74,7 +74,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="感谢一路同行的你们"
+                    android:text="@string/xml_activity_credits_3"
                     android:textColor="@android:color/white"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -84,7 +84,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:lineSpacingExtra="2dp"
-                    android:text="这份名单献给每一位支持阿西西的朋友，因为你们，项目才得以持续前进。"
+                    android:text="@string/xml_activity_credits_4"
                     android:textColor="@android:color/white"
                     android:textSize="10sp" />
             </LinearLayout>
@@ -106,7 +106,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:layout_marginLeft="20dp"
-                    android:text="鸣谢墙"
+                    android:text="@string/xml_activity_credits_5"
                     android:textColor="@android:color/white"
                     android:textSize="14sp"
                     android:textStyle="bold" />

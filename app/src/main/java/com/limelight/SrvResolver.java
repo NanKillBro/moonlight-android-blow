@@ -78,11 +78,11 @@ public class SrvResolver {
                     resultCode.setResult(result);
                 } else {
                     resultCode.setCode(1);
-                    resultCode.setResult("未找到 SRV 记录: " + srvQuery);
+                    resultCode.setResult("SRV record not found:" + srvQuery);
                 }
             } else {
                 resultCode.setCode(1);
-                resultCode.setResult("解析 SRV 记录失败，HTTP 状态码: " + responseCode);
+                resultCode.setResult("Failed to parse SRV record, HTTP status code:" + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();

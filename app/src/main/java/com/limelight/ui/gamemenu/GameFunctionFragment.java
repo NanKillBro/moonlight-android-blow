@@ -69,43 +69,43 @@ public class GameFunctionFragment extends BaseGameMenuDialog implements View.OnC
             return;
         }
         if(v.getId()==R.id.btn_logout){
-            click.click("注销",0);
+            click.click("Log out",0);
             return;
         }
         if(v.getId()==R.id.btn_shutdown){
-            click.click("关机",1);
+            click.click("Shut down",1);
             return;
         }
         if(v.getId()==R.id.btn_sleep){
-            click.click("睡眠",2);
+            click.click("sleep",2);
             return;
         }
         if(v.getId()==R.id.btn_reboot){
-            click.click("重启",3);
+            click.click("Restart",3);
             return;
         }
         if(v.getId()==R.id.btn_task_manager){
-            click.click("任务管理器",4);
+            click.click("task manager",4);
             return;
         }
         if(v.getId()==R.id.btn_clipboard_send){
-            click.click("发送剪切板",5);
+            click.click("Send clipboard",5);
             return;
         }
         if(v.getId()==R.id.btn_clipboard_open){
-            click.click("打开剪切板",6);
+            click.click("Open clipboard",6);
             return;
         }
         if(v.getId()==R.id.btn_open_setting){
-            click.click("打开设置",7);
+            click.click("Open settings",7);
             return;
         }
         if(v.getId()==R.id.btn_computer){
-            click.click("我的电脑",8);
+            click.click("my computer",8);
             return;
         }
         if(v.getId()==R.id.btn_win_center){
-            click.click("移动中心",9);
+            click.click("mobile center",9);
             return;
         }
         if(v.getId()==R.id.btn_win_p){
@@ -114,19 +114,19 @@ public class GameFunctionFragment extends BaseGameMenuDialog implements View.OnC
         }
 
         if(v.getId()==R.id.btn_display_1){
-            click.click("显示器1",11);
+            click.click("Monitor 1",11);
             return;
         }
         if(v.getId()==R.id.btn_display_2){
-            click.click("显示器2",12);
+            click.click("Monitor 2",12);
             return;
         }
         if(v.getId()==R.id.btn_display_3){
-            click.click("显示器3",13);
+            click.click("Monitor 3",13);
             return;
         }
         if(v.getId()==R.id.btn_display_4){
-            click.click("显示器4",14);
+            click.click("Monitor 4",14);
             return;
         }
 

@@ -143,7 +143,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.btn_soft_function || v.getId()==R.id.btn_display_1){
             GameFunctionFragment fragment=new GameFunctionFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("操作");
+            fragment.setTitle("operate");
             fragment.setOnClick(new GameFunctionFragment.onClick() {
                 @Override
                 public void click(String title, int index) {
@@ -328,7 +328,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_quick_list){
             GameListQuickFragment fragment=new GameListQuickFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("快捷键(字体倾斜项可长按删除)");
+            fragment.setTitle("Shortcut keys (font tilt items can be deleted by long pressing)");
             if(game!=null){
                 fragment.setEnableClearDefaultSpecial(game.prefConfig.enableClearDefaultSpecial);
             }
@@ -358,7 +358,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_touch_list){
             GameListMouseFragment fragment=new GameListMouseFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("鼠标与触控");
+            fragment.setTitle("Mouse and touch");
             fragment.setOnClick(new GameListMouseFragment.onClick() {
                 @Override
                 public void click(String title, int index) {
@@ -374,7 +374,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
                     }
                     if(index==8){
                         game.prefConfig.absoluteMouseMode=!game.prefConfig.absoluteMouseMode;
-                        Toast.makeText(getActivity(),"远程桌面鼠标模式"+(game.prefConfig.absoluteMouseMode?"已启用！":"已禁用！"),Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Remote desktop mouse mode"+(game.prefConfig.absoluteMouseMode?"Enabled!":"Disabled!"),Toast.LENGTH_SHORT).show();
                         return;
                     }
                     if(index==9){
@@ -393,7 +393,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_touch_sensitivity){
             GameTouchFragment fragment=new GameTouchFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("触控灵敏度");
+            fragment.setTitle("Touch sensitivity");
             fragment.setPrefConfig(game==null?new PreferenceConfiguration():game.prefConfig);
             fragment.show(getFragmentManager());
             return;
@@ -402,7 +402,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_display){
             GameDisplayFragment fragment=new GameDisplayFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("显示");
+            fragment.setTitle("show");
             fragment.setOnClick(new GameDisplayFragment.onClick() {
                 @Override
                 public void click() {
@@ -420,7 +420,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_device){
             GameDisplayDeviceFragment fragment=new GameDisplayDeviceFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("外设");
+            fragment.setTitle("peripherals");
             fragment.setOnClick((index, flag) -> {
                 if(index==1){
                     game.setDualSenseTrigger();
@@ -434,7 +434,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId() == R.id.bt_other_setting){
             GameDisplaySettingFragment fragment=new GameDisplaySettingFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("杂项");
+            fragment.setTitle("Miscellaneous");
             fragment.setOnClick(new GameDisplaySettingFragment.onClick() {
                 @Override
                 public void click(int index,boolean flag) {
@@ -490,7 +490,7 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         if(v.getId()==R.id.bt_virtual_view){
             GameMenuVirtualViewFragment fragment=new GameMenuVirtualViewFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("虚拟手柄与虚拟按键");
+            fragment.setTitle("Virtual controller and virtual buttons");
             fragment.setGamePadMode(game==null? KeyBoardController.ControllerMode.NONE:game.getVirtualControllerMode());
             fragment.setGameKeyMode(game==null? KeyBoardController.ControllerMode.NONE:game.getVirtualKeyControllerMode());
             fragment.setPrefConfig(game==null?new PreferenceConfiguration():game.prefConfig);

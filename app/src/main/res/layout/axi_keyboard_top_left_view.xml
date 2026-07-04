@@ -17,7 +17,7 @@
         android:layout_height="wrap_content">
 
         <TextView
-            android:text="当前按钮：xx"
+            android:text="@string/xml_axi_keyboard_top_left_view_1"
             android:textSize="12sp"
             android:id="@+id/tx_name"
             android:textStyle="bold"
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
-            android:text="键值：xx"
+            android:text="@string/xml_axi_keyboard_top_left_view_2"
             android:id="@+id/tx_desc"
             android:textSize="11sp"
             android:textColor="@android:color/white"
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="坐标：xx"
+            android:text="@string/xml_axi_keyboard_top_left_view_3"
             android:id="@+id/tx_margin"
             android:textSize="11sp"
             android:textColor="@android:color/white"
@@ -41,7 +41,7 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="缩放比例：100%"
+            android:text="@string/xml_axi_keyboard_top_left_view_4"
             android:textSize="11sp"
             android:id="@+id/tx_zoom"
             android:textColor="@android:color/white"
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="缩放宽度：100%"
+                android:text="@string/xml_axi_keyboard_top_left_view_5"
                 android:textSize="11sp"
                 android:id="@+id/tx_zoom_w"
                 android:textColor="@android:color/white"
@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"/>
 
             <TextView
-                android:text="缩放高度：100%"
+                android:text="@string/xml_axi_keyboard_top_left_view_6"
                 android:textSize="11sp"
                 android:id="@+id/tx_zoom_h"
                 android:textColor="@android:color/white"
@@ -126,7 +126,7 @@
                 android:textSize="11sp"
                 android:id="@+id/cb_switch_mode"
                 android:buttonTint="#8C99E6"
-                android:text="锁定模式" />
+                android:text="@string/xml_axi_keyboard_top_left_view_7" />
 
             <CheckBox
                 android:layout_width="wrap_content"
@@ -136,13 +136,13 @@
                 android:textSize="11sp"
                 android:id="@+id/cb_round"
                 android:buttonTint="#8C99E6"
-                android:text="方形按钮" />
+                android:text="@string/xml_axi_keyboard_top_left_view_8" />
 
         </LinearLayout>
 
 
         <TextView
-            android:text="删除"
+            android:text="@string/xml_axi_keyboard_top_left_view_9"
             android:textSize="12sp"
             android:layout_marginTop="4dp"
             android:layout_marginLeft="5dp"
@@ -155,7 +155,7 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text="取消"
+            android:text="@string/xml_axi_keyboard_top_left_view_10"
             android:textSize="12sp"
             android:gravity="center"
             android:layout_marginTop="4dp"

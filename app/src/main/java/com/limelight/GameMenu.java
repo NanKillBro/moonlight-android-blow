@@ -260,7 +260,7 @@ public class GameMenu {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(game,"自定义导入格式出错了，请检查！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(game,"There is an error in the custom import format, please check!",Toast.LENGTH_SHORT).show();
             }
         }
         options.add(new MenuOption(getString(R.string.game_menu_cancel), null));
@@ -297,11 +297,11 @@ public class GameMenu {
                 () -> showSetSensitivityDialog("touchX")));
         options.add(new MenuOption(getString(R.string.game_menu_switch_touch_sensitivity_update_y), true,
                 () -> showSetSensitivityDialog("touchY")));
-        options.add(new MenuOption("横竖屏切换", true,
+        options.add(new MenuOption("Switch between horizontal and vertical screens", true,
                 () -> game.switchLandscapePortraitScreen()));
-        options.add(new MenuOption("(开启/关闭)画面移动&缩放", true,
+        options.add(new MenuOption("(Turn on/off) Screen movement & zoom", true,
                 () -> game.screenMoveZoom()));
-        options.add(new MenuOption("切换性能信息样式", true,
+        options.add(new MenuOption("Switch performance information style", true,
                 () -> game.switchHUD()));
         if (device != null) {
             options.addAll(device.getGameMenuOptions());
@@ -314,7 +314,7 @@ public class GameMenu {
 
         options.add(new MenuOption(getString(R.string.game_menu_cancel), null));
 
-        showMenuDialog("游戏快捷菜单", options.toArray(new MenuOption[options.size()]));
+        showMenuDialog("Game quick menu", options.toArray(new MenuOption[options.size()]));
     }
 
 
@@ -322,7 +322,7 @@ public class GameMenu {
         Context context=game;
         int step = 10;
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("调整触摸灵敏度");
+        builder.setTitle("Adjust touch sensitivity");
         // 动态创建布局
         LinearLayout layout = new LinearLayout(context);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -352,11 +352,11 @@ public class GameMenu {
         switch (key) {
             case "touchX":
                 initialValue = game.prefConfig.touchSensitivityX;
-                builder.setTitle("调整触摸灵敏度X轴(当前界面生效)");
+                builder.setTitle("Adjust touch sensitivity X-axis (effective in current interface)");
                 break;
             case "touchY":
                 initialValue = game.prefConfig.touchSensitivityY;
-                builder.setTitle("调整触摸灵敏度Y轴(当前界面生效)");
+                builder.setTitle("Adjust touch sensitivity Y-axis (effective in current interface)");
                 break;
             default:
                 initialValue = 100;
@@ -381,7 +381,7 @@ public class GameMenu {
 
         builder.setView(layout);
 
-        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Sure", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // 保存修改后的值
@@ -397,7 +397,7 @@ public class GameMenu {
             }
         });
 
-        builder.setNegativeButton("取消", null);
+        builder.setNegativeButton("Cancel", null);
 
         builder.create().show();
     }

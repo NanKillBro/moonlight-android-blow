@@ -2378,7 +2378,7 @@ public class GameSbs extends Activity implements TextureView.SurfaceTextureListe
                 }
                 performanceOverlayView.setText(String.format(
                         Locale.US,
-                        "%dx%d %s  延迟/解码：%d ms / %.2f ms  丢包率：%.2f%%  FPS：%.2f",
+                        "%dx%d %s Delay/decoding: %d ms / %.2f ms Packet loss rate: %.2f%% FPS: %.2f",
                         stats.width,
                         stats.height,
                         stats.codecName != null ? stats.codecName : "--",

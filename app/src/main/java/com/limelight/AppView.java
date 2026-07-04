@@ -365,12 +365,12 @@ public class AppView extends Activity implements AdapterFragmentCallbacks {
                 }
                 dialogFragment=new GameDisplayFragment();
                 dialogFragment.setWidth(UiHelper.dpToPx(AppView.this,364));
-                dialogFragment.setTitle("显示");
+                dialogFragment.setTitle("show");
                 dialogFragment.setShowLock(false);
                 dialogFragment.setOnClick(new GameDisplayFragment.onClick() {
                     @Override
                     public void click() {
-                        Toast.makeText(AppView.this,"修改成功！",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(AppView.this,"Modification successful!",Toast.LENGTH_SHORT).show();
                     }
                 });
                 dialogFragment.setPrefConfig(pref);

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="显示"
+            android:text="@string/xml_dialog_game_menu_display_1"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -34,7 +34,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="应用配置"
+            android:text="@string/xml_dialog_game_menu_display_2"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -66,7 +66,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="视频信息"
+                    android:text="@string/xml_dialog_game_menu_display_3"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -74,7 +74,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="应用配置后，页面关闭，需重新打开串流页面生效！"
+                    android:text="@string/xml_dialog_game_menu_display_4"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="8dp" />
@@ -91,7 +91,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:text="分辨率：1920x1080"
+                    android:text="@string/xml_dialog_game_menu_display_5"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:id="@+id/tx_game_display_screen"
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="\t码率：100 mbps"
+                    android:text="@string/xml_dialog_game_menu_display_6"
                     android:textColor="@android:color/white"
                     android:id="@+id/tx_game_display_bit"
                     android:textStyle="italic|bold"
@@ -111,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="\t帧率：60 fps"
+                    android:text="@string/xml_dialog_game_menu_display_7"
                     android:textColor="@android:color/white"
                     android:id="@+id/tx_game_display_fps"
                     android:textStyle="italic|bold"
@@ -121,7 +121,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="\t方向：横向"
+                    android:text="@string/xml_dialog_game_menu_display_8"
                     android:textColor="@android:color/white"
                     android:id="@+id/tx_game_display_direction"
                     android:textStyle="italic|bold"
@@ -132,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="\t模式：外接显示器"
+                    android:text="@string/xml_dialog_game_menu_display_9"
                     android:textColor="@android:color/white"
                     android:id="@+id/tx_game_display_ex"
                     android:textStyle="italic|bold"
@@ -143,7 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
-                android:text="选项"
+                android:text="@string/xml_dialog_game_menu_display_10"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
                 android:textSize="12dp" />
@@ -169,7 +169,7 @@
                     android:drawableRight="@drawable/ic_axi_arrow"
                     android:gravity="left|center_vertical"
                     android:padding="10dp"
-                    android:text="分辨率"
+                    android:text="@string/xml_dialog_game_menu_display_11"
                     android:textSize="11dp" />
 
                 <LinearLayout
@@ -186,7 +186,7 @@
                         android:gravity="center"
                         android:layout_weight="1"
                         android:id="@+id/bt_display_ex"
-                        android:text="模式切换"
+                        android:text="@string/xml_dialog_game_menu_display_12"
                         android:textSize="10dp" />
 
                     <Button
@@ -197,7 +197,7 @@
                         android:id="@+id/bt_display_exchange"
                         android:background="@drawable/ic_game_menu_btn_selector"
                         android:gravity="center"
-                        android:text="宽高交换"
+                        android:text="@string/xml_dialog_game_menu_display_13"
                         android:textSize="10dp" />
 
                     <Button
@@ -208,7 +208,7 @@
                         android:gravity="center"
                         android:layout_weight="1"
                         android:id="@+id/bt_display_direction"
-                        android:text="方向交换"
+                        android:text="@string/xml_dialog_game_menu_display_14"
                         android:textSize="10dp" />
 
 
@@ -228,7 +228,7 @@
                 android:drawableRight="@drawable/ic_axi_arrow"
                 android:gravity="left|center_vertical"
                 android:padding="10dp"
-                android:text="码率"
+                android:text="@string/xml_dialog_game_menu_display_15"
                 android:textSize="11dp" />
 
             <Button
@@ -242,7 +242,7 @@
                 android:drawableRight="@drawable/ic_axi_arrow"
                 android:gravity="left|center_vertical"
                 android:padding="10dp"
-                android:text="帧率"
+                android:text="@string/xml_dialog_game_menu_display_16"
                 android:textSize="11dp" />
 
             <LinearLayout
@@ -255,7 +255,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="解码器"
+                    android:text="@string/xml_dialog_game_menu_display_17"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -265,7 +265,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="如果主机软件或显卡不支持编解码器选择，则可能会忽略编解码器选择。"
+                    android:text="@string/xml_dialog_game_menu_display_18"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -291,7 +291,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_video_format_1"
                     android:button="@null"
-                    android:text="自动"
+                    android:text="@string/xml_dialog_game_menu_display_19"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -357,7 +357,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="重新打开串流页面生效！"
+                    android:text="@string/xml_dialog_game_menu_display_20"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="8dp" />
@@ -383,7 +383,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_hdr_1"
                     android:button="@null"
-                    android:text="开启"
+                    android:text="@string/xml_dialog_game_menu_display_21"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -397,7 +397,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_hdr_2"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -418,7 +418,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="HDR满亮度"
+                        android:text="@string/xml_dialog_game_menu_display_23"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="12dp" />
@@ -428,7 +428,7 @@
                         android:layout_marginLeft="5dp"
                         android:singleLine="true"
                         android:ellipsize="end"
-                        android:text="HDR模式下可拉满窗口亮度，默认关闭。"
+                        android:text="@string/xml_dialog_game_menu_display_24"
                         android:textStyle="italic|bold"
                         android:textColor="#FFC107"
                         android:textSize="8dp" />
@@ -454,7 +454,7 @@
                         android:gravity="center"
                         android:padding="4dp"
                         android:button="@null"
-                        android:text="开启"
+                        android:text="@string/xml_dialog_game_menu_display_21"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -467,7 +467,7 @@
                         android:gravity="center"
                         android:padding="4dp"
                         android:button="@null"
-                        android:text="关闭"
+                        android:text="@string/xml_dialog_game_menu_display_22"
                         android:checked="true"
                         android:textSize="10dp" />
 
@@ -485,7 +485,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="解码低延迟模式Beta"
+                    android:text="@string/xml_dialog_game_menu_display_27"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -495,7 +495,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="高通8Gen1及以上和联发科9300及以下芯片机型生效！"
+                    android:text="@string/xml_dialog_game_menu_display_28"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -521,7 +521,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_lowlatency_1"
                     android:button="@null"
-                    android:text="开启"
+                    android:text="@string/xml_dialog_game_menu_display_21"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -535,7 +535,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_lowlatency_2"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -550,7 +550,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="FSR 超分"
+                    android:text="@string/xml_dialog_game_menu_display_31"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -560,7 +560,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="选择超分输出目标，HDR由渲染链路自动处理。"
+                    android:text="@string/xml_dialog_game_menu_display_32"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -586,7 +586,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_fsr_1"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -630,7 +630,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="5dp"
-                android:text="锐化程度"
+                android:text="@string/xml_dialog_game_menu_display_34"
                 android:textStyle="italic|bold"
                 android:visibility="visible"
                 android:textColor="@android:color/white"
@@ -656,7 +656,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_sharpness_1"
                         android:button="@null"
-                        android:text="柔和"
+                        android:text="@string/xml_dialog_game_menu_display_35"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -669,7 +669,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_sharpness_2"
                         android:button="@null"
-                        android:text="标准"
+                        android:text="@string/xml_dialog_game_menu_display_36"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -682,7 +682,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_sharpness_3"
                         android:button="@null"
-                        android:text="强"
+                        android:text="@string/xml_dialog_game_menu_display_37"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -695,7 +695,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_sharpness_4"
                         android:button="@null"
-                        android:text="极强"
+                        android:text="@string/xml_dialog_game_menu_display_38"
                         android:textSize="10dp" />
 
                 </RadioGroup>
@@ -706,7 +706,7 @@
                     android:layout_marginTop="8dp"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="5dp"
-                    android:text="FSR HDR输出"
+                    android:text="@string/xml_dialog_game_menu_display_39"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -731,7 +731,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_hdr_output_1"
                         android:button="@null"
-                        android:text="SDR映射"
+                        android:text="@string/xml_dialog_game_menu_display_40"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -744,7 +744,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_fsr_hdr_output_2"
                         android:button="@null"
-                        android:text="HDR直出"
+                        android:text="@string/xml_dialog_game_menu_display_41"
                         android:textSize="10dp" />
 
                 </RadioGroup>
@@ -761,7 +761,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="忽略HDR校验"
+                    android:text="@string/xml_dialog_game_menu_display_42"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -771,7 +771,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="重新打开串流页面生效！"
+                    android:text="@string/xml_dialog_game_menu_display_20"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="8dp" />
@@ -797,7 +797,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_ignore_hdr_1"
                     android:button="@null"
-                    android:text="开启"
+                    android:text="@string/xml_dialog_game_menu_display_21"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -811,7 +811,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_ignore_hdr_2"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -826,7 +826,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="虚拟显示器"
+                    android:text="@string/xml_dialog_game_menu_display_46"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -836,7 +836,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="使用sunshine·阿西西、雷蛇雷游生效，兼容Apollo扩展模式"
+                    android:text="@string/xml_dialog_game_menu_display_47"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -862,7 +862,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_1"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -876,7 +876,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_2"
                     android:button="@null"
-                    android:text="扩展模式"
+                    android:text="@string/xml_dialog_game_menu_display_49"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -889,7 +889,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_3"
                     android:button="@null"
-                    android:text="仅虚拟显示屏"
+                    android:text="@string/xml_dialog_game_menu_display_50"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -905,7 +905,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="强制显示模式"
+                    android:text="@string/xml_dialog_game_menu_display_51"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -915,7 +915,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="在某些系统(如ColorOS)上启用才能正确设置刷新率/分辨率。"
+                    android:text="@string/xml_dialog_game_menu_display_52"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -941,7 +941,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_enforce_1"
                     android:button="@null"
-                    android:text="开启"
+                    android:text="@string/xml_dialog_game_menu_display_21"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -955,7 +955,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_enforce_2"
                     android:button="@null"
-                    android:text="关闭"
+                    android:text="@string/xml_dialog_game_menu_display_22"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -970,7 +970,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="播放声音"
+                    android:text="@string/xml_dialog_game_menu_display_55"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -980,7 +980,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="重新打开串流页面生效！"
+                    android:text="@string/xml_dialog_game_menu_display_20"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="8dp" />
@@ -1006,7 +1006,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_audio_1"
                     android:button="@null"
-                    android:text="本设备发声"
+                    android:text="@string/xml_dialog_game_menu_display_57"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -1020,7 +1020,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_audio_2"
                     android:button="@null"
-                    android:text="本设备和PC同时发声"
+                    android:text="@string/xml_dialog_game_menu_display_58"
                     android:textSize="10dp" />
 
             </RadioGroup>
@@ -1042,7 +1042,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="亮屏自动回连"
+                        android:text="@string/xml_dialog_game_menu_display_59"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="12dp" />
@@ -1052,7 +1052,7 @@
                         android:layout_marginLeft="5dp"
                         android:singleLine="true"
                         android:ellipsize="end"
-                        android:text="立即生效，锁屏时保持游戏菜单是关闭状态！！！"
+                        android:text="@string/xml_dialog_game_menu_display_60"
                         android:textStyle="italic|bold"
                         android:textColor="#FFC107"
                         android:textSize="8dp" />
@@ -1078,7 +1078,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_lock_1"
                         android:button="@null"
-                        android:text="关闭"
+                        android:text="@string/xml_dialog_game_menu_display_22"
                         android:checked="true"
                         android:textSize="10dp" />
 
@@ -1092,7 +1092,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_lock_2"
                         android:button="@null"
-                        android:text="本次生效"
+                        android:text="@string/xml_dialog_game_menu_display_62"
                         android:textSize="10dp" />
 
                     <RadioButton
@@ -1105,7 +1105,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_display_lock_3"
                         android:button="@null"
-                        android:text="一直生效"
+                        android:text="@string/xml_dialog_game_menu_display_63"
                         android:textSize="10dp" />
 
                 </RadioGroup>

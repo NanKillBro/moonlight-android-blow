@@ -144,12 +144,12 @@ public class GameMenuVirtualViewFragment extends BaseGameMenuDialog implements V
                     return;
                 }
                 if(checkedId==R.id.btn_game_virtual_nomall){
-                    onClick.switchModeGamePad("正常模式", KeyBoardController.ControllerMode.Active);
+                    onClick.switchModeGamePad("normal mode", KeyBoardController.ControllerMode.Active);
                     return;
                 }
                 if(checkedId==R.id.btn_game_virtual_move){
-                    onClick.switchModeGamePad("编辑模式", KeyBoardController.ControllerMode.MoveButtons);
-                    Toast.makeText(getActivity(),"已进入编辑模式，关闭游戏菜单，进行操作！",Toast.LENGTH_SHORT).show();
+                    onClick.switchModeGamePad("edit mode", KeyBoardController.ControllerMode.MoveButtons);
+                    Toast.makeText(getActivity(),"You have entered editing mode, close the game menu and proceed!",Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -162,12 +162,12 @@ public class GameMenuVirtualViewFragment extends BaseGameMenuDialog implements V
                     return;
                 }
                 if(checkedId==R.id.btn_game_virtual_key_nomall){
-                    onClick.switchModeGameKey("正常模式", KeyBoardController.ControllerMode.Active);
+                    onClick.switchModeGameKey("normal mode", KeyBoardController.ControllerMode.Active);
                     return;
                 }
                 if(checkedId==R.id.btn_game_virtual_key_move){
-                    onClick.switchModeGameKey("编辑模式", KeyBoardController.ControllerMode.MoveButtons);
-                    Toast.makeText(getActivity(),"已进入编辑模式，关闭游戏菜单，进行操作！",Toast.LENGTH_SHORT).show();
+                    onClick.switchModeGameKey("edit mode", KeyBoardController.ControllerMode.MoveButtons);
+                    Toast.makeText(getActivity(),"You have entered editing mode, close the game menu and proceed!",Toast.LENGTH_SHORT).show();
                     return;
                 }
             }
@@ -364,20 +364,20 @@ public class GameMenuVirtualViewFragment extends BaseGameMenuDialog implements V
 
     private void initViewHeight(){
         sb_height_keyboard_all.setProgress(prefConfig.oscKeyboardHeight);
-        tx_height_keyboard_all.setText("高度："+prefConfig.oscKeyboardHeight);
+        tx_height_keyboard_all.setText("high:"+prefConfig.oscKeyboardHeight);
 
     }
 
     private void initViewAdjust(){
         sb_adjust_virtual_gamepad.setProgress(prefConfig.oscOpacity);
-        tx_adjust_virtual_gamepad.setText("透明度："+prefConfig.oscOpacity+"%");
+        tx_adjust_virtual_gamepad.setText("transparency:"+prefConfig.oscOpacity+"%");
 
         sb_adjust_keyboard_all.setProgress(prefConfig.oscKeyboardOpacity);
 
-        tx_adjust_keyboard_all.setText("透明度："+prefConfig.oscKeyboardOpacity+"%");
+        tx_adjust_keyboard_all.setText("transparency:"+prefConfig.oscKeyboardOpacity+"%");
 
         sb_gamepad_scale_factor.setProgress(prefConfig.virtualGamePadScaleFactor);
-        tx_gamepad_scale_factor.setText("缩放："+prefConfig.virtualGamePadScaleFactor+"%");
+        tx_gamepad_scale_factor.setText("Zoom:"+prefConfig.virtualGamePadScaleFactor+"%");
     }
 
 
@@ -390,7 +390,7 @@ public class GameMenuVirtualViewFragment extends BaseGameMenuDialog implements V
 
         if(v.getId()==R.id.btn_right){
             if(onClick!=null){
-                onClick.click("刷新",0);
+                onClick.click("refresh",0);
             }
             return;
         }

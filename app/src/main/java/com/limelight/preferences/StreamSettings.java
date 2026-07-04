@@ -837,7 +837,7 @@ public class StreamSettings extends Activity {
                     uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"保存数据文件"));
+                    startActivity(Intent.createChooser(intent,"Save data file"));
                     return false;
                 }
             });
@@ -856,7 +856,7 @@ public class StreamSettings extends Activity {
                     uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"保存数据文件"));
+                    startActivity(Intent.createChooser(intent,"Save data file"));
                     return false;
                 }
             });
@@ -875,7 +875,7 @@ public class StreamSettings extends Activity {
                     uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
                     intent.putExtra(Intent.EXTRA_STREAM, uri);
                     intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"保存数据文件"));
+                    startActivity(Intent.createChooser(intent,"Save data file"));
                     return false;
                 }
             });
@@ -902,7 +902,7 @@ public class StreamSettings extends Activity {
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     String value= (String) newValue;
                     if(TextUtils.isEmpty(value)){
-                        Toast.makeText(getActivity(),"请输入0-9999的数值。",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Please enter a value from 0-9999.",Toast.LENGTH_SHORT).show();
                         return false;
                     }
                     float bitrateValue=Float.valueOf(value)*1000;
@@ -911,7 +911,7 @@ public class StreamSettings extends Activity {
                     LimeLog.info("axi-bitrate:"+bitrate);
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsFragment.this.getActivity());
                     prefs.edit().putInt(PreferenceConfiguration.BITRATE_PREF_STRING,bitrate).apply();
-                    Toast.makeText(getActivity(),"设置成功！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Setup successful!",Toast.LENGTH_SHORT).show();
                     return true;
                 }
             });
@@ -938,7 +938,7 @@ public class StreamSettings extends Activity {
                     Uri uri = data.getData();
                     String json=FileUriUtils.openUriForRead(getActivity(),uri);
                     if(TextUtils.isEmpty(json)){
-                        Toast.makeText(getActivity(),"空文件~",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Empty file~",Toast.LENGTH_SHORT).show();
                         return;
                     }
                     String name = PreferenceManager.getDefaultSharedPreferences(getActivity()).getString(KeyBoardControllerConfigurationLoader.OSC_PREFERENCE, KeyBoardControllerConfigurationLoader.OSC_PREFERENCE_VALUE);
@@ -947,13 +947,13 @@ public class StreamSettings extends Activity {
                     }
                     boolean result=FileUriUtils.saveKeyBoardJson(getActivity(),"axi_"+name+".txt",json);
                     if(result){
-                        Toast.makeText(getActivity(),"导入成功！",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Import successful!",Toast.LENGTH_SHORT).show();
                     }else{
-                        Toast.makeText(getActivity(),"导入失败！",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getActivity(),"Import failed!",Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -975,10 +975,10 @@ public class StreamSettings extends Activity {
                     for (ComputerDetails computer : importComputers) {
                         manager.updateComputer(computer);
                     }
-                    Toast.makeText(getActivity(),"导入成功,重新打开APP生效！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"The import is successful, reopen the APP and it will take effect!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -990,10 +990,10 @@ public class StreamSettings extends Activity {
                     String displayName = "client.crt";
                     dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
                     FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    Toast.makeText(getActivity(),"导入成功!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Import successful!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
 
@@ -1006,10 +1006,10 @@ public class StreamSettings extends Activity {
                     String displayName = "client.key";
                     dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
                     FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    Toast.makeText(getActivity(),"导入成功!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Import successful!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -1021,10 +1021,10 @@ public class StreamSettings extends Activity {
                     String displayName = "axi_switch_keyboard.json";
                     dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
                     FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    Toast.makeText(getActivity(),"导入成功!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Import successful!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
 
@@ -1040,10 +1040,10 @@ public class StreamSettings extends Activity {
                             .edit()
                             .putString("screen_bg_file_name",displayName)
                             .apply();
-                    Toast.makeText(getActivity(),"设置成功!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Setup successful!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Toast.makeText(getActivity(),"出错啦~"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(),"Something went wrong~"+e.getMessage(),Toast.LENGTH_SHORT).show();
                 }
                 return;
 

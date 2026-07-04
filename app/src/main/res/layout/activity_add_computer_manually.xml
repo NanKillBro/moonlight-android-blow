@@ -75,7 +75,7 @@
         android:layout_alignParentLeft="true"
         android:preferKeepClear="true"
         android:visibility="gone"
-        android:text="根据svr获取"/>
+        android:text="@string/xml_activity_add_computer_manually_1"/>
 
     <Button
         android:id="@+id/razerPort"
@@ -89,7 +89,7 @@
         android:layout_below="@+id/addPcButton"
         android:layout_alignParentLeft="true"
         android:preferKeepClear="true"
-        android:text="追加Razer雷游端口号"/>
+        android:text="@string/xml_activity_add_computer_manually_2"/>
 
     <TextView
         android:layout_marginTop="15dp"

@@ -176,7 +176,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         rg_game_display_lock.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                Toast.makeText(getActivity(),"切换成功！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Switch successful!",Toast.LENGTH_SHORT).show();
                 if(checkedId==R.id.rbt_game_display_lock_1){
                     prefConfig.enableScreenOnAuto=0;
                     saveLock(0);
@@ -377,11 +377,11 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
     }
 
     private void initViewData() {
-        tx_game_display_screen.setText("分辨率："+width+"x"+height);
-        tx_game_display_bit.setText("\t码率："+(bitrate/1000)+"mbps");
-        tx_game_display_fps.setText("\t帧率："+fps+"fps");
-        tx_game_display_direction.setText("\t方向："+(!direction?"横屏":"竖屏(旋转功能失效，自行在PC端显示器改成竖向)"));
-        tx_game_display_ex.setText("\t模式："+(exDiaplay?"外接显示器":"正常模式"));
+        tx_game_display_screen.setText("Resolution:"+width+"x"+height);
+        tx_game_display_bit.setText("\tBit rate:"+(bitrate/1000)+"mbps");
+        tx_game_display_fps.setText("\tFrame rate:"+fps+"fps");
+        tx_game_display_direction.setText("\tDirection:"+(!direction?"Horizontal screen":"Portrait screen (the rotation function is disabled and you can change the monitor to vertical orientation on the PC)"));
+        tx_game_display_ex.setText("\tMode:"+(exDiaplay?"external monitor":"normal mode"));
     }
 
     private void initLock(){
@@ -596,7 +596,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
 
         if(v.getId()==R.id.btn_right){
             if(width==0||height==0||bitrate==0||fps==0){
-                Toast.makeText(getActivity(),"请检查配置信息！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Please check the configuration information!",Toast.LENGTH_SHORT).show();
                 return;
             }
             if(onClick==null){
@@ -629,7 +629,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         if(v.getId()==R.id.bt_display_screen){
             GameDisplayResolutionFragment fragment=new GameDisplayResolutionFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("分辨率");
+            fragment.setTitle("resolution");
             fragment.setOnClick(new GameDisplayResolutionFragment.onClick() {
                 @Override
                 public void click(int w, int h) {
@@ -659,7 +659,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         if(v.getId()==R.id.bt_display_bitrate){
             GameDisplayBitrateFragment fragment=new GameDisplayBitrateFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("码率");
+            fragment.setTitle("Code rate");
             fragment.setOnClick(new GameDisplayBitrateFragment.onClick() {
                 @Override
                 public void click(int num) {
@@ -673,7 +673,7 @@ public class GameDisplayFragment extends BaseGameMenuDialog implements View.OnCl
         if(v.getId()==R.id.bt_display_fps){
             GameDisplayFpsFragment fragment=new GameDisplayFpsFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
-            fragment.setTitle("帧率");
+            fragment.setTitle("Frame rate");
             fragment.setOnClick(new GameDisplayFpsFragment.onClick() {
                 @Override
                 public void click(int fps2) {

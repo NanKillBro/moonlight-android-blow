@@ -95,7 +95,7 @@ public class GameListQuickFragment extends BaseGameMenuDialog {
                     fragment.setWidth((getActivity().getResources().getDisplayMetrics().heightPixels*2)/3);
                 }
                 fragment.setDimAmount(0.8f);
-                fragment.setTitle("设置快捷键");
+                fragment.setTitle("Set shortcut keys");
                 fragment.setKeyFrom(1);
                 fragment.setOnClick(new GameKeyboardUpdateFragment.onClick() {
                     @Override
@@ -111,17 +111,17 @@ public class GameListQuickFragment extends BaseGameMenuDialog {
         oldGameMenus =new ArrayList<>();
         //内置的快捷指令
         if(!enableClearDefaultSpecial){
-            oldGameMenus.add(new GameMenuQuickBean("ESC (退出/菜单)",new short[]{KeyboardTranslator.VK_ESCAPE}));
-            oldGameMenus.add(new GameMenuQuickBean("F11 (网页全屏)",new short[]{KeyboardTranslator.VK_F11}));
-            oldGameMenus.add(new GameMenuQuickBean("Alt + F4 (关闭应用)",new short[]{KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_F4}));
-            oldGameMenus.add(new GameMenuQuickBean("Alt + Enter (窗口大小)",new short[]{KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_RETURN}));
-            oldGameMenus.add(new GameMenuQuickBean("Win (打开Windows开始菜单)",new short[]{KeyboardTranslator.VK_LWIN}));
-            oldGameMenus.add(new GameMenuQuickBean("Ctrl+Shift+ESC (任务管理器)",new short[]{KeyboardTranslator.VK_LCONTROL, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_ESCAPE}));
-            oldGameMenus.add(new GameMenuQuickBean("Win + D (返回桌面)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_D}));
-            oldGameMenus.add(new GameMenuQuickBean("Win + P (显示器模式)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_P}));
-            oldGameMenus.add(new GameMenuQuickBean("Win + G (打开Xbox Game Bar)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_G}));
-            oldGameMenus.add(new GameMenuQuickBean("Shift + Tab (打开Steam Overlay)",new short[]{KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_TAB}));
-            oldGameMenus.add(new GameMenuQuickBean("Win + Shift + left (切换桌面)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_LEFT}));
+            oldGameMenus.add(new GameMenuQuickBean("ESC (Exit/Menu)",new short[]{KeyboardTranslator.VK_ESCAPE}));
+            oldGameMenus.add(new GameMenuQuickBean("F11 (web page full screen)",new short[]{KeyboardTranslator.VK_F11}));
+            oldGameMenus.add(new GameMenuQuickBean("Alt + F4 (Close application)",new short[]{KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_F4}));
+            oldGameMenus.add(new GameMenuQuickBean("Alt + Enter (window size)",new short[]{KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_RETURN}));
+            oldGameMenus.add(new GameMenuQuickBean("Win (opens the Windows Start menu)",new short[]{KeyboardTranslator.VK_LWIN}));
+            oldGameMenus.add(new GameMenuQuickBean("Ctrl+Shift+ESC (Task Manager)",new short[]{KeyboardTranslator.VK_LCONTROL, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_ESCAPE}));
+            oldGameMenus.add(new GameMenuQuickBean("Win + D (return to desktop)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_D}));
+            oldGameMenus.add(new GameMenuQuickBean("Win + P (monitor mode)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_P}));
+            oldGameMenus.add(new GameMenuQuickBean("Win + G (Open Xbox Game Bar)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_G}));
+            oldGameMenus.add(new GameMenuQuickBean("Shift + Tab (Open Steam Overlay)",new short[]{KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_TAB}));
+            oldGameMenus.add(new GameMenuQuickBean("Win + Shift + left (switch desktop)",new short[]{KeyboardTranslator.VK_LWIN, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_LEFT}));
         }
         //自定义导入的指令
         SharedPreferences preferences=getActivity().getSharedPreferences(PREF_NAME, Activity.MODE_PRIVATE);
@@ -146,7 +146,7 @@ public class GameListQuickFragment extends BaseGameMenuDialog {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                Toast.makeText(getActivity(),"自定义导入格式出错了，请检查！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"There is an error in the custom import format, please check!",Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -173,15 +173,15 @@ public class GameListQuickFragment extends BaseGameMenuDialog {
                 }
                 new AlertDialog.Builder(getActivity())
                         .setTitle(gameMenus.get(position).getName())
-                        .setMessage("是否删除此键值？")
-                        .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        .setMessage("Delete this key-value?")
+                        .setPositiveButton("delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 removeKeyBoardListData(getActivity(), gameMenus.get(position));
                                 updateData();
                             }
                         })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

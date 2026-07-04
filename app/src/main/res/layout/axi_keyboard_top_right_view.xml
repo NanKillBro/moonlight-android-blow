@@ -31,7 +31,7 @@
             android:drawablePadding="4dp"
             android:padding="4dp"
             android:id="@+id/btn_game_virtual_add"
-            android:text="新增按钮"
+            android:text="@string/xml_axi_keyboard_top_right_view_1"
             android:textSize="8dp" />
 
         <Button
@@ -43,7 +43,7 @@
             android:drawablePadding="4dp"
             android:padding="4dp"
             android:id="@+id/btn_game_virtual_reset"
-            android:text="重置布局"
+            android:text="@string/xml_axi_keyboard_top_right_view_2"
             android:textSize="8dp" />
 
         <Button
@@ -55,7 +55,7 @@
             android:drawablePadding="4dp"
             android:padding="4dp"
             android:id="@+id/btn_game_virtual_save"
-            android:text="保存布局"
+            android:text="@string/xml_axi_keyboard_top_right_view_3"
             android:textSize="8dp" />
 
     </LinearLayout>

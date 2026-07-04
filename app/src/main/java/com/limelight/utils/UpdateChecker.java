@@ -46,7 +46,7 @@ public final class UpdateChecker {
     public static void checkForUpdates(Activity activity, boolean interactive) {
         SpinnerDialog spinner = null;
         if (interactive) {
-            spinner = SpinnerDialog.displayDialog(activity, "检查更新", "正在获取版本信息...", false);
+            spinner = SpinnerDialog.displayDialog(activity, "Check for updates", "Getting version information...", false);
         }
 
         SpinnerDialog finalSpinner = spinner;
@@ -61,7 +61,7 @@ public final class UpdateChecker {
                 runOnUiThreadSafely(activity, () -> {
                     dismissSpinner(finalSpinner);
                     if (interactive) {
-                        showToast(activity, "检查更新失败，已打开默认下载链接");
+                        showToast(activity, "Failed to check for updates, default download link has been opened");
                     }
                 });
             }
@@ -73,7 +73,7 @@ public final class UpdateChecker {
                         runOnUiThreadSafely(activity, () -> {
                             dismissSpinner(finalSpinner);
                             if (interactive) {
-                                showToast(activity, "检查更新失败，已打开默认下载链接");
+                                showToast(activity, "Failed to check for updates, default download link has been opened");
                             }
                         });
                         return;
@@ -90,7 +90,7 @@ public final class UpdateChecker {
                     runOnUiThreadSafely(activity, () -> {
                         dismissSpinner(finalSpinner);
                         if (interactive) {
-                            showToast(activity, "更新信息解析失败，已打开默认下载链接");
+                            showToast(activity, "Update information parsing failed, the default download link has been opened");
                         }
                     });
                 }
@@ -106,14 +106,14 @@ public final class UpdateChecker {
 
         if (latest == null || latest.code <= 0) {
             if (interactive) {
-                showToast(activity, "未找到可用更新信息");
+                showToast(activity, "No available updates found");
             }
             return;
         }
 
         if (latest.code <= BuildConfig.AXI_CODE) {
             if (interactive) {
-                showToast(activity, "当前已是最新版本");
+                showToast(activity, "Currently the latest version");
             }
             return;
         }
@@ -135,9 +135,9 @@ public final class UpdateChecker {
         View cancelButton = dialogView.findViewById(R.id.btn_cancel_update);
         View downloadButton = dialogView.findViewById(R.id.btn_download_update);
 
-        versionsView.setText("当前版本：" + BuildConfig.VERSION_NAME + " (" + BuildConfig.AXI_CODE + ")"
-                + "\n最新版本：" + safeText(latest.versionName, "未知版本") + " (" + latest.code + ")");
-        descView.setText(TextUtils.isEmpty(description) ? "暂无更新说明。" : description);
+        versionsView.setText("Current version:" + BuildConfig.VERSION_NAME + " (" + BuildConfig.AXI_CODE + ")"
+                + "\nLatest version:" + safeText(latest.versionName, "Unknown version") + " (" + latest.code + ")");
+        descView.setText(TextUtils.isEmpty(description) ? "No update instructions yet." : description);
         skipRow.setVisibility(interactive ? View.GONE : View.VISIBLE);
 
         AlertDialog dialog = buildDialog(activity, dialogView);
@@ -163,11 +163,11 @@ public final class UpdateChecker {
         List<String> urls = new ArrayList<>();
 
         addDownloadOption(labels, urls, "GitHub Releases", latest.github);
-        addDownloadOption(labels, urls, "夸克网盘", latest.quark);
-        addDownloadOption(labels, urls, "百度网盘", latest.baidu);
+        addDownloadOption(labels, urls, "Quark network disk", latest.quark);
+        addDownloadOption(labels, urls, "Baidu Skydisk", latest.baidu);
 
         if (urls.isEmpty()) {
-            showToast(activity, "当前没有可用下载地址");
+            showToast(activity, "There is currently no download address available");
             return;
         }
 
@@ -389,7 +389,7 @@ public final class UpdateChecker {
         if (intent.resolveActivity(activity.getPackageManager()) != null) {
             activity.startActivity(intent);
         } else {
-            showToast(activity, "未找到可用浏览器");
+            showToast(activity, "No available browser found");
         }
     }
 

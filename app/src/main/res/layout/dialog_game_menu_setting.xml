@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="杂项"
+            android:text="@string/xml_dialog_game_menu_setting_1"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="功能"
+                    android:text="@string/xml_dialog_game_menu_setting_2"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -60,7 +60,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="以下选项开关会保存到配置文件"
+                    android:text="@string/xml_dialog_game_menu_setting_3"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -93,7 +93,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_float_ball"
-                        android:text="悬浮球"
+                        android:text="@string/xml_dialog_game_menu_setting_4"
                         android:textSize="8dp" />
 
 <!--                    <CheckBox-->
@@ -132,7 +132,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_audio_mute"
-                        android:text="设备静音"
+                        android:text="@string/xml_dialog_game_menu_setting_7"
                         android:textSize="8dp" />
 
                 </LinearLayout>
@@ -141,7 +141,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="悬浮球点击操作"
+                    android:text="@string/xml_dialog_game_menu_setting_8"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -163,7 +163,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_float_ball_1"
                         android:button="@null"
-                        android:text="游戏菜单"
+                        android:text="@string/xml_dialog_game_menu_setting_9"
                         android:checked="true"
                         android:textSize="8dp" />
 
@@ -177,7 +177,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_float_ball_2"
                         android:button="@null"
-                        android:text="软键盘"
+                        android:text="@string/xml_dialog_game_menu_setting_10"
                         android:textSize="8dp" />
 
                     <RadioButton
@@ -190,7 +190,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_float_ball_3"
                         android:button="@null"
-                        android:text="全键盘"
+                        android:text="@string/xml_dialog_game_menu_setting_11"
                         android:textSize="8dp" />
 
                 </RadioGroup>
@@ -199,7 +199,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="精简性能信息"
+                    android:text="@string/xml_dialog_game_menu_setting_12"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -246,7 +246,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_rumble_hud"
-                        android:text="显示震动信息"
+                        android:text="@string/xml_dialog_game_menu_setting_15"
                         android:textSize="8dp" />
 
                 </LinearLayout>
@@ -277,7 +277,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_control_1"
                         android:button="@null"
-                        android:text="关闭"
+                        android:text="@string/xml_dialog_game_menu_setting_17"
                         android:checked="true"
                         android:textSize="6dp" />
 
@@ -291,7 +291,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_control_2"
                         android:button="@null"
-                        android:text="开始键【长按】"
+                        android:text="@string/xml_dialog_game_menu_setting_18"
                         android:textSize="6dp" />
 
                     <RadioButton
@@ -304,7 +304,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_control_3"
                         android:button="@null"
-                        android:text="Xbox键【单击】"
+                        android:text="@string/xml_dialog_game_menu_setting_19"
                         android:textSize="6dp" />
 
                     <RadioButton
@@ -317,7 +317,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_control_4"
                         android:button="@null"
-                        android:text="视图键【长按】"
+                        android:text="@string/xml_dialog_game_menu_setting_20"
                         android:textSize="6dp" />
 
                 </RadioGroup>
@@ -326,7 +326,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="多点触控打开软键盘"
+                    android:text="@string/xml_dialog_game_menu_setting_21"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -348,7 +348,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_touch_1"
                         android:button="@null"
-                        android:text="关闭"
+                        android:text="@string/xml_dialog_game_menu_setting_17"
                         android:checked="true"
                         android:textSize="6dp" />
 
@@ -362,7 +362,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_touch_2"
                         android:button="@null"
-                        android:text="三指"
+                        android:text="@string/xml_dialog_game_menu_setting_23"
                         android:textSize="6dp" />
 
                     <RadioButton
@@ -375,7 +375,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_touch_3"
                         android:button="@null"
-                        android:text="四指"
+                        android:text="@string/xml_dialog_game_menu_setting_24"
                         android:textSize="6dp" />
 
                     <RadioButton
@@ -388,7 +388,7 @@
                         android:padding="4dp"
                         android:id="@+id/rbt_game_setting_touch_4"
                         android:button="@null"
-                        android:text="五指"
+                        android:text="@string/xml_dialog_game_menu_setting_25"
                         android:textSize="6dp" />
 
                 </RadioGroup>
@@ -397,7 +397,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="设备震动相关"
+                    android:text="@string/xml_dialog_game_menu_setting_26"
                     android:textStyle="italic|bold"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -419,7 +419,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_rumble_force_stop"
-                        android:text="震动停止方案A"
+                        android:text="@string/xml_dialog_game_menu_setting_27"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -432,7 +432,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_rumble_force"
-                        android:text="强烈震动"
+                        android:text="@string/xml_dialog_game_menu_setting_28"
                         android:textSize="8dp" />
 
                 </LinearLayout>
@@ -465,7 +465,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_force_gyro"
-                        android:text="启用"
+                        android:text="@string/xml_dialog_game_menu_setting_30"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -478,7 +478,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_force_gyro_left_trgger"
-                        android:text="按下左扳机启用"
+                        android:text="@string/xml_dialog_game_menu_setting_31"
                         android:textSize="8dp" />
 
                     <CheckBox
@@ -491,7 +491,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/btn_game_force_gyro_switch"
-                        android:text="反转XY轴"
+                        android:text="@string/xml_dialog_game_menu_setting_32"
                         android:textSize="8dp" />
 
                 </LinearLayout>
@@ -500,7 +500,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="强制体感灵敏度：120%"
+                    android:text="@string/xml_dialog_game_menu_setting_33"
                     android:textStyle="italic|bold"
                     android:visibility="visible"
                     android:id="@+id/tx_game_setting_gyro_sensitivity"
@@ -582,7 +582,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="音频震动（Beta）"
+                        android:text="@string/xml_dialog_game_menu_setting_36"
                         android:textStyle="italic|bold"
                         android:textColor="@android:color/white"
                         android:textSize="8dp" />
@@ -590,7 +590,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="5dp"
-                        android:text="把串流音频转换成震动反馈，更适合爆炸、撞击、低频场景"
+                        android:text="@string/xml_dialog_game_menu_setting_37"
                         android:textStyle="italic|bold"
                         android:textColor="#FFC107"
                         android:textSize="6dp" />
@@ -613,7 +613,7 @@
                         android:button="@null"
                         android:gravity="center"
                         android:padding="4dp"
-                        android:text="开启"
+                        android:text="@string/xml_dialog_game_menu_setting_38"
                         android:textSize="8dp" />
 
                     <RadioButton
@@ -626,7 +626,7 @@
                         android:button="@null"
                         android:gravity="center"
                         android:padding="4dp"
-                        android:text="关闭"
+                        android:text="@string/xml_dialog_game_menu_setting_17"
                         android:textSize="8dp" />
 
                 </RadioGroup>
@@ -645,7 +645,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="音频震动输出目标"
+                            android:text="@string/xml_dialog_game_menu_setting_40"
                             android:textStyle="italic|bold"
                             android:textColor="@android:color/white"
                             android:textSize="8dp" />
@@ -676,7 +676,7 @@
                             android:button="@null"
                             android:gravity="center"
                             android:padding="4dp"
-                            android:text="手机"
+                            android:text="@string/xml_dialog_game_menu_setting_42"
                             android:textSize="8dp" />
 
                         <RadioButton
@@ -689,7 +689,7 @@
                             android:button="@null"
                             android:gravity="center"
                             android:padding="4dp"
-                            android:text="手柄"
+                            android:text="@string/xml_dialog_game_menu_setting_43"
                             android:textSize="8dp" />
 
                     </RadioGroup>
@@ -699,7 +699,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="保留游戏内手柄震动"
+                        android:text="@string/xml_dialog_game_menu_setting_44"
                         android:textStyle="italic|bold"
                         android:textColor="@android:color/white"
                         android:textSize="8dp"
@@ -723,7 +723,7 @@
                             android:button="@null"
                             android:gravity="center"
                             android:padding="4dp"
-                            android:text="开启"
+                            android:text="@string/xml_dialog_game_menu_setting_38"
                             android:textSize="8dp" />
 
                         <RadioButton
@@ -736,7 +736,7 @@
                             android:button="@null"
                             android:gravity="center"
                             android:padding="4dp"
-                            android:text="关闭"
+                            android:text="@string/xml_dialog_game_menu_setting_17"
                             android:textSize="8dp" />
 
                     </RadioGroup>
@@ -746,7 +746,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:id="@+id/tx_game_audio_haptics_strength"
-                        android:text="音频震动强度：100%"
+                        android:text="@string/xml_dialog_game_menu_setting_47"
                         android:textStyle="italic|bold"
                         android:textColor="@android:color/white"
                         android:textSize="8dp" />
@@ -773,7 +773,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="音频震动语音过滤"
+                            android:text="@string/xml_dialog_game_menu_setting_48"
                             android:textStyle="italic|bold"
                             android:textColor="@android:color/white"
                             android:textSize="8dp" />
@@ -781,7 +781,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="5dp"
-                            android:text="降低人声、语音聊天、播报声对震动的触发"
+                            android:text="@string/xml_dialog_game_menu_setting_49"
                             android:textStyle="italic|bold"
                             android:textColor="#FFC107"
                             android:textSize="6dp" />
@@ -804,7 +804,7 @@
                             android:padding="4dp"
                             android:id="@+id/rbt_game_audio_haptics_voice_filter_1"
                             android:button="@null"
-                            android:text="关闭"
+                            android:text="@string/xml_dialog_game_menu_setting_17"
                             android:textSize="6dp" />
 
                         <RadioButton
@@ -817,7 +817,7 @@
                             android:padding="4dp"
                             android:id="@+id/rbt_game_audio_haptics_voice_filter_2"
                             android:button="@null"
-                            android:text="低"
+                            android:text="@string/xml_dialog_game_menu_setting_51"
                             android:textSize="6dp" />
 
                         <RadioButton
@@ -830,7 +830,7 @@
                             android:padding="4dp"
                             android:id="@+id/rbt_game_audio_haptics_voice_filter_3"
                             android:button="@null"
-                            android:text="中"
+                            android:text="@string/xml_dialog_game_menu_setting_52"
                             android:textSize="6dp" />
 
                         <RadioButton
@@ -843,7 +843,7 @@
                             android:padding="4dp"
                             android:id="@+id/rbt_game_audio_haptics_voice_filter_4"
                             android:button="@null"
-                            android:text="高"
+                            android:text="@string/xml_dialog_game_menu_setting_53"
                             android:textSize="6dp" />
 
                     </RadioGroup>

@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="帧率"
+            android:text="@string/xml_dialog_game_menu_display_fps_1"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -34,7 +34,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="确认"
+            android:text="@string/xml_dialog_game_menu_display_fps_2"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:text="选择合适的帧率，异常帧率可能黑屏。"
+                    android:text="@string/xml_dialog_game_menu_display_fps_3"
                     android:textStyle="italic"
                     android:textColor="@android:color/white"
                     android:textSize="8dp" />
@@ -105,7 +105,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:text="常用帧率"
+                    android:text="@string/xml_dialog_game_menu_display_fps_4"
                     android:layout_marginTop="10dp"
                     android:textStyle="bold"
                     android:textSize="10dp" />

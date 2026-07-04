@@ -75,7 +75,7 @@ public class GameListKeyBoardFragment extends BaseGameMenuDialog {
                 GameKeyboardUpdateFragment fragment=new GameKeyboardUpdateFragment();
                 fragment.setWidth(getActivity().getResources().getDisplayMetrics().widthPixels);
                 fragment.setDimAmount(0.8f);
-                fragment.setTitle("组合键");
+                fragment.setTitle("Key combination");
                 fragment.setOnClick(new GameKeyboardUpdateFragment.onClick() {
                     @Override
                     public void click(GameMenuQuickBean bean) {
@@ -97,15 +97,15 @@ public class GameListKeyBoardFragment extends BaseGameMenuDialog {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 new AlertDialog.Builder(getActivity())
                         .setTitle(gameMenus.get(position).getName())
-                        .setMessage("是否删除此键值？")
-                        .setPositiveButton("删除", new DialogInterface.OnClickListener() {
+                        .setMessage("Delete this key-value?")
+                        .setPositiveButton("delete", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 removeKeyBoardListData(getActivity(),gameMenus.get(position));
                                 updateData();
                             }
                         })
-                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

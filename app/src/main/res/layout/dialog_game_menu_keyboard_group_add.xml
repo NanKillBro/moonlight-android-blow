@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="组合键"
+            android:text="@string/xml_dialog_game_menu_keyboard_group_add_1"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -29,7 +29,7 @@
             android:layout_width="50dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:text="清空"
+            android:text="@string/xml_dialog_game_menu_keyboard_group_add_2"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -43,7 +43,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="保存"
+            android:text="@string/xml_dialog_game_menu_keyboard_group_add_3"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="按键名称"
+                android:text="@string/xml_dialog_game_menu_keyboard_group_add_4"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textSize="10dp" />
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="组合键值"
+                android:text="@string/xml_dialog_game_menu_keyboard_group_add_5"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="5dp"
                 android:textStyle="bold"
@@ -98,7 +98,7 @@
 <!--                android:layout_width="wrap_content"-->
 <!--                android:layout_height="wrap_content"-->
 <!--                android:layout_gravity="left"-->
-<!--                android:text="阿西西快捷键：AXIX前缀，例如AXIX0(软键盘)，AXIX1(虚拟按键)，AXIX2(虚拟全键盘)，AXIX3(虚拟手柄)，AXIX4(悬浮球)，AXIX5(性能信息),AXIX6(游戏菜单)"-->
+<!--                android:text="@string/xml_dialog_game_menu_keyboard_group_add_6"-->
 <!--                android:layout_marginTop="2dp"-->
 <!--                android:id="@+id/tx_tips_axi"-->
 <!--                android:textColor="@android:color/white"-->
@@ -143,7 +143,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_1"
-                    android:text="电脑全键盘"
+                    android:text="@string/xml_dialog_game_menu_keyboard_group_add_7"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -155,7 +155,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_2"
-                    android:text="数字键盘"
+                    android:text="@string/xml_dialog_game_menu_keyboard_group_add_8"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -167,7 +167,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_3"
-                    android:text="鼠标与轮盘按键"
+                    android:text="@string/xml_dialog_game_menu_keyboard_group_add_9"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -179,7 +179,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_4"
-                    android:text="功能按键"
+                    android:text="@string/xml_dialog_game_menu_keyboard_group_add_10"
                     android:textSize="10dp" />
 
             </RadioGroup>

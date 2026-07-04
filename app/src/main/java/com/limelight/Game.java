@@ -3071,7 +3071,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                performanceRumble.setText(String.format((Locale)null, "手柄%d 震动信号 高%d 低%d", controllerNumber,  (short)((highFreqMotor >> 8) & 0xFF),  (short)((lowFreqMotor >> 8) & 0xFF)));
+                performanceRumble.setText(String.format((Locale)null, "Handle %d vibration signal high %d low %d", controllerNumber,  (short)((highFreqMotor >> 8) & 0xFF),  (short)((lowFreqMotor >> 8) & 0xFF)));
             }
         });
     }
@@ -3335,7 +3335,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         StringBuilder builder = new StringBuilder();
         if (stats.networkRateKbps > 0) {
-            builder.append("带宽：").append(formatThroughput(stats.networkRateKbps)).append("  ");
+            builder.append("bandwidth:").append(formatThroughput(stats.networkRateKbps)).append("  ");
         }
         if (prefConfig.enablePerfOverlayLiteExt) {
             builder.append(stats.width > 0 && stats.height > 0
@@ -3348,10 +3348,10 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (fsrEnabled) {
             builder.append(buildFsrPerfLabel()).append("  ");
         }
-        builder.append("延迟/解码：");
+        builder.append("Delay/Decode:");
         builder.append(stats.networkLatencyMs).append(" ms / ");
         builder.append(stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
-        builder.append("  丢包率：").append(String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
+        builder.append("Packet loss rate:").append(String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
         builder.append("  FPS：").append(String.format(Locale.US, "%.2f", stats.totalFps));
         if (micStatus == 1) {
             builder.append(" Mic");
@@ -3364,7 +3364,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if(prefConfig.enablePerfOverlayLite){
             return "FSR " + target;
         }
-        return "FSR " + target + " / 锐化 " + getFsrSharpnessDisplayName();
+        return "FSR " + target + "/sharpen" + getFsrSharpnessDisplayName();
     }
 
     private void renderFullPerfInfo(PerfOverlayStats stats) {
@@ -3374,35 +3374,35 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         performanceOverlayBigContent.removeAllViews();
 
         if (stats == null) {
-            addPerfRow("状态", "--");
+            addPerfRow("state", "--");
             return;
         }
 
-        addPerfRow("分辨率", stats.width > 0 && stats.height > 0
+        addPerfRow("resolution", stats.width > 0 && stats.height > 0
                 ? stats.width + "x" + stats.height + (stats.hdr ? " HDR" : "")
                 : prefConfig.width + "x" + prefConfig.height + (prefConfig.enableHdr ? " HDR" : ""));
-        addPerfRow("编码", nonEmpty(stats.codecName, "--"));
-        addPerfRow("目标码率", formatMbps(stats.targetBitrateKbps > 0 ? stats.targetBitrateKbps : prefConfig.bitrate));
-        addPerfRow("目标帧率", (stats.targetFps > 0 ? stats.targetFps : prefConfig.fps) + " FPS");
-        addPerfRow("实时帧率", formatFps(stats.totalFps));
-        addPerfRow("视频码率", formatRate(stats.videoRateKbps));
-        addPerfRow("音频码率", formatRate(stats.audioRateKbps));
-        addPerfRow("累计视频流量", formatBytes(stats.videoBytes));
-        addPerfRow("累计音频流量", formatBytes(stats.audioBytes));
-        addPerfRow("渲染方式", fsrEnabled ? "GLES渲染" : "系统渲染");
-        addPerfRow("超分状态", buildUpscaleStatusText());
-        addPerfRow("实际渲染链", buildRenderPipelineText());
-        addPerfRow("连接地址", nonEmpty(streamHost, "--"));
-        addPerfRow("本地时长", buildSessionDurationText());
-        addPerfRow("网络延迟", stats.networkLatencyMs > 0
-                ? stats.networkLatencyMs + " ms / 抖动 " + stats.networkLatencyVarianceMs + " ms"
+        addPerfRow("coding", nonEmpty(stats.codecName, "--"));
+        addPerfRow("Target bitrate", formatMbps(stats.targetBitrateKbps > 0 ? stats.targetBitrateKbps : prefConfig.bitrate));
+        addPerfRow("Target frame rate", (stats.targetFps > 0 ? stats.targetFps : prefConfig.fps) + " FPS");
+        addPerfRow("Real time frame rate", formatFps(stats.totalFps));
+        addPerfRow("Video bit rate", formatRate(stats.videoRateKbps));
+        addPerfRow("Audio bit rate", formatRate(stats.audioRateKbps));
+        addPerfRow("Cumulative video traffic", formatBytes(stats.videoBytes));
+        addPerfRow("Cumulative audio traffic", formatBytes(stats.audioBytes));
+        addPerfRow("Rendering method", fsrEnabled ? "GLES rendering" : "System rendering");
+        addPerfRow("Super score status", buildUpscaleStatusText());
+        addPerfRow("actual rendering chain", buildRenderPipelineText());
+        addPerfRow("connection address", nonEmpty(streamHost, "--"));
+        addPerfRow("local duration", buildSessionDurationText());
+        addPerfRow("network delay", stats.networkLatencyMs > 0
+                ? stats.networkLatencyMs + "ms / jitter" + stats.networkLatencyVarianceMs + " ms"
                 : "--");
-        addPerfRow("丢包率", String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
-        addPerfRow("解码延迟", stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
-        addPerfRow("主机延迟", stats.hostProcessingLatencyMs > 0 ? String.format(Locale.US, "%.1f ms", stats.hostProcessingLatencyMs) : "--");
-        addPerfRow("麦克风", micStatus == 1 ? "开启" : "关闭");
-        addPerfRow("音频震动", buildAudioHapticsStatusText());
-        addPerfRow("USB手柄", buildUsbControllerStatusText());
+        addPerfRow("Packet loss rate", String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
+        addPerfRow("decoding delay", stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
+        addPerfRow("Host latency", stats.hostProcessingLatencyMs > 0 ? String.format(Locale.US, "%.1f ms", stats.hostProcessingLatencyMs) : "--");
+        addPerfRow("microphone", micStatus == 1 ? "turn on" : "closure");
+        addPerfRow("Audio vibration", buildAudioHapticsStatusText());
+        addPerfRow("USB handle", buildUsbControllerStatusText());
     }
 
     private void addPerfRow(String label, String value) {
@@ -3439,7 +3439,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildUpscaleStatusText() {
         if (!fsrEnabled) {
-            return "关闭";
+            return "closure";
         }
         return getFsrTargetDisplayName() + " / "
                 + getFsrSharpnessDisplayName() + " / "
@@ -3448,30 +3448,30 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildRenderPipelineText() {
         if (!fsrEnabled) {
-            return "系统直出";
+            return "System direct exit";
         }
         return isFsrNativeHdrOutputEnabled() ? "GLES FSR HDR" : "GLES FSR SDR";
     }
 
     private String buildUsbControllerStatusText() {
         if (!prefConfig.usbDriver) {
-            return "关闭";
+            return "closure";
         }
         if (controllerHandler != null && controllerHandler.hasActiveUsbController()) {
             String controllerType = controllerHandler.getActiveUsbControllerTypeDisplayName();
             if (controllerType != null && !controllerType.isEmpty()) {
-                return "已接管 / " + controllerType;
+                return "Taken over /" + controllerType;
             }
-            return "已接管";
+            return "Taken over";
         }
-        return connectedToUsbDriverService ? "待机" : "未启动";
+        return connectedToUsbDriverService ? "standby" : "Not started";
     }
 
     private String buildAudioHapticsStatusText() {
         if (!prefConfig.enableAudioHaptics) {
-            return "关闭";
+            return "closure";
         }
-        return "开 / "
+        return "open /"
                 + getAudioHapticsOutputTargetDisplayName()
                 + " / " + getAudioHapticsVoiceFilterDisplayName()
                 + " / " + prefConfig.audioHapticsStrength + "%";
@@ -3479,22 +3479,22 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String getAudioHapticsOutputTargetDisplayName() {
         if ("controller".equals(prefConfig.audioHapticsOutputTarget)) {
-            return "手柄";
+            return "handle";
         }
-        return "手机";
+        return "cell phone";
     }
 
     private String getAudioHapticsVoiceFilterDisplayName() {
         if ("low".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "低";
+            return "Low";
         }
         if ("medium".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "中";
+            return "middle";
         }
         if ("high".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "高";
+            return "high";
         }
-        return "关";
+        return "close";
     }
 
     private String buildSessionDurationText() {
@@ -3583,7 +3583,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private void applyMicSpan(SpannableString spannable, String text) {
         int start = text.indexOf("Mic");
         if (start < 0) {
-            start = text.indexOf("麦克风");
+            start = text.indexOf("microphone");
         }
         if (start < 0) {
             return;
@@ -3647,7 +3647,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     public void switchMouseModel(){
         String[] strings=getResources().getStringArray(R.array.mouse_model_names_axi);
         String[] items =Arrays.copyOf(strings,strings.length+1);
-        items[items.length-1]="切换本地鼠标(需外接物理鼠标)";
+        items[items.length-1]="Switch local mouse (requires external physical mouse)";
 //        {"多点触控模式","普通鼠标模式","触控板模式","禁用鼠标/触控","普通鼠标模式（左右键互换）","切换本地鼠标(需外接物理鼠标)"}
         new AlertDialog.Builder(this).setItems(items, (dialog, which) -> {
             dialog.dismiss();
@@ -3657,7 +3657,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 return;
             }
             switchMouseModel(which);
-        }).setTitle("请选择鼠标模式").create().show();
+        }).setTitle("Please select mouse mode").create().show();
     }
 
     //本地鼠标光标切换
@@ -3784,7 +3784,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     //切换虚拟手柄模式
     public void switchVirtualController(KeyBoardController.ControllerMode mode){
         if(virtualController==null||!prefConfig.onscreenController){
-            Toast.makeText(this,"请先打开虚拟手柄开关！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please turn on the virtual controller switch first!",Toast.LENGTH_SHORT).show();
             return;
         }
         virtualController.switchMode(mode);
@@ -3801,7 +3801,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     //切换虚拟手柄模式
     public void switchVirtualKeyController(KeyBoardController.ControllerMode mode){
         if(keyBoardController==null||!prefConfig.enableKeyboard){
-            Toast.makeText(this,"请先打开虚拟按键开关！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please turn on the virtual key switch first!",Toast.LENGTH_SHORT).show();
             return;
         }
         keyBoardController.switchMode(mode);
@@ -3834,12 +3834,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if(!streamView.isEnableZoomAndPan()){
             disableMouseModel=true;
             streamView.setEnableZoomAndPan(true);
-            Toast.makeText(this,"开启画面平移&缩放！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Turn on screen pan & zoom!",Toast.LENGTH_SHORT).show();
             return;
         }
         disableMouseModel=false;
         streamView.setEnableZoomAndPan(false);
-        Toast.makeText(this,"关闭画面平移&缩放！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(this,"Turn off screen pan & zoom!",Toast.LENGTH_SHORT).show();
     }
 
     public boolean getScreenMoveZoom(){
@@ -3962,22 +3962,22 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if ("2k".equalsIgnoreCase(target)) {
             return "2K";
         }
-        return "关闭";
+        return "closure";
     }
 
     private String getFsrSharpnessDisplayName() {
         String value = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("list_fsr_sharpness", "standard");
         if ("soft".equalsIgnoreCase(value)) {
-            return "柔和";
+            return "soft";
         }
         if ("strong".equalsIgnoreCase(value)) {
-            return "强";
+            return "powerful";
         }
         if ("max".equalsIgnoreCase(value)) {
-            return "极强";
+            return "Extremely strong";
         }
-        return "标准";
+        return "standard";
     }
 
     private boolean isFsrNativeHdrOutputEnabled() {
@@ -4155,7 +4155,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (micStatus == 1) {
             conn.stopMicUplink();
             micStatus = 0;
-            Toast.makeText(this, "麦克风已关闭", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Microphone is off", Toast.LENGTH_SHORT).show();
             return;
         }
 

@@ -34,7 +34,7 @@
             android:textSize="20dp"/>
 
         <TextView
-            android:text="长按选中菜单有更多选项"
+            android:text="@string/xml_activity_app_view_new_2"
             android:layout_marginTop="25dp"
             android:textStyle="italic"
             android:textSize="10dp"

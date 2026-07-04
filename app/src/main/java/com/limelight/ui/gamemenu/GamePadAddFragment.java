@@ -62,61 +62,61 @@ public class GamePadAddFragment extends BaseGameMenuDialog implements View.OnCli
         beanGamePadList.add(new GameMenuQuickBean("ABXY",ControllerPacket.PADDLE2_FLAG,"Y-X-A-B",5,false).setGamePad(true));
 
         //"▲", "◀", "▼", "▶"
-        beanGamePadList.add(new GameMenuQuickBean("十字键",ControllerPacket.PADDLE1_FLAG,"▲-◀-▼-▶",5,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("Cross keys",ControllerPacket.PADDLE1_FLAG,"▲-◀-▼-▶",5,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("L3", ControllerPacket.LS_CLK_FLAG,"左摇杆按下",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("L3", ControllerPacket.LS_CLK_FLAG,"Left joystick pressed",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("R3", ControllerPacket.RS_CLK_FLAG,"右摇杆按下",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("R3", ControllerPacket.RS_CLK_FLAG,"Right joystick pressed",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("L1", ControllerPacket.LB_FLAG,"左肩键",4,false).setGamePad(true));
-        beanGamePadList.add(new GameMenuQuickBean("L2", ControllerPacket.PADDLE3_FLAG,"左扳机",4,false).setGamePad(true).setShapeType(1));
+        beanGamePadList.add(new GameMenuQuickBean("L1", ControllerPacket.LB_FLAG,"Left shoulder button",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("L2", ControllerPacket.PADDLE3_FLAG,"left trigger",4,false).setGamePad(true).setShapeType(1));
 
-        beanGamePadList.add(new GameMenuQuickBean("R1", ControllerPacket.RB_FLAG,"右肩键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("R1", ControllerPacket.RB_FLAG,"right shoulder button",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("R2", ControllerPacket.PADDLE4_FLAG,"右扳机",4,false).setGamePad(true).setShapeType(1));
+        beanGamePadList.add(new GameMenuQuickBean("R2", ControllerPacket.PADDLE4_FLAG,"right trigger",4,false).setGamePad(true).setShapeType(1));
 
-        beanGamePadList.add(new GameMenuQuickBean("MODE", ControllerPacket.SPECIAL_BUTTON_FLAG,"XBOX键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("MODE", ControllerPacket.SPECIAL_BUTTON_FLAG,"XBOX key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("SELECT", ControllerPacket.BACK_FLAG,"视图键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("SELECT", ControllerPacket.BACK_FLAG,"view key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("START", ControllerPacket.PLAY_FLAG,"菜单键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("START", ControllerPacket.PLAY_FLAG,"Menu key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("触控板",ControllerPacket.TOUCHPAD_FLAG,"DS4触控板按键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("trackpad",ControllerPacket.TOUCHPAD_FLAG,"DS4 touchpad buttons",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"常规模式",3,false).setFreeStick(false).setGamePad(true));
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"常规·最大偏转",3,false).setFreeStick(false).setGamePad(true).setFixedStrokeFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"自由摇杆",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"自由摇杆·触发显示",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFreeeStickDrawNormal(false));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"Normal mode",3,false).setFreeStick(false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"Normal·maximum deflection",3,false).setFreeStick(false).setGamePad(true).setFixedStrokeFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"free rocker",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"Free joystick·Trigger display",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFreeeStickDrawNormal(false));
 
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"自由摇杆·最大偏转",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("左摇杆",ControllerPacket.PADDLE5_FLAG,"自由·最大偏转·触发显示",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true).setFreeeStickDrawNormal(false));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"Free rocker·maximum deflection",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("left joystick",ControllerPacket.PADDLE5_FLAG,"Free·Maximum Deflection·Trigger Display",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true).setFreeeStickDrawNormal(false));
 
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"常规模式",3,false).setFreeStick(false).setGamePad(true));
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"常规·最大偏转",3,false).setFreeStick(false).setGamePad(true).setFixedStrokeFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"自由摇杆",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"自由摇杆·触发显示",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFreeeStickDrawNormal(false));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"Normal mode",3,false).setFreeStick(false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"Normal·maximum deflection",3,false).setFreeStick(false).setGamePad(true).setFixedStrokeFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"free rocker",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"Free joystick·Trigger display",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFreeeStickDrawNormal(false));
 
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"自由摇杆·最大偏转",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true));
-        beanGamePadList.add(new GameMenuQuickBean("右摇杆",ControllerPacket.PADDLE6_FLAG,"自由·最大偏转·触发显示",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true).setFreeeStickDrawNormal(false));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"Free rocker·maximum deflection",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true));
+        beanGamePadList.add(new GameMenuQuickBean("Right joystick",ControllerPacket.PADDLE6_FLAG,"Free·Maximum Deflection·Trigger Display",3,false).setFreeStick(false).setGamePad(true).setFreeStick(true).setFixedStrokeFreeStick(true).setFreeeStickDrawNormal(false));
 
 
-        beanGamePadList.add(new GameMenuQuickBean("A", ControllerPacket.A_FLAG,"A键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("A", ControllerPacket.A_FLAG,"A key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("B", ControllerPacket.B_FLAG,"B键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("B", ControllerPacket.B_FLAG,"B key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("X", ControllerPacket.X_FLAG,"X键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("X", ControllerPacket.X_FLAG,"X key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("Y", ControllerPacket.Y_FLAG,"Y键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("Y", ControllerPacket.Y_FLAG,"Y key",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("▲", ControllerPacket.UP_FLAG,"十字键·上",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("▲", ControllerPacket.UP_FLAG,"Cross key·up",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("▼", ControllerPacket.DOWN_FLAG,"十字键·下",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("▼", ControllerPacket.DOWN_FLAG,"Cross key·down",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("◀", ControllerPacket.LEFT_FLAG,"十字键·左",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("◀", ControllerPacket.LEFT_FLAG,"Cross key·left",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("▶", ControllerPacket.RIGHT_FLAG,"十字键·右",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("▶", ControllerPacket.RIGHT_FLAG,"Cross key·right",4,false).setGamePad(true));
 
-        beanGamePadList.add(new GameMenuQuickBean("Share", ControllerPacket.MISC_FLAG,"手柄分享键",4,false).setGamePad(true));
+        beanGamePadList.add(new GameMenuQuickBean("Share", ControllerPacket.MISC_FLAG,"Controller share button",4,false).setGamePad(true));
 
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {

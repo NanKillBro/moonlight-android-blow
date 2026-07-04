@@ -571,17 +571,17 @@ public class GameDisplaySettingFragment extends BaseGameMenuDialog {
     }
 
     private void initPrefZoom(){
-        tx_game_setting_pref_zoom.setText("性能信息·缩放："+prefConfig.gameSettingPrefZoom+"%");
+        tx_game_setting_pref_zoom.setText("Performance information · Scaling:"+prefConfig.gameSettingPrefZoom+"%");
         sb_game_setting_pref_zoom.setProgress(prefConfig.gameSettingPrefZoom);
     }
 
     private void initPrefMagin(){
-        tx_game_setting_pref_magin_top.setText("性能信息·边距："+prefConfig.performanceOverlayLiteMaginTop);
+        tx_game_setting_pref_magin_top.setText("Performance Information·Margins:"+prefConfig.performanceOverlayLiteMaginTop);
         sb_game_setting_pref_magin_top.setProgress(prefConfig.performanceOverlayLiteMaginTop);
     }
 
     private void initGyroSensitivity(){
-        tx_game_setting_gyro_sensitivity.setText("强制体感·灵敏度："+prefConfig.gameForceGyroSensitivity);
+        tx_game_setting_gyro_sensitivity.setText("Forced somatosensory sensitivity:"+prefConfig.gameForceGyroSensitivity);
         sb_game_setting_gyro_sensitivity.setProgress(prefConfig.gameForceGyroSensitivity);
     }
 
@@ -618,7 +618,7 @@ public class GameDisplaySettingFragment extends BaseGameMenuDialog {
     }
 
     private void initAudioHapticsStrength() {
-        tx_game_audio_haptics_strength.setText("音频震动强度：" + prefConfig.audioHapticsStrength + "%");
+        tx_game_audio_haptics_strength.setText("Audio vibration intensity:" + prefConfig.audioHapticsStrength + "%");
         sb_game_audio_haptics_strength.setProgress(prefConfig.audioHapticsStrength);
     }
 

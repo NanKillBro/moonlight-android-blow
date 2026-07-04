@@ -54,9 +54,9 @@ public class GameListMouseFragment extends BaseGameMenuDialog {
         for (int i = 0; i < strings.length; i++) {
             gameMenus.add(new GameMenuQuickBean(strings[i],null));
         }
-        gameMenus.add(new GameMenuQuickBean("切换本地鼠标(需外接物理鼠标)",null));
-        gameMenus.add(new GameMenuQuickBean("适合远程桌面的鼠标模式(需切换到普通鼠标模式)",null));
-        gameMenus.add(new GameMenuQuickBean("隐藏/显示电脑端鼠标光标",null));
+        gameMenus.add(new GameMenuQuickBean("Switch local mouse (requires external physical mouse)",null));
+        gameMenus.add(new GameMenuQuickBean("Mouse mode suitable for remote desktop (needs to switch to normal mouse mode)",null));
+        gameMenus.add(new GameMenuQuickBean("Hide/show mouse cursor on computer",null));
         GameMenuQuickKeyboardAdapter adapter=new GameMenuQuickKeyboardAdapter(getActivity(),gameMenus);
         adapter.setType(1);
         lv_menu.setAdapter(adapter);

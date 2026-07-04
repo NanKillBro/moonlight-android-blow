@@ -3572,7 +3572,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         public void toggleMouseEmulation() {
             mainThreadHandler.removeCallbacks(mouseEmulationRunnable);
             mouseEmulationActive = !mouseEmulationActive;
-            Toast.makeText(activityContext, "手柄键鼠模式: " + (mouseEmulationActive ? "开启" : "关闭"), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activityContext, "Controller keyboard and mouse mode:" + (mouseEmulationActive ? "turn on" : "closure"), Toast.LENGTH_SHORT).show();
             if (mouseEmulationActive) {
                 mainThreadHandler.postDelayed(mouseEmulationRunnable, mouseEmulationReportPeriod);
             }

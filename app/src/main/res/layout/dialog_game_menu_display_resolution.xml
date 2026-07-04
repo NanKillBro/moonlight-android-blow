@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="分辨率"
+            android:text="@string/xml_dialog_game_menu_display_resolution_1"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -34,7 +34,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="确认"
+            android:text="@string/xml_dialog_game_menu_display_resolution_2"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -65,7 +65,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="信息"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_3"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -90,7 +90,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:text="宽度"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_5"
                     android:textStyle="bold"
                     android:textSize="10dp" />
 
@@ -112,7 +112,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="高度"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_6"
                     android:textStyle="bold"
                     android:textSize="10dp" />
 
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
                     android:layout_marginTop="4dp"
-                    android:text="常用分辨率"
+                    android:text="@string/xml_dialog_game_menu_display_resolution_7"
                     android:textStyle="bold"
                     android:textSize="10dp" />
 
@@ -210,7 +210,7 @@
                         android:layout_marginTop="5dp"
                         android:background="@drawable/ic_game_menu_btn_selector"
                         android:gravity="center"
-                        android:text="本机"
+                        android:text="@string/xml_dialog_game_menu_display_resolution_8"
                         android:tag="5"
                         android:textColor="@android:color/white"
                         android:textSize="9sp" />

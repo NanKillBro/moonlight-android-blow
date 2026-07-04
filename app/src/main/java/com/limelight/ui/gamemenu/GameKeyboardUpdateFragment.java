@@ -147,7 +147,7 @@ public class GameKeyboardUpdateFragment extends BaseGameMenuDialog implements Vi
                         // 处理释放事件
                         v.setBackgroundResource(R.drawable.bg_ax_keyboard_button);
                         if(contentValues.toString().split(",").length>=5){
-                            Toast.makeText(getActivity(),"限制只能输入5个按键！",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(),"Only 5 keystrokes can be entered!",Toast.LENGTH_SHORT).show();
                             return true;
                         }
                         if(!TextUtils.isEmpty(contentValues.toString())){
@@ -186,41 +186,41 @@ public class GameKeyboardUpdateFragment extends BaseGameMenuDialog implements Vi
             lv_digitpad_2.getChildAt(i).setOnTouchListener(touchListener);
         }
 
-        beanList.add(new GameMenuQuickBean("鼠标·左键",1,"常规模式",1,false));
-        beanList.add(new GameMenuQuickBean("鼠标·左键",1,"锁定模式",1,true));
-        beanList.add(new GameMenuQuickBean("鼠标·右键",3,"常规模式",1,false));
-        beanList.add(new GameMenuQuickBean("鼠标·右键",3,"锁定模式",1,true));
-        beanList.add(new GameMenuQuickBean("鼠标·中键",2,"常规模式",1,false));
-        beanList.add(new GameMenuQuickBean("鼠标·中键",2,"锁定模式",1,true));
+        beanList.add(new GameMenuQuickBean("Mouse·left button",1,"Normal mode",1,false));
+        beanList.add(new GameMenuQuickBean("Mouse·left button",1,"lock mode",1,true));
+        beanList.add(new GameMenuQuickBean("Mouse·right button",3,"Normal mode",1,false));
+        beanList.add(new GameMenuQuickBean("Mouse·right button",3,"lock mode",1,true));
+        beanList.add(new GameMenuQuickBean("Mouse·middle button",2,"Normal mode",1,false));
+        beanList.add(new GameMenuQuickBean("Mouse·middle button",2,"lock mode",1,true));
 
-        beanList.add(new GameMenuQuickBean("滚轮·上",4,"常规模式",1,false));
-        beanList.add(new GameMenuQuickBean("滚轮·上",4,"锁定模式",1,true));
-        beanList.add(new GameMenuQuickBean("滚轮·下",5,"常规模式",1,false));
-        beanList.add(new GameMenuQuickBean("滚轮·下",5,"锁定模式",1,true));
+        beanList.add(new GameMenuQuickBean("Roller·Up",4,"Normal mode",1,false));
+        beanList.add(new GameMenuQuickBean("Roller·Up",4,"lock mode",1,true));
+        beanList.add(new GameMenuQuickBean("Roller·Down",5,"Normal mode",1,false));
+        beanList.add(new GameMenuQuickBean("Roller·Down",5,"lock mode",1,true));
 
-        beanList.add(new GameMenuQuickBean("触控板",10,"常规模式",2,false).setShapeType(1));
-        beanList.add(new GameMenuQuickBean("触控板·左",11,"左键",2,false).setShapeType(1));
-        beanList.add(new GameMenuQuickBean("触控板·右",9,"右键",2,false).setShapeType(1));
-        beanList.add(new GameMenuQuickBean("触控板·中",12,"中键",2,false).setShapeType(1));
-        beanList.add(new GameMenuQuickBean("触控板·无",13,"只转视野",2,false).setShapeType(1));
+        beanList.add(new GameMenuQuickBean("trackpad",10,"Normal mode",2,false).setShapeType(1));
+        beanList.add(new GameMenuQuickBean("Touchpad·Left",11,"left click",2,false).setShapeType(1));
+        beanList.add(new GameMenuQuickBean("Touchpad·right",9,"Right click",2,false).setShapeType(1));
+        beanList.add(new GameMenuQuickBean("Touchpad·Medium",12,"middle button",2,false).setShapeType(1));
+        beanList.add(new GameMenuQuickBean("Touchpad·None",13,"Just turn the field of view",2,false).setShapeType(1));
 
-        beanList.add(new GameMenuQuickBean("摇杆","51,47,29,32","W-A-S-D",3,false));
-        beanList.add(new GameMenuQuickBean("摇杆","19,20,21,22","上-左-下-右",3,false));
+        beanList.add(new GameMenuQuickBean("joystick","51,47,29,32","W-A-S-D",3,false));
+        beanList.add(new GameMenuQuickBean("joystick","19,20,21,22","Up-Left-Down-Right",3,false));
 
-        beanList.add(new GameMenuQuickBean("自由摇杆","51,47,29,32","W-A-S-D",3,false).setFreeStick(true));
-        beanList.add(new GameMenuQuickBean("自由摇杆","19,20,21,22","上-左-下-右",3,false).setFreeStick(true));
+        beanList.add(new GameMenuQuickBean("free rocker","51,47,29,32","W-A-S-D",3,false).setFreeStick(true));
+        beanList.add(new GameMenuQuickBean("free rocker","19,20,21,22","Up-Left-Down-Right",3,false).setFreeStick(true));
 
-        beanList.add(new GameMenuQuickBean("十字键","51,47,29,32","W-A-S-D",5,false));
-        beanList.add(new GameMenuQuickBean("十字键","19,20,21,22","↑-←-↓-→",5,false));
+        beanList.add(new GameMenuQuickBean("Cross keys","51,47,29,32","W-A-S-D",5,false));
+        beanList.add(new GameMenuQuickBean("Cross keys","19,20,21,22","↑-←-↓-→",5,false));
 
         //快捷键：AXIX前缀，例如AXIX0(软键盘)，AXIX1(虚拟按键)，AXIX2(虚拟全键盘)，AXIX3(虚拟手柄)，AXIX4(悬浮球)，AXIX5(性能信息),AXIX6(游戏菜单)
-        beanFunctionList.add(new GameMenuQuickBean("软键盘","29,52,37,52,7","AXIX0",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("虚拟按键","29,52,37,52,8","AXIX1",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("虚拟全键盘","29,52,37,52,9","AXIX2",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("虚拟手柄","29,52,37,52,10","AXIX3",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("悬浮球","29,52,37,52,11","AXIX4",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("性能信息","29,52,37,52,12","AXIX5",4,false));
-        beanFunctionList.add(new GameMenuQuickBean("游戏菜单","29,52,37,52,13","AXIX6",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("soft keyboard","29,52,37,52,7","AXIX0",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("virtual keys","29,52,37,52,8","AXIX1",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("virtual full keyboard","29,52,37,52,9","AXIX2",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("virtual controller","29,52,37,52,10","AXIX3",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("suspended ball","29,52,37,52,11","AXIX4",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("Performance information","29,52,37,52,12","AXIX5",4,false));
+        beanFunctionList.add(new GameMenuQuickBean("game menu","29,52,37,52,13","AXIX6",4,false));
 
         int orientation = getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -274,11 +274,11 @@ public class GameKeyboardUpdateFragment extends BaseGameMenuDialog implements Vi
                 name=name.trim();
             }
             if(TextUtils.isEmpty(name)){
-                Toast.makeText(getActivity(),"请输入名称！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Please enter a name!",Toast.LENGTH_SHORT).show();
                 return;
             }
             if(TextUtils.isEmpty(contentValues.toString())){
-                Toast.makeText(getActivity(),"请输入组合键！",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(),"Please enter the key combination!",Toast.LENGTH_SHORT).show();
                 return;
             }
             GameMenuQuickBean bean=new GameMenuQuickBean();
