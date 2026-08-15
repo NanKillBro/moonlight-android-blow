@@ -94,7 +94,7 @@ public final class StreamLogStore {
                     ? Api30ExitInfo.find(context, activePid, activeStartedAt, traceFile) : null;
             try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
                     new FileOutputStream(file, true), StandardCharsets.UTF_8))) {
-                writer.write(now + " [WARN] 会话未正常结束：应用进程可能闪退、被系统终止或被强制停止");
+                writer.write(now + " [WARN] Session did not exit cleanly: process may have crashed, been killed by OS, or force stopped");
                 writer.newLine();
                 if (exitInfo != null) {
                     writeExitInfo(writer, now, exitInfo);
@@ -104,7 +104,7 @@ public final class StreamLogStore {
                             + ", sessionStartedAt=" + activeStartedAt);
                     writer.newLine();
                 }
-                writer.write(now + " [END] 异常中断（下次启动时补记）");
+                writer.write(now + " [END] Abnormal interruption (recorded on next launch)");
                 writer.newLine();
             }
             catch (IOException ignored) {
@@ -193,7 +193,7 @@ public final class StreamLogStore {
             if (content.length() > maxChars) {
                 content = content.substring(content.length() - maxChars);
             }
-            return start > 0 ? "……（显示日志末尾）\n" + content : content;
+            return start > 0 ? "…… (showing end of log)\n" + content : content;
         }
         catch (IOException ignored) {
             return "";

@@ -278,13 +278,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             binder.setStateListener(Game.this);
             binder.start();
             connectedToUsbDriverService = true;
-            logSessionInfo("USB", "USB 手柄服务已连接");
+            logSessionInfo("USB", "USB gamepad service connected");
         }
 
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             connectedToUsbDriverService = false;
-            logSessionWarn("USB", "USB 手柄服务意外断开");
+            logSessionWarn("USB", "USB gamepad service disconnected unexpectedly");
         }
     };
 
@@ -357,14 +357,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     if (displayId == Display.DEFAULT_DISPLAY || externalDisplayRoutingDestroyed) {
                         return;
                     }
-                    logSessionInfo("DISPLAY", "检测到外接显示器接入，displayId=" + displayId);
+                    logSessionInfo("DISPLAY", "External display connected, displayId=" + displayId);
                     scheduleExternalDisplayAttach();
                 }
 
                 @Override
                 public void onDisplayRemoved(int displayId) {
                     if (displayId == activeExternalDisplayId) {
-                        restoreRenderViewToHandset("外接显示器已拔出，displayId=" + displayId);
+                        restoreRenderViewToHandset("External display disconnected, displayId=" + displayId);
                         scheduleExternalDisplayAttach();
                     }
                 }
@@ -375,7 +375,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         Display display = externalDisplayManager != null
                                 ? externalDisplayManager.getDisplay(displayId) : null;
                         if (display != null) {
-                            logSessionInfo("DISPLAY", "外接显示器状态变化："
+                            logSessionInfo("DISPLAY", "External display state changed: "
                                     + describeDisplay(display));
                         }
                     }
@@ -438,10 +438,10 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         pcName = getIntent().getStringExtra(EXTRA_PC_NAME);
         backgroundReconnectAttempt = getIntent().getIntExtra(EXTRA_BACKGROUND_RECONNECT_ATTEMPT, 0);
         streamSessionLogger = StreamSessionLogger.create(this, prefConfig, pcName, appName);
-        logSessionInfo("LIFECYCLE", "串流页面已创建");
+        logSessionInfo("LIFECYCLE", "Stream view created");
         if (backgroundReconnectAttempt > 0) {
-            logSessionInfo("CONNECT", "开始后台回连，第 " + backgroundReconnectAttempt + "/"
-                    + MAX_BACKGROUND_RECONNECT_ATTEMPTS + " 次");
+            logSessionInfo("CONNECT", "Starting background reconnect, attempt " + backgroundReconnectAttempt + "/"
+                    + MAX_BACKGROUND_RECONNECT_ATTEMPTS + "");
             streamLoadingController.showPreparing(getString(
                     R.string.stream_background_reconnecting,
                     backgroundReconnectAttempt,
@@ -742,8 +742,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         if (stereo3dEnabled && willStreamHdr) {
             willStreamHdr = false;
-            Toast.makeText(this, "3D输出首版使用SDR串流，已临时关闭HDR", Toast.LENGTH_LONG).show();
-            logSessionWarn("VIDEO", "SBS 3D 首版禁用 HDR 串流");
+            Toast.makeText(this, "3D output initial version uses SDR streaming, HDR temporarily disabled", Toast.LENGTH_LONG).show();
+            logSessionWarn("VIDEO", "SBS 3D initial version disables HDR streaming");
         }
 
         // Check if the user has enabled performance stats overlay
@@ -777,7 +777,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         // We must use commit because the app will crash when we return from this function
                         tombstonePrefs.edit().putInt("CrashCount", tombstonePrefs.getInt("CrashCount", 0) + 1).commit();
                         reportedCrash = true;
-                        logSessionError("DECODER", "MediaCodec 解码器异常", e);
+                        logSessionError("DECODER", "MediaCodec decoder error", e);
                     }
                 },
                 tombstonePrefs.getInt("CrashCount", 0),
@@ -786,7 +786,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 glPrefs.glRenderer,
                 this);
         decoderRenderer.setFirstFrameListener(() -> {
-            logSessionInfo("VIDEO", "首帧已显示");
+            logSessionInfo("VIDEO", "First frame rendered");
             streamLoadingController.onFirstFrameRendered();
             if (controllerHandler != null) {
                 controllerHandler.notifyStreamReady();
@@ -910,7 +910,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     @Override
                     public void onAvailabilityChanged(boolean active) {
                         LimeLog.info("Kishi PCM haptics " + (active ? "active" : "inactive"));
-                        logSessionInfo("HAPTICS", "Kishi 原生触觉通道" + (active ? "已启用" : "已停用"));
+                        logSessionInfo("HAPTICS", "Kishi native haptics channel" + (active ? "enabled" : "disabled"));
                     }
 
                     @Override
@@ -1634,7 +1634,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     protected void onDestroy() {
-        logSessionInfo("LIFECYCLE", "串流页面正在销毁");
+        logSessionInfo("LIFECYCLE", "Stream view destroying");
         backgroundReconnectHandler.removeCallbacksAndMessages(null);
         releaseExternalDisplayRouting();
 
@@ -1693,7 +1693,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         inputCaptureProvider.destroy();
 
         if (streamSessionLogger != null) {
-            streamSessionLogger.close(reportedCrash ? "解码器异常后结束" : "串流页面已关闭");
+            streamSessionLogger.close(reportedCrash ? "Ended due to decoder error" : "Stream view closed");
             streamSessionLogger = null;
         }
         super.onDestroy();
@@ -1764,7 +1764,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             videoZoomGestureOverlay.setInputSuppressed(true);
         }
 
-        logSessionInfo("LIFECYCLE", "串流页面进入后台/停止");
+        logSessionInfo("LIFECYCLE", "Stream view entered background/stopped");
 
         Dialog.closeDialogs();
 
@@ -1784,7 +1784,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
 
         if (restartingForBackgroundReconnect || isChangingConfigurations()) {
-            logSessionInfo("LIFECYCLE", "串流页面为后台回连而重建");
+            logSessionInfo("LIFECYCLE", "Stream view rebuilt for background reconnect");
             return;
         }
 
@@ -3186,13 +3186,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void stageStarting(final String stage) {
-        logSessionInfo("CONNECT", "开始阶段: " + stage);
+        logSessionInfo("CONNECT", "Starting stage: " + stage);
         streamLoadingController.onStageStarting(stage);
     }
 
     @Override
     public void stageComplete(String stage) {
-        logSessionInfo("CONNECT", "完成阶段: " + stage);
+        logSessionInfo("CONNECT", "Completed stage: " + stage);
     }
 
     private void stopConnection() {
@@ -3206,7 +3206,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         releaseBackgroundStreamWakeLock();
 
         if (connecting || connected) {
-            logSessionInfo("CONNECT", "请求停止串流连接");
+            logSessionInfo("CONNECT", "Requesting stream stop");
             connecting = connected = false;
             UiHelper.notifyHdrWindowStatus(this, false);
             updatePipAutoEnter();
@@ -3239,7 +3239,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void stageFailed(final String stage, final int portFlags, final int errorCode) {
-        logSessionWarn("CONNECT", "连接阶段失败: " + stage + ", error=" + errorCode
+        logSessionWarn("CONNECT", "Connection stage failed: " + stage + ", error=" + errorCode
                 + (portFlags != 0 ? ", ports=" + portFlags : ""));
 
         if (restartingForBackgroundReconnect) {
@@ -3287,14 +3287,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void connectionTerminated(final int errorCode) {
         if (errorCode == MoonBridge.ML_ERROR_GRACEFUL_TERMINATION) {
-            logSessionInfo("CONNECT", "连接正常结束, code=" + errorCode);
+            logSessionInfo("CONNECT", "Connection ended normally, code=" + errorCode);
         }
         else {
-            logSessionWarn("CONNECT", "连接异常中断, code=" + errorCode);
+            logSessionWarn("CONNECT", "Connection terminated abnormally, code=" + errorCode);
         }
 
         if (pendingBackgroundReconnect || restartingForBackgroundReconnect) {
-            logSessionInfo("CONNECT", "后台回连清理期间忽略重复的终止回调, code=" + errorCode);
+            logSessionInfo("CONNECT", "Ignoring duplicate termination callback during background reconnect cleanup, code=" + errorCode);
             return;
         }
         boolean backgroundReconnectCandidate = isBackgroundReconnectCandidate(errorCode);
@@ -3404,8 +3404,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (connectionStatus != lastLoggedConnectionStatus) {
             lastLoggedConnectionStatus = connectionStatus;
             logSessionInfo("NETWORK", connectionStatus == MoonBridge.CONN_STATUS_POOR
-                    ? "连接质量变差" : connectionStatus == MoonBridge.CONN_STATUS_OKAY
-                    ? "连接质量恢复" : "连接状态=" + connectionStatus);
+                    ? "Connection quality degraded" : connectionStatus == MoonBridge.CONN_STATUS_OKAY
+                    ? "Connection quality restored" : "Connection state=" + connectionStatus);
         }
         runOnUiThread(new Runnable() {
             @Override
@@ -3437,7 +3437,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void connectionStarted() {
-        logSessionInfo("CONNECT", "串流连接已建立");
+        logSessionInfo("CONNECT", "Stream connection established");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -3448,14 +3448,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                     final int completedAttempt = backgroundReconnectAttempt;
                     backgroundReconnectEligibleUntilElapsedMs = SystemClock.elapsedRealtime()
                             + BACKGROUND_RECONNECT_GRACE_MS;
-                    logSessionInfo("CONNECT", "后台回连已建立，等待连接稳定");
+                    logSessionInfo("CONNECT", "Background reconnect established, waiting for stability");
                     backgroundReconnectHandler.postDelayed(() -> {
                         if (connected && !streamSessionBackgrounded &&
                                 backgroundReconnectAttempt == completedAttempt) {
                             backgroundReconnectAttempt = 0;
                             backgroundReconnectEligibleUntilElapsedMs = 0L;
                             getIntent().removeExtra(EXTRA_BACKGROUND_RECONNECT_ATTEMPT);
-                            logSessionInfo("CONNECT", "后台回连已稳定");
+                            logSessionInfo("CONNECT", "Background reconnect stabilized");
                         }
                     }, BACKGROUND_RECONNECT_GRACE_MS);
                 }
@@ -3533,7 +3533,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                performanceRumble.setText(String.format((Locale)null, "手柄%d 震动信号 高%d 低%d", controllerNumber,  (short)((highFreqMotor >> 8) & 0xFF),  (short)((lowFreqMotor >> 8) & 0xFF)));
+                performanceRumble.setText(String.format((Locale)null, "Gamepad %d rumble signal high=%d low=%d", controllerNumber,  (short)((highFreqMotor >> 8) & 0xFF),  (short)((lowFreqMotor >> 8) & 0xFF)));
             }
         });
     }
@@ -3585,7 +3585,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
         if (!attemptedConnection) {
             attemptedConnection = true;
-            logSessionInfo("CONNECT", "渲染表面就绪，开始连接；渲染路径=Surface");
+            logSessionInfo("CONNECT", "Render surface ready, starting connection; render path=Surface");
 
             // Update GameManager state to indicate we're "loading" while connecting
             UiHelper.notifyStreamConnecting(Game.this);
@@ -3606,7 +3606,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         logSessionInfo("VIDEO", glesRenderingEnabled && fsrView != null && holder == fsrView.getHolder()
-                ? "GLES 显示表面已创建" : "视频表面已创建");
+                ? "GLES display surface created" : "Video surface created");
         float desiredFrameRate;
 
         if (glesRenderingEnabled) {
@@ -3658,7 +3658,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        logSessionInfo("VIDEO", "视频表面已销毁");
+        logSessionInfo("VIDEO", "Video surface destroyed");
         if (glesRenderingEnabled) {
             if (fsrView == null || holder != fsrView.getHolder()) {
                 return;
@@ -3803,17 +3803,17 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (stats != null && now - lastSessionPerfLogElapsedMs >= 10000) {
             lastSessionPerfLogElapsedMs = now;
             logSessionInfo("PERF", String.format(Locale.US,
-                    "%dx%d %s, FPS %.1f/%.1f, 网络 %.0f Kbps, 视频 %.0f Kbps, 音频 %.0f Kbps, "
-                            + "延迟 %d±%d ms, 丢包 %.2f%%, 解码 %.2f ms, 主机 %.2f ms",
+                    "%dx%d %s, FPS %.1f/%.1f, Net %.0f Kbps, Video %.0f Kbps, Audio %.0f Kbps, "
+                            + "Latency %d±%d ms, Loss %.2f%%, Decode %.2f ms, Host %.2f ms",
                     stats.width, stats.height, nonEmpty(stats.codecName, "--"),
                     stats.renderedFps, stats.receivedFps, stats.networkRateKbps,
                     stats.videoRateKbps, stats.audioRateKbps, stats.networkLatencyMs,
                     stats.networkLatencyVarianceMs, stats.packetLossPercent,
                     stats.decodeTimeMs, stats.hostProcessingLatencyMs));
-            logSessionInfo("STATE", "渲染=" + buildRenderPipelineText()
-                    + "；USB手柄=" + buildUsbControllerStatusText()
-                    + "；游戏震动=" + buildNativeGameHapticsStatusText()
-                    + "；音频震动=" + buildAudioHapticsStatusText());
+            logSessionInfo("STATE", "Render=" + buildRenderPipelineText()
+                    + "; USB Gamepad=" + buildUsbControllerStatusText()
+                    + "; Game Rumble=" + buildNativeGameHapticsStatusText()
+                    + "; Audio Haptics=" + buildAudioHapticsStatusText());
         }
         runOnUiThread(new Runnable() {
             @Override
@@ -3836,7 +3836,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         StringBuilder builder = new StringBuilder();
         if (stats.networkRateKbps > 0) {
-            builder.append("带宽：").append(formatThroughput(stats.networkRateKbps)).append("  ");
+            builder.append("Bandwidth: ").append(formatThroughput(stats.networkRateKbps)).append("  ");
         }
         if (prefConfig.enablePerfOverlayLiteExt) {
             builder.append(stats.width > 0 && stats.height > 0
@@ -3852,10 +3852,10 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (stereo3dEnabled) {
             builder.append(buildStereo3dPerfLabel()).append("  ");
         }
-        builder.append("延迟/解码：");
+        builder.append("Latency/Decode: ");
         builder.append(stats.networkLatencyMs).append(" ms / ");
         builder.append(stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
-        builder.append("  丢包率：").append(String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
+        builder.append("  Loss: ").append(String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
         builder.append("  FPS：").append(String.format(Locale.US, "%.2f", stats.totalFps));
         if (micStatus == 1) {
             builder.append(" Mic");
@@ -3868,7 +3868,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if(prefConfig.enablePerfOverlayLite){
             return "FSR " + target;
         }
-        return "FSR " + target + " / 锐化 " + getFsrSharpnessDisplayName();
+        return "FSR " + target + " / Sharpness " + getFsrSharpnessDisplayName();
     }
 
     private void renderFullPerfInfo(PerfOverlayStats stats) {
@@ -3878,42 +3878,42 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         performanceOverlayBigContent.removeAllViews();
 
         if (stats == null) {
-            addPerfRow("状态", "--");
+            addPerfRow("Status", "--");
             return;
         }
 
-        addPerfRow("分辨率", stats.width > 0 && stats.height > 0
+        addPerfRow("Resolution", stats.width > 0 && stats.height > 0
                 ? stats.width + "x" + stats.height + (stats.hdr ? " HDR" : "")
                 : prefConfig.width + "x" + prefConfig.height
                 + (prefConfig.enableHdr && !stereo3dEnabled ? " HDR" : ""));
-        addPerfRow("编码", nonEmpty(stats.codecName, "--"));
-        addPerfRow("目标码率", formatMbps(stats.targetBitrateKbps > 0 ? stats.targetBitrateKbps : prefConfig.bitrate));
-        addPerfRow("目标帧率", (stats.targetFps > 0 ? stats.targetFps : prefConfig.fps) + " FPS");
-        addPerfRow("实时帧率", formatFps(stats.totalFps));
-        addPerfRow("视频码率", formatRate(stats.videoRateKbps));
-        addPerfRow("音频码率", formatRate(stats.audioRateKbps));
-        addPerfRow("累计视频流量", formatBytes(stats.videoBytes));
-        addPerfRow("累计音频流量", formatBytes(stats.audioBytes));
-        addPerfRow("渲染方式", glesRenderingEnabled ? "GLES渲染" : "系统渲染");
-        addPerfRow("3D输出", stereo3dEnabled
+        addPerfRow("Codec", nonEmpty(stats.codecName, "--"));
+        addPerfRow("Target Bitrate", formatMbps(stats.targetBitrateKbps > 0 ? stats.targetBitrateKbps : prefConfig.bitrate));
+        addPerfRow("Target FPS", (stats.targetFps > 0 ? stats.targetFps : prefConfig.fps) + " FPS");
+        addPerfRow("Real-time FPS", formatFps(stats.totalFps));
+        addPerfRow("Video Bitrate", formatRate(stats.videoRateKbps));
+        addPerfRow("Audio Bitrate", formatRate(stats.audioRateKbps));
+        addPerfRow("Total Video Traffic", formatBytes(stats.videoBytes));
+        addPerfRow("Total Audio Traffic", formatBytes(stats.audioBytes));
+        addPerfRow("Render Mode", glesRenderingEnabled ? "GLES Rendering" : "System Rendering");
+        addPerfRow("3D Output", stereo3dEnabled
                 ? getStereo3dPackingDisplayName() + " "
                 + getStereoOutputSizeLabel() + getStereo3dAiSuffix()
-                + " / 景深" + getStereo3dDepthDisplayName()
-                : "关闭");
-        addPerfRow("超分状态", buildUpscaleStatusText());
-        addPerfRow("实际渲染链", buildRenderPipelineText());
-        addPerfRow("连接地址", nonEmpty(streamHost, "--"));
-        addPerfRow("本地时长", buildSessionDurationText());
-        addPerfRow("网络延迟", stats.networkLatencyMs > 0
-                ? stats.networkLatencyMs + " ms / 抖动 " + stats.networkLatencyVarianceMs + " ms"
+                + " / Depth" + getStereo3dDepthDisplayName()
+                : "Off");
+        addPerfRow("Upscaling", buildUpscaleStatusText());
+        addPerfRow("Render Pipeline", buildRenderPipelineText());
+        addPerfRow("Host Address", nonEmpty(streamHost, "--"));
+        addPerfRow("Session Time", buildSessionDurationText());
+        addPerfRow("Network Latency", stats.networkLatencyMs > 0
+                ? stats.networkLatencyMs + " ms / Jitter " + stats.networkLatencyVarianceMs + " ms"
                 : "--");
-        addPerfRow("丢包率", String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
-        addPerfRow("解码延迟", stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
-        addPerfRow("主机延迟", stats.hostProcessingLatencyMs > 0 ? String.format(Locale.US, "%.1f ms", stats.hostProcessingLatencyMs) : "--");
-        addPerfRow("麦克风", micStatus == 1 ? "开启" : "关闭");
-        addPerfRow("游戏震动", buildNativeGameHapticsStatusText());
-        addPerfRow("音频震动", buildAudioHapticsStatusText());
-        addPerfRow("USB手柄", buildUsbControllerStatusText());
+        addPerfRow("Packet Loss", String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
+        addPerfRow("Decode Latency", stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
+        addPerfRow("Host Latency", stats.hostProcessingLatencyMs > 0 ? String.format(Locale.US, "%.1f ms", stats.hostProcessingLatencyMs) : "--");
+        addPerfRow("Microphone", micStatus == 1 ? "On" : "Off");
+        addPerfRow("Game Rumble", buildNativeGameHapticsStatusText());
+        addPerfRow("Audio Haptics", buildAudioHapticsStatusText());
+        addPerfRow("USB Gamepad", buildUsbControllerStatusText());
     }
 
     private void addPerfRow(String label, String value) {
@@ -3950,7 +3950,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildUpscaleStatusText() {
         if (!fsrEnabled) {
-            return "关闭";
+            return "Off";
         }
         return getFsrTargetDisplayName() + " / "
                 + getFsrSharpnessDisplayName() + " / "
@@ -3959,11 +3959,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildRenderPipelineText() {
         if (!glesRenderingEnabled) {
-            return "系统直出";
+            return "System Direct";
         }
         String stereoSuffix = stereo3dEnabled ? " → " + buildStereo3dPerfLabel() : "";
         if (!fsrEnabled) {
-            return "GLES直通" + stereoSuffix;
+            return "GLES Passthrough" + stereoSuffix;
         }
         return (isFsrNativeHdrOutputEnabled() ? "GLES FSR HDR" : "GLES FSR SDR")
                 + stereoSuffix;
@@ -3983,7 +3983,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (controllerHandler != null && controllerHandler.hasActiveUsbController()) {
             String controllerType = controllerHandler.getActiveUsbControllerTypeDisplayName();
             String protocol = controllerHandler.getActiveUsbControllerProtocolDisplayName();
-            StringBuilder status = new StringBuilder("已连接");
+            StringBuilder status = new StringBuilder("Connected");
             if (controllerType != null && !controllerType.isEmpty()) {
                 status.append(" / ").append(controllerType);
             }
@@ -3993,53 +3993,53 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             return status.toString();
         }
         if (!prefConfig.usbDriver) {
-            return "关闭";
+            return "Off";
         }
-        return connectedToUsbDriverService ? "待机" : "未启动";
+        return connectedToUsbDriverService ? "Standby" : "Not Started";
     }
 
     private String buildNativeGameHapticsStatusText() {
         return controllerHandler == null
-                ? "待触发"
+                ? "Idle"
                 : controllerHandler.getNativeGameHapticsOutputRouteDisplayName();
     }
 
     private String buildAudioHapticsStatusText() {
         if (!prefConfig.enableAudioHaptics) {
-            return "关闭";
+            return "Off";
         }
 
         String outputRoute;
         if ("controller".equals(prefConfig.audioHapticsOutputTarget)) {
             outputRoute = controllerHandler == null
-                    ? "待触发"
+                    ? "Idle"
                     : controllerHandler.getAudioHapticsOutputRouteDisplayName();
-            if ("待触发".equals(outputRoute)) {
-                outputRoute += " / 手柄";
+            if ("Idle".equals(outputRoute)) {
+                outputRoute += " / Gamepad";
             }
         }
         else {
             outputRoute = audioRenderer != null && audioRenderer.hasRecentPhoneAudioHapticsOutput()
-                    ? "普通震动 / 手机"
-                    : "待触发 / 手机";
+                    ? "Standard Rumble / Phone"
+                    : "Idle / Phone";
         }
 
         return outputRoute
-                + " / 滤" + getAudioHapticsVoiceFilterDisplayName()
+                + " / Filter " + getAudioHapticsVoiceFilterDisplayName()
                 + " / " + prefConfig.audioHapticsStrength + "%";
     }
 
     private String getAudioHapticsVoiceFilterDisplayName() {
         if ("low".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "低";
+            return "Low";
         }
         if ("medium".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "中";
+            return "Medium";
         }
         if ("high".equals(prefConfig.audioHapticsVoiceFilter)) {
-            return "高";
+            return "High";
         }
-        return "关";
+        return "Off";
     }
 
     private String buildSessionDurationText() {
@@ -4128,7 +4128,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private void applyMicSpan(SpannableString spannable, String text) {
         int start = text.indexOf("Mic");
         if (start < 0) {
-            start = text.indexOf("麦克风");
+            start = text.indexOf("Microphone");
         }
         if (start < 0) {
             return;
@@ -4143,7 +4143,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void onUsbPermissionPromptStarting() {
-        logSessionInfo("USB", "正在请求 USB 手柄授权");
+        logSessionInfo("USB", "Requesting USB gamepad permission");
         usbPermissionPromptVisible = true;
         streamLoadingController.setCancelEnabled(false);
         // Disable PiP auto-enter while the USB permission prompt is on-screen. This prevents
@@ -4154,7 +4154,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void onUsbPermissionPromptCompleted() {
-        logSessionInfo("USB", "USB 手柄授权流程已结束");
+        logSessionInfo("USB", "USB gamepad permission request finished");
         usbPermissionPromptVisible = false;
         streamLoadingController.setCancelEnabled(true);
         suppressPipRefCount--;
@@ -4324,7 +4324,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     //切换虚拟手柄模式
     public void switchVirtualController(KeyBoardController.ControllerMode mode){
         if(virtualController==null||!prefConfig.onscreenController){
-            Toast.makeText(this,"请先打开虚拟手柄开关！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please enable virtual gamepad first!",Toast.LENGTH_SHORT).show();
             return;
         }
         virtualController.switchMode(mode);
@@ -4341,7 +4341,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     //切换虚拟手柄模式
     public void switchVirtualKeyController(KeyBoardController.ControllerMode mode){
         if(keyBoardController==null||!prefConfig.enableKeyboard){
-            Toast.makeText(this,"请先打开虚拟按键开关！",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Please enable virtual controls first!",Toast.LENGTH_SHORT).show();
             return;
         }
         keyBoardController.switchMode(mode);
@@ -4430,7 +4430,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         pendingBackgroundReconnectErrorCode = errorCode;
         backgroundReconnectEligibleUntilElapsedMs = 0L;
         displayedFailureDialog = false;
-        logSessionWarn("CONNECT", "后台期间连接中断，等待回到前台自动恢复, code=" + errorCode);
+        logSessionWarn("CONNECT", "Connection interrupted in background, waiting for foreground auto-resume, code=" + errorCode);
         LimeLog.warning("Background stream interrupted; reconnect will start when Game resumes. code="
                 + errorCode);
 
@@ -4466,7 +4466,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         pendingBackgroundReconnectErrorCode = errorCode;
         displayedFailureDialog = false;
         connecting = false;
-        logSessionWarn("CONNECT", "后台回连失败，准备重试, attempt="
+        logSessionWarn("CONNECT", "Background reconnect failed, retrying, attempt="
                 + backgroundReconnectAttempt + ", code=" + errorCode);
         maybeStartBackgroundReconnect();
     }
@@ -4495,8 +4495,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 R.string.stream_background_reconnecting,
                 nextAttempt,
                 MAX_BACKGROUND_RECONNECT_ATTEMPTS));
-        logSessionInfo("CONNECT", "准备重建串流页面并回连，第 " + nextAttempt + "/"
-                + MAX_BACKGROUND_RECONNECT_ATTEMPTS + " 次");
+        logSessionInfo("CONNECT", "Preparing to rebuild stream view and reconnect, attempt " + nextAttempt + "/"
+                + MAX_BACKGROUND_RECONNECT_ATTEMPTS + "");
         LimeLog.info("Background stream reconnect: scheduling attempt " + nextAttempt + "/"
                 + MAX_BACKGROUND_RECONNECT_ATTEMPTS);
 
@@ -4558,7 +4558,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         streamSessionBackgrounded = true;
         backgroundReconnectEligibleUntilElapsedMs = Long.MAX_VALUE;
-        logSessionInfo("LIFECYCLE", "串流进入后台挂起，保留网络会话");
+        logSessionInfo("LIFECYCLE", "Stream entering background, retaining network session");
         LimeLog.info("Background stream: retaining session while activity is stopped");
 
         decoderRenderer.notifyVideoBackground();
@@ -4619,7 +4619,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         backgroundReconnectEligibleUntilElapsedMs = SystemClock.elapsedRealtime()
                 + BACKGROUND_RECONNECT_GRACE_MS;
         releaseBackgroundStreamWakeLock();
-        logSessionInfo("LIFECYCLE", "渲染表面已恢复，继续原串流会话");
+        logSessionInfo("LIFECYCLE", "Render surface restored, continuing stream session");
 
         if (restoreInputGrabAfterBackground) {
             restoreInputGrabAfterBackground = false;
@@ -4895,7 +4895,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             routeRenderViewToExternalDisplay(display);
         }
         else {
-            logSessionInfo("DISPLAY", "当前未检测到可用的外接显示器，等待热插拔事件");
+            logSessionInfo("DISPLAY", "No external display detected, waiting for hotplug event");
         }
     }
 
@@ -4994,7 +4994,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
         rememberHandsetRenderHost(renderView);
         if (handsetRenderParent == null) {
-            logSessionInfo("DISPLAY", "外屏切换失败：无法确定手机端渲染容器");
+            logSessionInfo("DISPLAY", "External display switch failed: unable to determine phone render container");
             return;
         }
 
@@ -5002,7 +5002,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 new SecondaryDisplayPresentation(this, display);
         newPresentation.setOnDismissListener(dialog -> {
             if (!externalDisplayRoutingDestroyed && presentation == newPresentation) {
-                restoreRenderViewToHandset("外接显示窗口已关闭，displayId="
+                restoreRenderViewToHandset("External display window closed, displayId="
                         + display.getDisplayId());
                 scheduleExternalDisplayAttach();
             }
@@ -5016,13 +5016,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             if (newPresentation.isShowing()) {
                 newPresentation.dismiss();
             }
-            logSessionInfo("DISPLAY", "外屏切换失败：" + e.getMessage());
+            logSessionInfo("DISPLAY", "External display switch failed: " + e.getMessage());
             return;
         }
 
         presentation = newPresentation;
         activeExternalDisplayId = display.getDisplayId();
-        logSessionInfo("DISPLAY", "渲染画面正在迁移到外接显示器：" + describeDisplay(display));
+        logSessionInfo("DISPLAY", "Migrating render surface to external display: " + describeDisplay(display));
 
         configureExternalRenderView(renderView, display, newPresentation);
         ViewParent parent = renderView.getParent();
@@ -5063,11 +5063,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
         configureStereoOutputSize(targetWidth, selectedHeight);
         logSessionInfo("DISPLAY", exactModeSelected
-                ? "外接显示器已请求 " + getStereoOutputSizeLabel() + " "
-                + getStereo3dPackingDisplayName() + "模式"
-                : "外接显示器未暴露 " + targetWidth
-                + "x1080/1200 模式，" + getStereo3dPackingDisplayName()
-                + "将适配实际显示尺寸");
+                ? "External display requested " + getStereoOutputSizeLabel() + " "
+                + getStereo3dPackingDisplayName() + " mode"
+                : "External display does not expose " + targetWidth
+                + "x1080/1200 mode, " + getStereo3dPackingDisplayName()
+                + "adapting to physical display size");
 
         // Some Android vendors expose the physical SBS mode through Display.Mode, but keep
         // the Presentation layer stack at a different logical size. Fill that logical window
@@ -5117,7 +5117,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 ? handsetRenderParent.getChildCount()
                 : Math.min(handsetRenderIndex, handsetRenderParent.getChildCount());
         handsetRenderParent.addView(renderView, insertIndex);
-        logSessionInfo("DISPLAY", reason + "；渲染画面已恢复到手机屏幕");
+        logSessionInfo("DISPLAY", reason + "; render surface restored to phone screen");
     }
 
     private void restoreHandsetRenderConfiguration(View renderView) {
@@ -5204,8 +5204,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String getStereo3dPackingDisplayName() {
         return stereo3dOutputLayout == Stereo3dOutputLayout.HALF_SBS
-                ? "SBS 半宽"
-                : "SBS 全宽";
+                ? "SBS Half"
+                : "SBS Full";
     }
 
     private boolean isFsrEnabled() {
@@ -5234,12 +5234,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String getStereo3dDepthDisplayName() {
         if ("soft".equalsIgnoreCase(prefConfig.stereo3dDepth)) {
-            return "弱";
+            return "Weak";
         }
         if ("strong".equalsIgnoreCase(prefConfig.stereo3dDepth)) {
-            return "强";
+            return "Strong";
         }
-        return "标准";
+        return "Standard";
     }
 
     private float getFsrSharpness() {
@@ -5361,22 +5361,22 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if ("2k".equalsIgnoreCase(target)) {
             return "2K";
         }
-        return "关闭";
+        return "Off";
     }
 
     private String getFsrSharpnessDisplayName() {
         String value = PreferenceManager.getDefaultSharedPreferences(this)
                 .getString("list_fsr_sharpness", "standard");
         if ("soft".equalsIgnoreCase(value)) {
-            return "柔和";
+            return "Soft";
         }
         if ("strong".equalsIgnoreCase(value)) {
-            return "强";
+            return "Strong";
         }
         if ("max".equalsIgnoreCase(value)) {
-            return "极强";
+            return "Ultra Sharp";
         }
-        return "标准";
+        return "Standard";
     }
 
     private boolean isFsrNativeHdrOutputEnabled() {
@@ -5411,8 +5411,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
 
         attemptedConnection = true;
-        logSessionInfo("CONNECT", "渲染表面就绪，开始连接；渲染路径="
-                + (fsrEnabled ? "FSR/GLES" : "GLES直通")
+        logSessionInfo("CONNECT", "Render surface ready, starting connection; render path="
+                + (fsrEnabled ? "FSR/GLES" : "GLES Passthrough")
                 + (stereo3dEnabled
                 ? "/SBS3D " + getStereoOutputSizeLabel()
                 : ""));
@@ -5586,7 +5586,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (micStatus == 1) {
             conn.stopMicUplink();
             micStatus = 0;
-            Toast.makeText(this, "麦克风已关闭", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Microphone disabled", Toast.LENGTH_SHORT).show();
             return;
         }
 

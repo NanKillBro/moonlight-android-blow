@@ -257,7 +257,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private String getRecentHapticsRoute(String route, long outputTimeMs) {
         if (route == null || route.isEmpty() || outputTimeMs <= 0L ||
                 SystemClock.uptimeMillis() - outputTimeMs > HAPTICS_ROUTE_RECENT_MS) {
-            return "待触发";
+            return "Idle";
         }
         return route;
     }
@@ -286,7 +286,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         if (name.contains("kishi")) {
             return "Kishi";
         }
-        return "手柄";
+        return "Gamepad";
     }
 
     private String getUsbControllerTypeDisplayName(AbstractController controller) {
@@ -380,7 +380,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         }
 
         if (!outputDevices.isEmpty()) {
-            markAudioHapticsOutput("普通震动", outputDevices);
+            markAudioHapticsOutput("Standard Rumble", outputDevices);
         }
         return vibrated;
     }
@@ -420,7 +420,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
         if (submitted) {
             if (outputDevices.isEmpty()) {
-                addOutputDevice(outputDevices, "USB手柄");
+                addOutputDevice(outputDevices, "USB Gamepad");
             }
             markAudioHapticsOutput("PCM", outputDevices);
         }
@@ -2752,7 +2752,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             if (!foundMatchingDevice && prefConfig.onscreenController && !prefConfig.onlyL3R3 && PreferenceConfiguration.readPreferences(activityContext).vibrateOsc) {
                 rumbleSingleVibrator(deviceVibrator, lowFreqMotor, highFreqMotor);
                 if (hasRumbleAmplitude(lowFreqMotor, highFreqMotor)) {
-                    addOutputDevice(outputDevices, "手机");
+                    addOutputDevice(outputDevices, "Phone");
                 }
             }
             else if (foundMatchingDevice && !vibrated && prefConfig.vibrateFallbackToDevice) {
@@ -2769,13 +2769,13 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
                 rumbleSingleVibrator(deviceVibrator, lowFreqMotorAdjusted, highFreqMotorAdjusted);
                 if (hasRumbleAmplitude(lowFreqMotorAdjusted, highFreqMotorAdjusted)) {
-                    addOutputDevice(outputDevices, "手机");
+                    addOutputDevice(outputDevices, "Phone");
                 }
             }
         }
 
         if (!outputDevices.isEmpty()) {
-            markNativeGameHapticsOutput("普通震动", outputDevices);
+            markNativeGameHapticsOutput("Standard Rumble", outputDevices);
         }
     }
 

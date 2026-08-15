@@ -360,50 +360,49 @@
     <string name="pacing_smoothness">Prefer smoothest video (may significantly increase latency)</string>
 
 
-    <string name="keyboard_service_label">月光·阿西西物理键盘</string>
-    <string name="accessibility_description_text">此功能仅用于外接实体键盘时，某些系统存在特定的键盘快捷键，此情况会影响串流过程中，无法将相关按键指令传输给目标PC。
-        \n\n月光·阿西西不会观察您输入的文本，也不会收集您的密码、信用卡号或任何其他信息。
-        \n\n请关注：B站-阿西西的日常</string>
+    <string name="keyboard_service_label">Moonlight Physical Keyboard Service</string>
+    <string name="accessibility_description_text">This service is only used when connecting an external physical keyboard to intercept system shortcuts that might otherwise prevent key commands from reaching the host PC.
+        \n\nMoonlight does not monitor your typed text, passwords, credit card numbers, or any personal data.</string>
 
     <!-- In Game menu -->
-    <string name="game_menu_toggle_keyboard">弹出软键盘</string>
-    <string name="game_menu_hud">(显示/隐藏)性能信息</string>
-    <string name="game_menu_switch_mouse_model">鼠标模式切换</string>
-    <string name="game_menu_switch_keyboard_model">(显示/隐藏)特殊按键</string>
-    <string name="game_menu_switch_virtual_model">(显示/隐藏)虚拟手柄</string>
-    <string name="game_menu_switch_virtual_keyboard_model">(显示/隐藏)虚拟全键盘</string>
-    <string name="game_menu_switch_touch_sensitivity_model">(开启/禁用)触控灵敏度</string>
-    <string name="game_menu_switch_touch_sensitivity_update_x">触控灵敏度修改X轴</string>
-    <string name="game_menu_switch_touch_sensitivity_update_y">触控灵敏度修改Y轴</string>
+    <string name="game_menu_toggle_keyboard">On-Screen Keyboard</string>
+    <string name="game_menu_hud">Performance Overlay (Show/Hide)</string>
+    <string name="game_menu_switch_mouse_model">Mouse Mode Switch</string>
+    <string name="game_menu_switch_keyboard_model">Special Keys (Show/Hide)</string>
+    <string name="game_menu_switch_virtual_model">Virtual Gamepad (Show/Hide)</string>
+    <string name="game_menu_switch_virtual_keyboard_model">Full Virtual Keyboard (Show/Hide)</string>
+    <string name="game_menu_switch_touch_sensitivity_model">Touch Sensitivity (Enable/Disable)</string>
+    <string name="game_menu_switch_touch_sensitivity_update_x">Adjust Touch Sensitivity X-Axis</string>
+    <string name="game_menu_switch_touch_sensitivity_update_y">Adjust Touch Sensitivity Y-Axis</string>
 
 
-    <string name="game_menu_gamepad_mouse">手柄键鼠</string>
-    <string name="game_menu_connect_gamepad">请连接手柄后使用</string>
-    <string name="game_menu_gamepad_mouse_enabled">手柄键鼠模式：已开启</string>
-    <string name="game_menu_gamepad_mouse_disabled">手柄键鼠模式：已关闭</string>
-    <string name="game_menu_disconnect">断开连接</string>
-    <string name="game_menu_quit_steaming">退出串流</string>
-    <string name="game_menu_cancel">取消</string>
-    <string name="game_menu_send_keys">发送特殊按键</string>
+    <string name="game_menu_gamepad_mouse">Gamepad Mouse</string>
+    <string name="game_menu_connect_gamepad">Please connect a gamepad first</string>
+    <string name="game_menu_gamepad_mouse_enabled">Gamepad Mouse Mode: Enabled</string>
+    <string name="game_menu_gamepad_mouse_disabled">Gamepad Mouse Mode: Disabled</string>
+    <string name="game_menu_disconnect">Disconnect</string>
+    <string name="game_menu_quit_steaming">Quit Streaming</string>
+    <string name="game_menu_cancel">Cancel</string>
+    <string name="game_menu_send_keys">Send Special Keys</string>
     <string name="game_menu_send_keys_esc">Send ESC</string>
     <string name="game_menu_send_keys_f11">Send F11</string>
     <string name="game_menu_send_keys_alt_f4">Send Alt + F4</string>
-    <string name="game_menu_send_keys_ctrl_v">Send Ctrl + V (粘贴剪切板)</string>
-    <string name="game_menu_send_keys_win">Send Win (打开Windows开始菜单)</string>
-    <string name="game_menu_send_keys_win_d">Send Win + D (返回桌面)</string>
-    <string name="game_menu_send_keys_win_p">Send Win + P (显示器模式)</string>
-    <string name="game_menu_send_keys_alt_b">Send ALT + B (切换HDR)</string>
-    <string name="game_menu_send_keys_win_x_u_s">Send Win + X ~ U + S (睡眠)</string>
-    <string name="game_menu_send_keys_win_x_u_r">Send Win + X ~ U + R (重启)</string>
-    <string name="game_menu_send_keys_win_x_u_u">Send Win + X ~ U + U (关机)</string>
-    <string name="game_menu_send_keys_win_x_u_i">Send Win + X ~ U + I (注销)</string>
-    <string name="game_menu_send_keys_win_g">Send Win + G (打开Xbox Game Bar)</string>
-    <string name="game_menu_send_keys_shift_tab">Send Shift + Tab (打开Steam Overlay)</string>
+    <string name="game_menu_send_keys_ctrl_v">Send Ctrl + V (Paste Clipboard)</string>
+    <string name="game_menu_send_keys_win">Send Win (Open Start Menu)</string>
+    <string name="game_menu_send_keys_win_d">Send Win + D (Show Desktop)</string>
+    <string name="game_menu_send_keys_win_p">Send Win + P (Display Mode)</string>
+    <string name="game_menu_send_keys_alt_b">Send ALT + B (Toggle HDR)</string>
+    <string name="game_menu_send_keys_win_x_u_s">Send Win + X ~ U + S (Sleep)</string>
+    <string name="game_menu_send_keys_win_x_u_r">Send Win + X ~ U + R (Restart)</string>
+    <string name="game_menu_send_keys_win_x_u_u">Send Win + X ~ U + U (Shut Down)</string>
+    <string name="game_menu_send_keys_win_x_u_i">Send Win + X ~ U + I (Sign Out)</string>
+    <string name="game_menu_send_keys_win_g">Send Win + G (Open Xbox Game Bar)</string>
+    <string name="game_menu_send_keys_shift_tab">Send Shift + Tab (Open Steam Overlay)</string>
     <string name="game_menu_send_keys_alt_enter">Send Alt + Enter</string>
-    <string name="game_menu_send_keys_win_shift_left">Send Win + shift + left (切换桌面)</string>
-    <string name="game_menu_send_keys_ctrl_alt_shift_q">Send Ctrl+Alt+Shift+Q (PC退出串流)</string>
-    <string name="game_menu_send_keys_ctrl_alt_shift_f1">Send Ctrl+Alt+Shift+F1 (切换显示器)</string>
-    <string name="game_menu_send_keys_ctrl_alt_shift_f12">Send Ctrl+Alt+Shift+F12 (切换显示器)</string>
+    <string name="game_menu_send_keys_win_shift_left">Send Win + Shift + Left (Switch Desktop)</string>
+    <string name="game_menu_send_keys_ctrl_alt_shift_q">Send Ctrl+Alt+Shift+Q (PC Quit Streaming)</string>
+    <string name="game_menu_send_keys_ctrl_alt_shift_f1">Send Ctrl+Alt+Shift+F1 (Switch Display)</string>
+    <string name="game_menu_send_keys_ctrl_alt_shift_f12">Send Ctrl+Alt+Shift+F12 (Switch Display)</string>
 
 
 
@@ -418,54 +417,53 @@
     <string name="perf_overlay_lite_netdrops">%1$.2f%%</string>
     <string name="perf_overlay_lite_streamdetails">%1$s</string>
     <string name="perf_overlay_lite_fps">%1$.2f</string>
-    <string name="perf_overlay_lite_decoder">解码器： %1$s</string>
+    <string name="perf_overlay_lite_decoder">Decoder: %1$s</string>
 
-    <string name="axi_add_computer_tips">温馨提示：\n1、PC端设备开启N卡GeForce Shield 服务或者安装Sunshine并启用串流服务\n
-        2、如果是默认端口[47989]，无需手动输入，自定义端口需要自行拼接\n
-        3、支持ipv4和ipv6地址 例如：\n
-        ipv4：192.168.1.123\n
-        ipv6：[fd00:6868:6868:0:fd6:e0ea:84d9:70ea]:47989
+    <string name="axi_add_computer_tips">Helpful Tips:\n1. Ensure NVIDIA GeForce Shield service or Sunshine is running on your host PC.\n
+        2. If using the default port [47989], there is no need to enter it manually. Custom ports should be specified.\n
+        3. Supports both IPv4 and IPv6 addresses. Example:\n
+        IPv4: 192.168.1.123\n
+        IPv6: [fd00:6868:6868:0:fd6:e0ea:84d9:70ea]:47989
     </string>
 
-    <string name="axi_question_1">1、手柄测试界面可用，串流游戏中不识别？</string>
-    <string name="axi_question_answer_1">大概率电脑端没有安装虚拟手柄驱动ViGEmBus，在sunshine首页查看是否有相关报错信息.ps:点击网盘资源，内有相关安装文件.
-        \n或者手柄识别为DS4手柄，部分游戏不适配,可在sunshine后台，输入选项卡修改手柄类型为xbox360解决。</string>
+    <string name="axi_question_1">1. Gamepad works in test screen, but is not recognized in stream?</string>
+    <string name="axi_question_answer_1">Most likely ViGEmBus virtual gamepad driver is not installed on the PC. Check Sunshine Web UI home page for errors.
+        \nOr the controller is recognized as DS4 which is unsupported by some games; change controller type to Xbox 360 in Sunshine Web UI > Input tab.</string>
 
-    <string name="axi_question_2">2、串流如何全屏显示？如何息屏游玩？</string>
-    <string name="axi_question_answer_2">使用虚拟显示器或者HDMI欺骗器创建本机相对于分辨率的显示器屏幕.
-        \nHDMI欺骗器需要借助显卡驱动程序创建，设置完成需要设置为主屏幕，sunshine默认捕获主屏幕（可在sunshine后台修改默认捕获屏幕）
-        \n息屏可Win+P或者系统设置-显示器，选择仅显示器1或者2，或者部分sunshine版本后台内置相关无头显示器设置.
-        \n部分sunshine版本自带虚拟显示器，比如Apollo版 ps:点击网盘资源，内有相关安装文件</string>
+    <string name="axi_question_2">2. How to stream in fullscreen or with PC monitor turned off?</string>
+    <string name="axi_question_answer_2">Use a virtual display or HDMI dummy plug matched to your client resolution.
+        \nSet it as primary display in Windows Display Settings (Sunshine captures primary display by default).
+        \nTo turn off host screen, press Win+P and choose Second screen only, or use headless display tools like Apollo/IddSampleDriver.</string>
 
-    <string name="about_get_res"><u>网盘资源</u></string>
-    <string name="about_update_tx"><u>检测更新</u></string>
-    <string name="about_version_history"><u>版本日志</u></string>
-    <string name="about_help"><u>使用帮助</u></string>
-    <string name="credits_sponsored_dialog_title">赞赏</string>
-    <string name="credits_sponsored_dialog_message">如果你愿意支持项目持续更新，可以直接扫码赞赏。非常感谢你的陪伴与鼓励。</string>
-    <string name="game_menu_enable_virtual_mouse">虚拟鼠标</string>
-    <string name="game_menu_disable_virtual_mouse">虚拟鼠标</string>
-    <string name="virtual_mouse_accessibility_hidden">虚拟鼠标已隐藏</string>
-    <string name="virtual_mouse_accessibility_compact">虚拟鼠标，点击展开，拖动可移动</string>
-    <string name="virtual_mouse_accessibility_expanded">虚拟鼠标已展开，包含左右键、滚轮和指针移动区</string>
-    <string name="virtual_mouse_accessibility_scroll">虚拟鼠标方向滚动</string>
-    <string name="video_zoom_enabled_hint">画面缩放已开启：拖动平移，双指缩放，双击复位，轻点左键</string>
-    <string name="video_zoom_disabled">画面缩放已关闭</string>
-    <string name="video_zoom_disabled_retained">画面缩放已关闭，当前画面已保留</string>
-    <string name="video_zoom_accessibility">画面缩放手势区域</string>
+    <string name="about_get_res"><u>Resources</u></string>
+    <string name="about_update_tx"><u>Check for Updates</u></string>
+    <string name="about_version_history"><u>Changelog</u></string>
+    <string name="about_help"><u>Help Guide</u></string>
+    <string name="credits_sponsored_dialog_title">Donate</string>
+    <string name="credits_sponsored_dialog_message">If you would like to support the ongoing development of this project, you can donate. Thank you very much for your encouragement and support.</string>
+    <string name="game_menu_enable_virtual_mouse">Virtual Mouse</string>
+    <string name="game_menu_disable_virtual_mouse">Virtual Mouse</string>
+    <string name="virtual_mouse_accessibility_hidden">Virtual mouse hidden</string>
+    <string name="virtual_mouse_accessibility_compact">Virtual mouse: tap to expand, drag to move</string>
+    <string name="virtual_mouse_accessibility_expanded">Virtual mouse expanded: left/right click, wheel, and pointer area</string>
+    <string name="virtual_mouse_accessibility_scroll">Virtual mouse scroll</string>
+    <string name="video_zoom_enabled_hint">Zoom enabled: Drag to pan, pinch to zoom, double tap to reset, tap to left click</string>
+    <string name="video_zoom_disabled">Zoom disabled</string>
+    <string name="video_zoom_disabled_retained">Zoom disabled, current view retained</string>
+    <string name="video_zoom_accessibility">Video zoom gesture area</string>
     <string name="home_action_settings">Settings</string>
     <string name="home_action_about">About</string>
-    <string name="home_action_back">返回</string>
-    <string name="home_action_support">赞赏</string>
-    <string name="version_history_title">版本日志</string>
-    <string name="version_history_loading">正在读取版本日志…</string>
-    <string name="version_history_empty">暂无版本日志</string>
-    <string name="version_history_load_failed">版本日志加载失败，请稍后重试</string>
-    <string name="version_history_retry">重新加载</string>
-    <string name="version_history_current">当前版本</string>
-    <string name="version_history_latest">最新版本</string>
-    <string name="version_history_unknown">未知版本</string>
-    <string name="version_history_empty_description">暂无更新说明</string>
+    <string name="home_action_back">Back</string>
+    <string name="home_action_support">Donate</string>
+    <string name="version_history_title">Changelog</string>
+    <string name="version_history_loading">Loading changelog…</string>
+    <string name="version_history_empty">No changelog available</string>
+    <string name="version_history_load_failed">Failed to load changelog, please try again later</string>
+    <string name="version_history_retry">Retry</string>
+    <string name="version_history_current">Current Version</string>
+    <string name="version_history_latest">Latest Version</string>
+    <string name="version_history_unknown">Unknown Version</string>
+    <string name="version_history_empty_description">No update notes available</string>
     <string name="version_history_version_format">v%1$s</string>
     <string name="home_action_gamepad">Gamepad tools</string>
     <string name="home_select_host">Controllable devices</string>

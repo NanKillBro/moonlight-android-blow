@@ -89,7 +89,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="随时随地，畅连你的电脑！"
+                    android:text="Connect to your PC anytime, anywhere!"
                     android:layout_marginTop="5dp"
                     android:textColor="@android:color/white"
                     android:textSize="10sp"/>
@@ -97,7 +97,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="版本号：1.0.0"
+                    android:text="Version: 1.0.0"
                     android:textStyle="bold"
                     android:id="@+id/tv_version"
                     android:layout_marginTop="5dp"
@@ -190,7 +190,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="鸣谢"
+                        android:text="Credits"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="13sp"/>
@@ -198,7 +198,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="感谢每一位支持与陪伴的朋友"
+                        android:text="Thanks to all friends who supported and accompanied us"
                         android:textColor="@android:color/white"
                         android:textSize="10sp"/>
 
@@ -235,7 +235,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="更多应用"
+                        android:text="More Apps"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="13sp"/>
@@ -243,7 +243,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="前往开发者个人空间，发现更多应用与作品"
+                        android:text="Visit developer space to explore more apps"
                         android:textColor="@android:color/white"
                         android:textSize="10sp"/>
 
@@ -255,7 +255,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="在这里找到开发者"
+                android:text="Find developer here"
                 android:textStyle="bold"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="20dp"

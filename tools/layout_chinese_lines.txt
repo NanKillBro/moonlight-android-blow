@@ -1,0 +1,497 @@
+
+=== app/src/main/res/layout\activity_about.xml (7 lines) ===
+    92: android:text="随时随地，畅连你的电脑！"
+   100: android:text="版本号：1.0.0"
+   193: android:text="鸣谢"
+   201: android:text="感谢每一位支持与陪伴的朋友"
+   238: android:text="更多应用"
+   246: android:text="前往开发者个人空间，发现更多应用与作品"
+   258: android:text="在这里找到开发者"
+
+=== app/src/main/res/layout\activity_add_computer_manually.xml (2 lines) ===
+    78: android:text="根据svr获取"/>
+    92: android:text="追加Razer雷游端口号"/>
+
+=== app/src/main/res/layout\activity_app_view_new.xml (2 lines) ===
+    23: tools:text="我的电脑"
+    38: android:text="长按选中菜单有更多选项"
+
+=== app/src/main/res/layout\activity_axitest.xml (10 lines) ===
+    19: android:text="测试键盘按键" />
+    27: android:text="测试设备震动" />
+    43: android:text="【开/关】振动重定向" />
+    51: android:text="刷新手柄列表" />
+    67: android:text="测试USB手柄震动" />
+    75: android:text="测试手柄震动" />
+    89: android:text="振幅强度" />
+    97: android:text="停止测试" />
+   107: android:text="安卓设备信息" />
+   116: android:text="点击刷新按钮刷新手柄信息\nUSB手柄测试 设置-勾选覆盖USB驱动"
+
+=== app/src/main/res/layout\activity_credits.xml (5 lines) ===
+    38: android:text="鸣谢"
+    47: android:text="赞赏"
+    82: android:text="感谢一路同行的你们"
+    92: android:text="这份名单献给每一位支持阿西西的朋友，因为你们，项目才得以持续前进。"
+   114: android:text="鸣谢墙"
+
+=== app/src/main/res/layout\activity_game.xml (2 lines) ===
+    86: android:text="性能信息"
+   108: tools:text="延迟/解码：109ms/7ms 丢包率：69% FPS：60"
+
+=== app/src/main/res/layout\activity_stream_logs.xml (3 lines) ===
+    23: android:contentDescription="返回"
+    30: android:text="串流日志"
+    63: android:text="暂无串流日志\n开启采集后，每次串流会生成一份新日志"
+
+=== app/src/main/res/layout\app_grid_item_new.xml (1 lines) ===
+    32: tools:text="我的应用"
+
+=== app/src/main/res/layout\ax_gamepad_top_view.xml (4 lines) ===
+    30: android:text="位移"
+    45: android:text="缩放"
+    60: android:text="禁用"
+    73: android:text="应用"
+
+=== app/src/main/res/layout\axi_keyboard_top_left_view.xml (10 lines) ===
+    20: android:text="当前按钮：xx"
+    28: android:text="键值：xx"
+    36: android:text="坐标：xx"
+    44: android:text="缩放比例：100%"
+    73: android:text="缩放宽度：100%"
+    94: android:text="缩放高度：100%"
+   129: android:text="锁定模式" />
+   139: android:text="方形按钮" />
+   145: android:text="删除"
+   158: android:text="取消"
+
+=== app/src/main/res/layout\axi_keyboard_top_right_view.xml (3 lines) ===
+    34: android:text="新增按钮"
+    46: android:text="重置布局"
+    58: android:text="保存布局"
+
+=== app/src/main/res/layout\dialog_axi_gamepad_ds5.xml (12 lines) ===
+    27: android:text="外设"
+    37: android:text="应用配置"
+    74: android:text="扳机类型"
+    83: android:text="右上角应用配置生效！(每次连接手动执行下)"
+   110: android:text="关闭"
+   124: android:text="阻尼"
+   137: android:text="扳机"
+   150: android:text="自动步枪扳机"
+   163: android:text="震动强度"
+   193: android:text="震动频率"
+   223: android:text="起始位置"
+   253: android:text="结束位置"
+
+=== app/src/main/res/layout\dialog_game_menu.xml (25 lines) ===
+    30: android:text="操作"
+    48: android:text="键盘"
+    65: android:text="桌面"
+    82: android:text="全部窗口"
+   114: android:text="功能与操作"
+   123: android:text="(只对本次串流生效)"
+   173: android:text="断开连接"
+   187: android:text="退出串流"
+   201: android:text="旋转屏幕"
+   214: android:text="性能信息"
+   236: android:text="虚拟手柄"
+   250: android:text="虚拟按键"
+   263: android:text="全键盘"
+   277: android:text="画面缩放"
+   299: android:text="显示器"
+   313: android:text="麦克风"
+   350: android:text="特色功能"
+   369: android:text="鼠标与触控"
+   382: android:text="快捷键"
+   397: android:text="虚拟手柄与按键"
+   411: android:text="显示"
+   425: android:text="外设"
+   439: android:text="音频震动"
+   453: android:text="触控灵敏度"
+   467: android:text="杂项"
+
+=== app/src/main/res/layout\dialog_game_menu_audio_haptics.xml (21 lines) ===
+    29: android:text="音频震动"
+    56: android:text="功能"
+    65: android:text="以下选项开关会保存到配置文件"
+    88: android:text="音频震动（Beta）"
+    97: android:text="把串流音频转换成震动反馈，更适合爆炸、撞击、低频场景"
+   121: android:text="开启"
+   134: android:text="关闭"
+   154: android:text="音频震动输出目标"
+   163: android:text="其中原装DS5有线驱动接管模式，有特殊优化."
+   187: android:text="手机"
+   200: android:text="手柄"
+   210: android:text="保留游戏内手柄震动"
+   234: android:text="开启"
+   247: android:text="关闭"
+   257: android:text="音频震动强度：100%"
+   285: android:text="音频震动语音过滤"
+   294: android:text="降低人声、语音聊天、播报声对震动的触发"
+   318: android:text="关闭"
+   331: android:text="低"
+   344: android:text="中"
+   357: android:text="高"
+
+=== app/src/main/res/layout\dialog_game_menu_control.xml (24 lines) ===
+    27: android:text="外设"
+    37: android:text="应用配置"
+    70: android:text="手柄"
+    78: android:text="以下功能可能需要重新连接手柄生效！"
+   110: android:text="启用月光\nUSB手柄驱动"
+   125: android:text="反转握把\n震动方向"
+   140: android:text="忽略扳机\n默认死区"
+   163: android:text="上报手柄\n电池状态"
+   178: android:text="启用USB驱动\n手柄陀螺仪"
+   193: android:text="握把震动联动\n扳机震动"
+   214: android:text="以下功能需要重新打开串流页面生效！"
+   237: android:text="强制使用\n机身震动"
+   252: android:text="无手柄使用\n设备陀螺仪"
+   267: android:text="兼容NS\n手柄按键"
+   282: android:text="PS5手柄自适应扳机"
+   291: android:text="右上角应用配置生效！(每次连接手动执行下)"
+   318: android:text="关闭"
+   332: android:text="阻尼"
+   345: android:text="扳机"
+   358: android:text="自动步枪扳机"
+   371: android:text="震动强度"
+   401: android:text="震动频率"
+   431: android:text="起始位置"
+   461: android:text="结束位置"
+
+=== app/src/main/res/layout\dialog_game_menu_display.xml (78 lines) ===
+    27: android:text="显示"
+    37: android:text="应用配置"
+    69: android:text="视频信息"
+    77: android:text="应用配置后，页面关闭，需重新打开串流页面生效！"
+    94: android:text="分辨率：1920x1080"
+   104: android:text="\t码率：100 mbps"
+   114: android:text="\t帧率：60 fps"
+   124: android:text="\t方向：横向"
+   135: android:text="\t模式：外接显示器"
+   146: android:text="选项"
+   172: android:text="分辨率"
+   189: android:text="模式切换"
+   200: android:text="宽高交换"
+   211: android:text="方向交换"
+   231: android:text="码率"
+   245: android:text="帧率"
+   258: android:text="解码器"
+   268: android:text="如果主机软件或显卡不支持编解码器选择，则可能会忽略编解码器选择。"
+   294: android:text="自动"
+   360: android:text="重新打开串流页面生效！"
+   386: android:text="开启"
+   400: android:text="关闭"
+   421: android:text="HDR满亮度"
+   431: android:text="HDR模式下可拉满窗口亮度，默认关闭。"
+   457: android:text="开启"
+   470: android:text="关闭"
+   488: android:text="解码低延迟模式Beta"
+   498: android:text="高通8Gen1及以上和联发科9300及以下芯片机型生效！"
+   524: android:text="开启"
+   538: android:text="关闭"
+   553: android:text="渲染模式"
+   563: android:text="GLES渲染支持FSR和画面处理。"
+   589: android:text="系统渲染"
+   602: android:text="GLES渲染"
+   619: android:text="3D输出"
+   630: android:text="支持全宽3840×1080/1200和半宽1920×1080/1200。"
+   656: android:text="关闭"
+   669: android:text="左右全宽"
+   682: android:text="左右半宽"
+   699: android:text="景深强度"
+   724: android:text="弱"
+   737: android:text="标准"
+   750: android:text="强"
+   760: android:text="汇聚位置"
+   785: android:text="近"
+   798: android:text="标准"
+   811: android:text="远"
+   821: android:text="左右眼"
+   846: android:text="正常"
+   859: android:text="交换"
+   875: android:text="FSR 超分"
+   885: android:text="选择超分输出目标，HDR由渲染链路自动处理。"
+   911: android:text="关闭"
+   955: android:text="锐化程度"
+   981: android:text="柔和"
+   994: android:text="标准"
+  1007: android:text="强"
+  1020: android:text="极强"
+  1031: android:text="FSR HDR输出"
+  1056: android:text="SDR映射"
+  1069: android:text="HDR直出"
+  1086: android:text="忽略HDR校验"
+  1096: android:text="重新打开串流页面生效！"
+  1122: android:text="开启"
+  1136: android:text="关闭"
+  1151: android:text="虚拟显示器"
+  1161: android:text="使用sunshine·阿西西、雷蛇雷游生效，兼容Apollo扩展模式"
+  1187: android:text="关闭"
+  1201: android:text="扩展模式"
+  1214: android:text="仅虚拟显示屏"
+  1230: android:text="强制显示模式"
+  1240: android:text="在某些系统(如ColorOS)上启用才能正确设置刷新率/分辨率。"
+  1266: android:text="开启"
+  1280: android:text="关闭"
+  1295: android:text="播放声音"
+  1305: android:text="重新打开串流页面生效！"
+  1331: android:text="本设备发声"
+  1345: android:text="本设备和PC同时发声"
+
+=== app/src/main/res/layout\dialog_game_menu_display_bitrate.xml (7 lines) ===
+    27: android:text="码率"
+    37: android:text="确认"
+    68: android:text="信息"
+    76: android:text="输入码率 单位mbps (只校验非空，别填奇怪的数值)"
+    93: android:text="码率"
+   103: android:hint="请输入码率，最大99999"
+   115: android:text="常用码率"
+
+=== app/src/main/res/layout\dialog_game_menu_display_fps.xml (5 lines) ===
+    27: android:text="帧率"
+    37: android:text="确认"
+    76: android:text="选择合适的帧率，异常帧率可能黑屏。"
+    96: android:hint="请输入帧率"
+   108: android:text="常用帧率"
+
+=== app/src/main/res/layout\dialog_game_menu_display_resolution.xml (11 lines) ===
+    27: android:text="分辨率"
+    37: android:text="确认"
+    68: android:text="信息"
+    76: android:text="输入宽和高 (保存并使用)"
+    93: android:text="宽度"
+   101: android:hint="请输入宽度，比如1920"
+   115: android:text="高度"
+   123: android:hint="请输入高度，比如1080"
+   138: android:text="常用分辨率"
+   213: android:text="本机"
+   226: android:text="自定义分辨率 (长按删除)"
+
+=== app/src/main/res/layout\dialog_game_menu_function.xml (18 lines) ===
+    27: android:text="操作"
+    55: android:text="快捷操作"
+    88: android:text="显示器1"
+   102: android:text="显示器2"
+   116: android:text="显示器3"
+   130: android:text="显示器4"
+   152: android:text="注销"
+   166: android:text="关机"
+   180: android:text="睡眠"
+   194: android:text="重启"
+   216: android:text="任务管理器"
+   230: android:text="发送剪切板"
+   245: android:text="打开剪切板"
+   259: android:text="Win系统设置"
+   281: android:text="我的电脑"
+   295: android:text="移动中心"
+   309: android:text="显示器模式"
+   323: android:text="HDR开关"
+
+=== app/src/main/res/layout\dialog_game_menu_game_pad_add.xml (1 lines) ===
+    23: android:text="手柄按键"
+
+=== app/src/main/res/layout\dialog_game_menu_keyboard_group_add.xml (12 lines) ===
+    23: android:text="组合键"
+    32: android:text="清空"
+    46: android:text="保存"
+    70: android:text="按键名称"
+    81: android:hint="请输入按键名称，不易过长~"
+    91: android:text="组合键值"
+   101: <!--                android:text="阿西西快捷键：AXIX前缀，例如AXIX0(软键盘)，AXIX1(虚拟按键)，AXIX2(虚拟全键盘)，AXIX3(虚拟手柄)，AXIX4(悬浮球)，AXIX5(性能信息),AXIX6(游戏菜单)"-->
+   109: android:hint="请输入1~5个按键"
+   146: android:text="电脑全键盘"
+   158: android:text="数字键盘"
+   170: android:text="鼠标与轮盘按键"
+   182: android:text="功能按键"
+
+=== app/src/main/res/layout\dialog_game_menu_list.xml (2 lines) ===
+    26: android:text="触控模式"
+    36: android:text="新增"
+
+=== app/src/main/res/layout\dialog_game_menu_setting.xml (39 lines) ===
+    27: android:text="杂项"
+    55: android:text="功能"
+    63: android:text="以下选项开关会保存到配置文件"
+    96: android:text="完整性能"
+   109: android:text="悬浮球"
+   122: <!--                        android:text="悬浮球\n打开软键盘"-->
+   135: android:text="悬浮球\n记住位置"
+   148: android:text="设备静音"
+   169: android:text="关闭缩放后\n保留画面"
+   181: android:text="ESC 呼出\n游戏菜单"
+   190: android:text="悬浮球点击操作"
+   212: android:text="游戏菜单"
+   226: android:text="软键盘"
+   239: android:text="全键盘"
+   248: android:text="精简性能信息"
+   269: android:text="显示更多\n扩展参数"
+   282: android:text="点击打开\n游戏菜单"
+   295: android:text="显示震动信息"
+   304: android:text="游戏菜单 摇杆鼠标 快捷键"
+   326: android:text="关闭"
+   340: android:text="开始键【长按】"
+   353: android:text="Xbox键【单击】"
+   366: android:text="视图键【长按】"
+   379: android:text="Z键【单击】"
+   388: android:text="多点触控打开软键盘"
+   410: android:text="关闭"
+   424: android:text="三指"
+   437: android:text="四指"
+   450: android:text="五指"
+   459: android:text="设备震动相关"
+   481: android:text="震动停止方案A"
+   494: android:text="强烈震动"
+   503: android:text="手柄陀螺仪模拟右摇杆 Beta"
+   527: android:text="启用"
+   540: android:text="按下左扳机启用"
+   553: android:text="反转XY轴"
+   562: android:text="强制体感灵敏度：120%"
+   589: android:text="性能信息 缩放：100%"
+   615: android:text="性能信息 边距：4"
+
+=== app/src/main/res/layout\dialog_game_menu_touch.xml (23 lines) ===
+    27: android:text="触控灵敏度"
+    37: android:text="恢复默认"
+    65: android:text="多点触控灵敏度"
+    74: android:text="选项会保存到磁盘中，一直有效！"
+    99: android:text="灵敏度开启"
+   112: android:text="自动回中"
+   126: android:text="全局生效"
+   154: android:text="X轴:100%"
+   178: android:text="Y轴:100%"
+   190: android:text="触控板模式灵敏度（默认启用没有开关）"
+   218: android:text="X轴:100%"
+   243: android:text="Y轴:100%"
+   254: android:text="触控板控件灵敏度（默认启用没有开关）"
+   282: android:text="X轴:100%"
+   306: android:text="Y轴:100%"
+   318: android:text="手柄键鼠模式 鼠标指针灵敏度"
+   346: android:text="灵敏度:100%"
+   358: android:text="虚拟鼠标滚轮移动距离"
+   386: android:text="距离:5"
+   399: android:text="触控板外设灵敏度"
+   428: android:text="X轴:100%"
+   452: android:text="Y轴:100%"
+   476: android:text="滚轮速度:5"
+
+=== app/src/main/res/layout\dialog_game_menu_virtual_gamepad.xml (51 lines) ===
+    27: android:text="虚拟手柄与虚拟按键"
+    37: android:text="更新配置"
+    69: android:text="虚拟手柄"
+    77: android:text="模式切换:需要先打开虚拟手柄开关~"
+   105: android:text="默认"
+   119: android:text="编辑模式"
+   128: android:text="默认布局方案"
+   153: android:text="方案1"
+   166: android:text="方案2"
+   179: android:text="方案3"
+   192: android:text="方案4"
+   204: android:text="方案5"
+   214: <!--                android:text="按键皮肤"-->
+   239: <!--                    android:text="默认"-->
+   252: <!--                    android:text="NS皮肤"-->
+   265: <!--                    android:text="PS皮肤"-->
+   281: android:text="虚拟按键"
+   289: android:text="模式切换:需要先打开虚拟按键开关~"
+   317: android:text="默认"
+   331: android:text="编辑模式"
+   341: android:text="默认布局方案"
+   366: android:text="方案1"
+   379: android:text="方案2"
+   392: android:text="方案3"
+   405: android:text="方案4"
+   417: android:text="方案5"
+   426: <!--                android:text="组合键相关功能"-->
+   444: <!--                android:text="自定义虚拟按键列表"-->
+   453: <!--                android:text="APP内置按键布局文件"-->
+   478: <!--                    android:text="完整"-->
+   491: <!--                    android:text="精简"-->
+   504: <!--                    android:text="空白"-->
+   520: android:text="通用"
+   528: android:text="如果按键布局出现过，点击右上角按钮刷新"
+   552: android:text="按键震动"
+   566: android:text="虚拟手柄震动"
+   583: <!--                    android:text="自由摇杆"-->
+   596: <!--                    android:text="NS皮肤"-->
+   608: <!--                    android:text="方形按钮"-->
+   617: android:text="控件默认模式颜色(手柄与按键通用)"
+   641: android:text="黑色"
+   654: android:text="白色"
+   667: android:text="灰色"
+   677: android:text="控件透明度(手柄与按键通用)"
+   704: android:text="不透明度:100%"
+   716: android:text="全键盘面板透明度"
+   743: android:text="不透明度：100%"
+   755: android:text="全键盘高度"
+   782: android:text="高度:200"
+   793: android:text="虚拟手柄按键缩放"
+   820: android:text="缩放：100%"
+
+=== app/src/main/res/layout\dialog_update_channels.xml (3 lines) ===
+    23: android:text="选择下载渠道"
+    33: android:text="可根据你的习惯选择下载渠道。"
+    65: android:text="取消"
+
+=== app/src/main/res/layout\dialog_update_prompt.xml (7 lines) ===
+    24: android:text="发现新版本"
+    35: android:text="新版本已经准备好了，可以查看更新内容后选择下载。"
+    50: android:text="版本信息"
+    76: android:text="更新内容"
+   113: android:text="跳过本次更新"
+   140: android:text="取消"
+   160: android:text="下载"
+
+=== app/src/main/res/layout\item_game_menu_list.xml (1 lines) ===
+    19: android:text="触控模式"
+
+=== app/src/main/res/layout\item_layout_axixi_keyboard.xml (3 lines) ===
+   210: <!-- 继续更新其他 TextView 的 android:tag 值 -->
+   232: <!-- 以此类推，更新其他 TextView 的 android:tag 值 -->
+   850: android:text="空格"
+
+=== app/src/main/res/layout\item_layout_axixi_keyboard_digitpad.xml (10 lines) ===
+    33: android:text="左键"
+    43: android:text="中键"
+    54: android:text="右键"
+    68: <!-- 第一行 -->
+   120: <!-- 第二行 -->
+   171: <!-- 第三行 -->
+   222: <!-- 第四行 -->
+   256: android:text="回车"
+   417: android:text="滚轮⬆"
+   428: android:text="滚轮⬇"
+
+=== app/src/main/res/layout\item_layout_axixi_keyboard_digitpad_add.xml (5 lines) ===
+    15: <!-- 第一行 -->
+    67: <!-- 第二行 -->
+   118: <!-- 第三行 -->
+   169: <!-- 第四行 -->
+   203: android:text="回车"
+
+=== app/src/main/res/layout\item_layout_axixi_keyboard_mouse.xml (2 lines) ===
+    13: android:text="触控板"
+    23: android:text="常规模式"
+
+=== app/src/main/res/layout\layout_axixi_keyboard.xml (4 lines) ===
+    32: android:text="电脑全键盘"
+    45: android:text="数字键盘"
+    59: android:text="组合键模式"
+    71: android:text="手机软键盘"
+
+=== app/src/main/res/layout-land\activity_app_view_new.xml (2 lines) ===
+    22: tools:text="我的电脑"
+    37: android:text="长按选中菜单有更多选项"
+
+=== app/src/main/res/layout-land\activity_axitest.xml (10 lines) ===
+    25: android:text="测试键盘按键" />
+    33: android:text="测试设备震动" />
+    47: android:text="【开/关】振动重定向" />
+    55: android:text="刷新手柄列表" />
+    71: android:text="测试USB手柄震动" />
+    79: android:text="测试手柄震动" />
+    93: android:text="振幅强度" />
+   101: android:text="取消震动" />
+   112: android:text="安卓设备信息" />
+   128: android:text="点击刷新按钮刷新手柄信息\nUSB手柄测试 设置-勾选覆盖USB驱动"

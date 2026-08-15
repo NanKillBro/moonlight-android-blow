@@ -1,0 +1,830 @@
+Total XML files with non-comment Chinese: 39
+
+=============================
+File: app\src\main\res\layout-land\activity_app_view_new.xml (2 lines)
+=============================
+  Line   22: tools:text="我的电脑"
+  Line   37: android:text="长按选中菜单有更多选项"
+
+=============================
+File: app\src\main\res\layout-land\activity_axitest.xml (10 lines)
+=============================
+  Line   25: android:text="测试键盘按键" />
+  Line   33: android:text="测试设备震动" />
+  Line   47: android:text="【开/关】振动重定向" />
+  Line   55: android:text="刷新手柄列表" />
+  Line   71: android:text="测试USB手柄震动" />
+  Line   79: android:text="测试手柄震动" />
+  Line   93: android:text="振幅强度" />
+  Line  101: android:text="取消震动" />
+  Line  112: android:text="安卓设备信息" />
+  Line  128: android:text="点击刷新按钮刷新手柄信息\nUSB手柄测试 设置-勾选覆盖USB驱动"
+
+=============================
+File: app\src\main\res\layout\activity_about.xml (7 lines)
+=============================
+  Line   92: android:text="随时随地，畅连你的电脑！"
+  Line  100: android:text="版本号：1.0.0"
+  Line  193: android:text="鸣谢"
+  Line  201: android:text="感谢每一位支持与陪伴的朋友"
+  Line  238: android:text="更多应用"
+  Line  246: android:text="前往开发者个人空间，发现更多应用与作品"
+  Line  258: android:text="在这里找到开发者"
+
+=============================
+File: app\src\main\res\layout\activity_add_computer_manually.xml (2 lines)
+=============================
+  Line   78: android:text="根据svr获取"/>
+  Line   92: android:text="追加Razer雷游端口号"/>
+
+=============================
+File: app\src\main\res\layout\activity_app_view_new.xml (2 lines)
+=============================
+  Line   23: tools:text="我的电脑"
+  Line   38: android:text="长按选中菜单有更多选项"
+
+=============================
+File: app\src\main\res\layout\activity_axitest.xml (10 lines)
+=============================
+  Line   19: android:text="测试键盘按键" />
+  Line   27: android:text="测试设备震动" />
+  Line   43: android:text="【开/关】振动重定向" />
+  Line   51: android:text="刷新手柄列表" />
+  Line   67: android:text="测试USB手柄震动" />
+  Line   75: android:text="测试手柄震动" />
+  Line   89: android:text="振幅强度" />
+  Line   97: android:text="停止测试" />
+  Line  107: android:text="安卓设备信息" />
+  Line  116: android:text="点击刷新按钮刷新手柄信息\nUSB手柄测试 设置-勾选覆盖USB驱动"
+
+=============================
+File: app\src\main\res\layout\activity_credits.xml (5 lines)
+=============================
+  Line   38: android:text="鸣谢"
+  Line   47: android:text="赞赏"
+  Line   82: android:text="感谢一路同行的你们"
+  Line   92: android:text="这份名单献给每一位支持阿西西的朋友，因为你们，项目才得以持续前进。"
+  Line  114: android:text="鸣谢墙"
+
+=============================
+File: app\src\main\res\layout\activity_game.xml (2 lines)
+=============================
+  Line   86: android:text="性能信息"
+  Line  108: tools:text="延迟/解码：109ms/7ms 丢包率：69% FPS：60"
+
+=============================
+File: app\src\main\res\layout\activity_stream_logs.xml (3 lines)
+=============================
+  Line   23: android:contentDescription="返回"
+  Line   30: android:text="串流日志"
+  Line   63: android:text="暂无串流日志\n开启采集后，每次串流会生成一份新日志"
+
+=============================
+File: app\src\main\res\layout\app_grid_item_new.xml (1 lines)
+=============================
+  Line   32: tools:text="我的应用"
+
+=============================
+File: app\src\main\res\layout\ax_gamepad_top_view.xml (4 lines)
+=============================
+  Line   30: android:text="位移"
+  Line   45: android:text="缩放"
+  Line   60: android:text="禁用"
+  Line   73: android:text="应用"
+
+=============================
+File: app\src\main\res\layout\axi_keyboard_top_left_view.xml (10 lines)
+=============================
+  Line   20: android:text="当前按钮：xx"
+  Line   28: android:text="键值：xx"
+  Line   36: android:text="坐标：xx"
+  Line   44: android:text="缩放比例：100%"
+  Line   73: android:text="缩放宽度：100%"
+  Line   94: android:text="缩放高度：100%"
+  Line  129: android:text="锁定模式" />
+  Line  139: android:text="方形按钮" />
+  Line  145: android:text="删除"
+  Line  158: android:text="取消"
+
+=============================
+File: app\src\main\res\layout\axi_keyboard_top_right_view.xml (3 lines)
+=============================
+  Line   34: android:text="新增按钮"
+  Line   46: android:text="重置布局"
+  Line   58: android:text="保存布局"
+
+=============================
+File: app\src\main\res\layout\dialog_axi_gamepad_ds5.xml (12 lines)
+=============================
+  Line   27: android:text="外设"
+  Line   37: android:text="应用配置"
+  Line   74: android:text="扳机类型"
+  Line   83: android:text="右上角应用配置生效！(每次连接手动执行下)"
+  Line  110: android:text="关闭"
+  Line  124: android:text="阻尼"
+  Line  137: android:text="扳机"
+  Line  150: android:text="自动步枪扳机"
+  Line  163: android:text="震动强度"
+  Line  193: android:text="震动频率"
+  Line  223: android:text="起始位置"
+  Line  253: android:text="结束位置"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu.xml (25 lines)
+=============================
+  Line   30: android:text="操作"
+  Line   48: android:text="键盘"
+  Line   65: android:text="桌面"
+  Line   82: android:text="全部窗口"
+  Line  114: android:text="功能与操作"
+  Line  123: android:text="(只对本次串流生效)"
+  Line  173: android:text="断开连接"
+  Line  187: android:text="退出串流"
+  Line  201: android:text="旋转屏幕"
+  Line  214: android:text="性能信息"
+  Line  236: android:text="虚拟手柄"
+  Line  250: android:text="虚拟按键"
+  Line  263: android:text="全键盘"
+  Line  277: android:text="画面缩放"
+  Line  299: android:text="显示器"
+  Line  313: android:text="麦克风"
+  Line  350: android:text="特色功能"
+  Line  369: android:text="鼠标与触控"
+  Line  382: android:text="快捷键"
+  Line  397: android:text="虚拟手柄与按键"
+  Line  411: android:text="显示"
+  Line  425: android:text="外设"
+  Line  439: android:text="音频震动"
+  Line  453: android:text="触控灵敏度"
+  Line  467: android:text="杂项"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_audio_haptics.xml (21 lines)
+=============================
+  Line   29: android:text="音频震动"
+  Line   56: android:text="功能"
+  Line   65: android:text="以下选项开关会保存到配置文件"
+  Line   88: android:text="音频震动（Beta）"
+  Line   97: android:text="把串流音频转换成震动反馈，更适合爆炸、撞击、低频场景"
+  Line  121: android:text="开启"
+  Line  134: android:text="关闭"
+  Line  154: android:text="音频震动输出目标"
+  Line  163: android:text="其中原装DS5有线驱动接管模式，有特殊优化."
+  Line  187: android:text="手机"
+  Line  200: android:text="手柄"
+  Line  210: android:text="保留游戏内手柄震动"
+  Line  234: android:text="开启"
+  Line  247: android:text="关闭"
+  Line  257: android:text="音频震动强度：100%"
+  Line  285: android:text="音频震动语音过滤"
+  Line  294: android:text="降低人声、语音聊天、播报声对震动的触发"
+  Line  318: android:text="关闭"
+  Line  331: android:text="低"
+  Line  344: android:text="中"
+  Line  357: android:text="高"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_control.xml (24 lines)
+=============================
+  Line   27: android:text="外设"
+  Line   37: android:text="应用配置"
+  Line   70: android:text="手柄"
+  Line   78: android:text="以下功能可能需要重新连接手柄生效！"
+  Line  110: android:text="启用月光\nUSB手柄驱动"
+  Line  125: android:text="反转握把\n震动方向"
+  Line  140: android:text="忽略扳机\n默认死区"
+  Line  163: android:text="上报手柄\n电池状态"
+  Line  178: android:text="启用USB驱动\n手柄陀螺仪"
+  Line  193: android:text="握把震动联动\n扳机震动"
+  Line  214: android:text="以下功能需要重新打开串流页面生效！"
+  Line  237: android:text="强制使用\n机身震动"
+  Line  252: android:text="无手柄使用\n设备陀螺仪"
+  Line  267: android:text="兼容NS\n手柄按键"
+  Line  282: android:text="PS5手柄自适应扳机"
+  Line  291: android:text="右上角应用配置生效！(每次连接手动执行下)"
+  Line  318: android:text="关闭"
+  Line  332: android:text="阻尼"
+  Line  345: android:text="扳机"
+  Line  358: android:text="自动步枪扳机"
+  Line  371: android:text="震动强度"
+  Line  401: android:text="震动频率"
+  Line  431: android:text="起始位置"
+  Line  461: android:text="结束位置"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_display.xml (78 lines)
+=============================
+  Line   27: android:text="显示"
+  Line   37: android:text="应用配置"
+  Line   69: android:text="视频信息"
+  Line   77: android:text="应用配置后，页面关闭，需重新打开串流页面生效！"
+  Line   94: android:text="分辨率：1920x1080"
+  Line  104: android:text="\t码率：100 mbps"
+  Line  114: android:text="\t帧率：60 fps"
+  Line  124: android:text="\t方向：横向"
+  Line  135: android:text="\t模式：外接显示器"
+  Line  146: android:text="选项"
+  Line  172: android:text="分辨率"
+  Line  189: android:text="模式切换"
+  Line  200: android:text="宽高交换"
+  Line  211: android:text="方向交换"
+  Line  231: android:text="码率"
+  Line  245: android:text="帧率"
+  Line  258: android:text="解码器"
+  Line  268: android:text="如果主机软件或显卡不支持编解码器选择，则可能会忽略编解码器选择。"
+  Line  294: android:text="自动"
+  Line  360: android:text="重新打开串流页面生效！"
+  Line  386: android:text="开启"
+  Line  400: android:text="关闭"
+  Line  421: android:text="HDR满亮度"
+  Line  431: android:text="HDR模式下可拉满窗口亮度，默认关闭。"
+  Line  457: android:text="开启"
+  Line  470: android:text="关闭"
+  Line  488: android:text="解码低延迟模式Beta"
+  Line  498: android:text="高通8Gen1及以上和联发科9300及以下芯片机型生效！"
+  Line  524: android:text="开启"
+  Line  538: android:text="关闭"
+  Line  553: android:text="渲染模式"
+  Line  563: android:text="GLES渲染支持FSR和画面处理。"
+  Line  589: android:text="系统渲染"
+  Line  602: android:text="GLES渲染"
+  Line  619: android:text="3D输出"
+  Line  630: android:text="支持全宽3840×1080/1200和半宽1920×1080/1200。"
+  Line  656: android:text="关闭"
+  Line  669: android:text="左右全宽"
+  Line  682: android:text="左右半宽"
+  Line  699: android:text="景深强度"
+  Line  724: android:text="弱"
+  Line  737: android:text="标准"
+  Line  750: android:text="强"
+  Line  760: android:text="汇聚位置"
+  Line  785: android:text="近"
+  Line  798: android:text="标准"
+  Line  811: android:text="远"
+  Line  821: android:text="左右眼"
+  Line  846: android:text="正常"
+  Line  859: android:text="交换"
+  Line  875: android:text="FSR 超分"
+  Line  885: android:text="选择超分输出目标，HDR由渲染链路自动处理。"
+  Line  911: android:text="关闭"
+  Line  955: android:text="锐化程度"
+  Line  981: android:text="柔和"
+  Line  994: android:text="标准"
+  Line 1007: android:text="强"
+  Line 1020: android:text="极强"
+  Line 1031: android:text="FSR HDR输出"
+  Line 1056: android:text="SDR映射"
+  Line 1069: android:text="HDR直出"
+  Line 1086: android:text="忽略HDR校验"
+  Line 1096: android:text="重新打开串流页面生效！"
+  Line 1122: android:text="开启"
+  Line 1136: android:text="关闭"
+  Line 1151: android:text="虚拟显示器"
+  Line 1161: android:text="使用sunshine·阿西西、雷蛇雷游生效，兼容Apollo扩展模式"
+  Line 1187: android:text="关闭"
+  Line 1201: android:text="扩展模式"
+  Line 1214: android:text="仅虚拟显示屏"
+  Line 1230: android:text="强制显示模式"
+  Line 1240: android:text="在某些系统(如ColorOS)上启用才能正确设置刷新率/分辨率。"
+  Line 1266: android:text="开启"
+  Line 1280: android:text="关闭"
+  Line 1295: android:text="播放声音"
+  Line 1305: android:text="重新打开串流页面生效！"
+  Line 1331: android:text="本设备发声"
+  Line 1345: android:text="本设备和PC同时发声"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_display_bitrate.xml (7 lines)
+=============================
+  Line   27: android:text="码率"
+  Line   37: android:text="确认"
+  Line   68: android:text="信息"
+  Line   76: android:text="输入码率 单位mbps (只校验非空，别填奇怪的数值)"
+  Line   93: android:text="码率"
+  Line  103: android:hint="请输入码率，最大99999"
+  Line  115: android:text="常用码率"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_display_fps.xml (5 lines)
+=============================
+  Line   27: android:text="帧率"
+  Line   37: android:text="确认"
+  Line   76: android:text="选择合适的帧率，异常帧率可能黑屏。"
+  Line   96: android:hint="请输入帧率"
+  Line  108: android:text="常用帧率"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_display_resolution.xml (11 lines)
+=============================
+  Line   27: android:text="分辨率"
+  Line   37: android:text="确认"
+  Line   68: android:text="信息"
+  Line   76: android:text="输入宽和高 (保存并使用)"
+  Line   93: android:text="宽度"
+  Line  101: android:hint="请输入宽度，比如1920"
+  Line  115: android:text="高度"
+  Line  123: android:hint="请输入高度，比如1080"
+  Line  138: android:text="常用分辨率"
+  Line  213: android:text="本机"
+  Line  226: android:text="自定义分辨率 (长按删除)"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_function.xml (18 lines)
+=============================
+  Line   27: android:text="操作"
+  Line   55: android:text="快捷操作"
+  Line   88: android:text="显示器1"
+  Line  102: android:text="显示器2"
+  Line  116: android:text="显示器3"
+  Line  130: android:text="显示器4"
+  Line  152: android:text="注销"
+  Line  166: android:text="关机"
+  Line  180: android:text="睡眠"
+  Line  194: android:text="重启"
+  Line  216: android:text="任务管理器"
+  Line  230: android:text="发送剪切板"
+  Line  245: android:text="打开剪切板"
+  Line  259: android:text="Win系统设置"
+  Line  281: android:text="我的电脑"
+  Line  295: android:text="移动中心"
+  Line  309: android:text="显示器模式"
+  Line  323: android:text="HDR开关"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_game_pad_add.xml (1 lines)
+=============================
+  Line   23: android:text="手柄按键"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_keyboard_group_add.xml (11 lines)
+=============================
+  Line   23: android:text="组合键"
+  Line   32: android:text="清空"
+  Line   46: android:text="保存"
+  Line   70: android:text="按键名称"
+  Line   81: android:hint="请输入按键名称，不易过长~"
+  Line   91: android:text="组合键值"
+  Line  109: android:hint="请输入1~5个按键"
+  Line  146: android:text="电脑全键盘"
+  Line  158: android:text="数字键盘"
+  Line  170: android:text="鼠标与轮盘按键"
+  Line  182: android:text="功能按键"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_list.xml (2 lines)
+=============================
+  Line   26: android:text="触控模式"
+  Line   36: android:text="新增"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_setting.xml (38 lines)
+=============================
+  Line   27: android:text="杂项"
+  Line   55: android:text="功能"
+  Line   63: android:text="以下选项开关会保存到配置文件"
+  Line   96: android:text="完整性能"
+  Line  109: android:text="悬浮球"
+  Line  135: android:text="悬浮球\n记住位置"
+  Line  148: android:text="设备静音"
+  Line  169: android:text="关闭缩放后\n保留画面"
+  Line  181: android:text="ESC 呼出\n游戏菜单"
+  Line  190: android:text="悬浮球点击操作"
+  Line  212: android:text="游戏菜单"
+  Line  226: android:text="软键盘"
+  Line  239: android:text="全键盘"
+  Line  248: android:text="精简性能信息"
+  Line  269: android:text="显示更多\n扩展参数"
+  Line  282: android:text="点击打开\n游戏菜单"
+  Line  295: android:text="显示震动信息"
+  Line  304: android:text="游戏菜单 摇杆鼠标 快捷键"
+  Line  326: android:text="关闭"
+  Line  340: android:text="开始键【长按】"
+  Line  353: android:text="Xbox键【单击】"
+  Line  366: android:text="视图键【长按】"
+  Line  379: android:text="Z键【单击】"
+  Line  388: android:text="多点触控打开软键盘"
+  Line  410: android:text="关闭"
+  Line  424: android:text="三指"
+  Line  437: android:text="四指"
+  Line  450: android:text="五指"
+  Line  459: android:text="设备震动相关"
+  Line  481: android:text="震动停止方案A"
+  Line  494: android:text="强烈震动"
+  Line  503: android:text="手柄陀螺仪模拟右摇杆 Beta"
+  Line  527: android:text="启用"
+  Line  540: android:text="按下左扳机启用"
+  Line  553: android:text="反转XY轴"
+  Line  562: android:text="强制体感灵敏度：120%"
+  Line  589: android:text="性能信息 缩放：100%"
+  Line  615: android:text="性能信息 边距：4"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_touch.xml (23 lines)
+=============================
+  Line   27: android:text="触控灵敏度"
+  Line   37: android:text="恢复默认"
+  Line   65: android:text="多点触控灵敏度"
+  Line   74: android:text="选项会保存到磁盘中，一直有效！"
+  Line   99: android:text="灵敏度开启"
+  Line  112: android:text="自动回中"
+  Line  126: android:text="全局生效"
+  Line  154: android:text="X轴:100%"
+  Line  178: android:text="Y轴:100%"
+  Line  190: android:text="触控板模式灵敏度（默认启用没有开关）"
+  Line  218: android:text="X轴:100%"
+  Line  243: android:text="Y轴:100%"
+  Line  254: android:text="触控板控件灵敏度（默认启用没有开关）"
+  Line  282: android:text="X轴:100%"
+  Line  306: android:text="Y轴:100%"
+  Line  318: android:text="手柄键鼠模式 鼠标指针灵敏度"
+  Line  346: android:text="灵敏度:100%"
+  Line  358: android:text="虚拟鼠标滚轮移动距离"
+  Line  386: android:text="距离:5"
+  Line  399: android:text="触控板外设灵敏度"
+  Line  428: android:text="X轴:100%"
+  Line  452: android:text="Y轴:100%"
+  Line  476: android:text="滚轮速度:5"
+
+=============================
+File: app\src\main\res\layout\dialog_game_menu_virtual_gamepad.xml (38 lines)
+=============================
+  Line   27: android:text="虚拟手柄与虚拟按键"
+  Line   37: android:text="更新配置"
+  Line   69: android:text="虚拟手柄"
+  Line   77: android:text="模式切换:需要先打开虚拟手柄开关~"
+  Line  105: android:text="默认"
+  Line  119: android:text="编辑模式"
+  Line  128: android:text="默认布局方案"
+  Line  153: android:text="方案1"
+  Line  166: android:text="方案2"
+  Line  179: android:text="方案3"
+  Line  192: android:text="方案4"
+  Line  204: android:text="方案5"
+  Line  281: android:text="虚拟按键"
+  Line  289: android:text="模式切换:需要先打开虚拟按键开关~"
+  Line  317: android:text="默认"
+  Line  331: android:text="编辑模式"
+  Line  341: android:text="默认布局方案"
+  Line  366: android:text="方案1"
+  Line  379: android:text="方案2"
+  Line  392: android:text="方案3"
+  Line  405: android:text="方案4"
+  Line  417: android:text="方案5"
+  Line  520: android:text="通用"
+  Line  528: android:text="如果按键布局出现过，点击右上角按钮刷新"
+  Line  552: android:text="按键震动"
+  Line  566: android:text="虚拟手柄震动"
+  Line  617: android:text="控件默认模式颜色(手柄与按键通用)"
+  Line  641: android:text="黑色"
+  Line  654: android:text="白色"
+  Line  667: android:text="灰色"
+  Line  677: android:text="控件透明度(手柄与按键通用)"
+  Line  704: android:text="不透明度:100%"
+  Line  716: android:text="全键盘面板透明度"
+  Line  743: android:text="不透明度：100%"
+  Line  755: android:text="全键盘高度"
+  Line  782: android:text="高度:200"
+  Line  793: android:text="虚拟手柄按键缩放"
+  Line  820: android:text="缩放：100%"
+
+=============================
+File: app\src\main\res\layout\dialog_update_channels.xml (3 lines)
+=============================
+  Line   23: android:text="选择下载渠道"
+  Line   33: android:text="可根据你的习惯选择下载渠道。"
+  Line   65: android:text="取消"
+
+=============================
+File: app\src\main\res\layout\dialog_update_prompt.xml (7 lines)
+=============================
+  Line   24: android:text="发现新版本"
+  Line   35: android:text="新版本已经准备好了，可以查看更新内容后选择下载。"
+  Line   50: android:text="版本信息"
+  Line   76: android:text="更新内容"
+  Line  113: android:text="跳过本次更新"
+  Line  140: android:text="取消"
+  Line  160: android:text="下载"
+
+=============================
+File: app\src\main\res\layout\item_game_menu_list.xml (1 lines)
+=============================
+  Line   19: android:text="触控模式"
+
+=============================
+File: app\src\main\res\layout\item_layout_axixi_keyboard.xml (1 lines)
+=============================
+  Line  850: android:text="空格"
+
+=============================
+File: app\src\main\res\layout\item_layout_axixi_keyboard_digitpad.xml (6 lines)
+=============================
+  Line   33: android:text="左键"
+  Line   43: android:text="中键"
+  Line   54: android:text="右键"
+  Line  256: android:text="回车"
+  Line  417: android:text="滚轮⬆"
+  Line  428: android:text="滚轮⬇"
+
+=============================
+File: app\src\main\res\layout\item_layout_axixi_keyboard_digitpad_add.xml (1 lines)
+=============================
+  Line  203: android:text="回车"
+
+=============================
+File: app\src\main\res\layout\item_layout_axixi_keyboard_mouse.xml (2 lines)
+=============================
+  Line   13: android:text="触控板"
+  Line   23: android:text="常规模式"
+
+=============================
+File: app\src\main\res\layout\layout_axixi_keyboard.xml (4 lines)
+=============================
+  Line   32: android:text="电脑全键盘"
+  Line   45: android:text="数字键盘"
+  Line   59: android:text="组合键模式"
+  Line   71: android:text="手机软键盘"
+
+=============================
+File: app\src\main\res\values\arrays.xml (51 lines)
+=============================
+  Line   36: <item>系统渲染</item>
+  Line   37: <item>GLES渲染</item>
+  Line   45: <item>关闭</item>
+  Line   46: <item>左右全宽</item>
+  Line   47: <item>左右半宽</item>
+  Line   56: <item>弱</item>
+  Line   57: <item>标准</item>
+  Line   58: <item>强</item>
+  Line   67: <item>近</item>
+  Line   68: <item>标准</item>
+  Line   69: <item>远</item>
+  Line   78: <item>关闭</item>
+  Line   89: <item>柔和</item>
+  Line   90: <item>标准</item>
+  Line   91: <item>强</item>
+  Line   92: <item>极强</item>
+  Line  102: <item>兼容 SDR 映射</item>
+  Line  103: <item>原生 HDR 直出</item>
+  Line  122: <item>关闭</item>
+  Line  123: <item>低</item>
+  Line  124: <item>中</item>
+  Line  125: <item>高</item>
+  Line  135: <item>手机</item>
+  Line  136: <item>手柄</item>
+  Line  148: <item>日本語</item>
+  Line  151: <item>中文(简体)</item>
+  Line  152: <item>中文(繁體)</item>
+  Line  234: <item>方案1</item>
+  Line  235: <item>方案2</item>
+  Line  236: <item>方案3</item>
+  Line  237: <item>方案4</item>
+  Line  238: <item>方案5</item>
+  Line  249: <item>多点触控模式</item>
+  Line  250: <item>普通鼠标模式</item>
+  Line  251: <item>触控板模式</item>
+  Line  252: <item>禁用鼠标/触控</item>
+  Line  253: <item>普通鼠标「左右键互换」</item>
+  Line  254: <item>触控板「仅移动」</item>
+  Line  255: <item>触控板「移动+左键点击」</item>
+  Line  270: <item>默认居中</item>
+  Line  271: <item>顶部居中</item>
+  Line  272: <item>顶部居左</item>
+  Line  273: <item>顶部居右</item>
+  Line  274: <item>底部居中</item>
+  Line  275: <item>底部居左</item>
+  Line  276: <item>底部居右</item>
+  Line  290: <item>方案1</item>
+  Line  291: <item>方案2</item>
+  Line  292: <item>方案3</item>
+  Line  293: <item>方案4</item>
+  Line  294: <item>方案5</item>
+
+=============================
+File: app\src\main\res\values\strings.xml (75 lines)
+=============================
+  Line  363: <string name="keyboard_service_label">月光·阿西西物理键盘</string>
+  Line  364: <string name="accessibility_description_text">此功能仅用于外接实体键盘时，某些系统存在特定的键盘快捷键，此情况会影响串流过程中，无法将相关按键指令传输给目标PC。
+  Line  365: \n\n月光·阿西西不会观察您输入的文本，也不会收集您的密码、信用卡号或任何其他信息。
+  Line  366: \n\n请关注：B站-阿西西的日常</string>
+  Line  369: <string name="game_menu_toggle_keyboard">弹出软键盘</string>
+  Line  370: <string name="game_menu_hud">(显示/隐藏)性能信息</string>
+  Line  371: <string name="game_menu_switch_mouse_model">鼠标模式切换</string>
+  Line  372: <string name="game_menu_switch_keyboard_model">(显示/隐藏)特殊按键</string>
+  Line  373: <string name="game_menu_switch_virtual_model">(显示/隐藏)虚拟手柄</string>
+  Line  374: <string name="game_menu_switch_virtual_keyboard_model">(显示/隐藏)虚拟全键盘</string>
+  Line  375: <string name="game_menu_switch_touch_sensitivity_model">(开启/禁用)触控灵敏度</string>
+  Line  376: <string name="game_menu_switch_touch_sensitivity_update_x">触控灵敏度修改X轴</string>
+  Line  377: <string name="game_menu_switch_touch_sensitivity_update_y">触控灵敏度修改Y轴</string>
+  Line  380: <string name="game_menu_gamepad_mouse">手柄键鼠</string>
+  Line  381: <string name="game_menu_connect_gamepad">请连接手柄后使用</string>
+  Line  382: <string name="game_menu_gamepad_mouse_enabled">手柄键鼠模式：已开启</string>
+  Line  383: <string name="game_menu_gamepad_mouse_disabled">手柄键鼠模式：已关闭</string>
+  Line  384: <string name="game_menu_disconnect">断开连接</string>
+  Line  385: <string name="game_menu_quit_steaming">退出串流</string>
+  Line  386: <string name="game_menu_cancel">取消</string>
+  Line  387: <string name="game_menu_send_keys">发送特殊按键</string>
+  Line  391: <string name="game_menu_send_keys_ctrl_v">Send Ctrl + V (粘贴剪切板)</string>
+  Line  392: <string name="game_menu_send_keys_win">Send Win (打开Windows开始菜单)</string>
+  Line  393: <string name="game_menu_send_keys_win_d">Send Win + D (返回桌面)</string>
+  Line  394: <string name="game_menu_send_keys_win_p">Send Win + P (显示器模式)</string>
+  Line  395: <string name="game_menu_send_keys_alt_b">Send ALT + B (切换HDR)</string>
+  Line  396: <string name="game_menu_send_keys_win_x_u_s">Send Win + X ~ U + S (睡眠)</string>
+  Line  397: <string name="game_menu_send_keys_win_x_u_r">Send Win + X ~ U + R (重启)</string>
+  Line  398: <string name="game_menu_send_keys_win_x_u_u">Send Win + X ~ U + U (关机)</string>
+  Line  399: <string name="game_menu_send_keys_win_x_u_i">Send Win + X ~ U + I (注销)</string>
+  Line  400: <string name="game_menu_send_keys_win_g">Send Win + G (打开Xbox Game Bar)</string>
+  Line  401: <string name="game_menu_send_keys_shift_tab">Send Shift + Tab (打开Steam Overlay)</string>
+  Line  403: <string name="game_menu_send_keys_win_shift_left">Send Win + shift + left (切换桌面)</string>
+  Line  404: <string name="game_menu_send_keys_ctrl_alt_shift_q">Send Ctrl+Alt+Shift+Q (PC退出串流)</string>
+  Line  405: <string name="game_menu_send_keys_ctrl_alt_shift_f1">Send Ctrl+Alt+Shift+F1 (切换显示器)</string>
+  Line  406: <string name="game_menu_send_keys_ctrl_alt_shift_f12">Send Ctrl+Alt+Shift+F12 (切换显示器)</string>
+  Line  421: <string name="perf_overlay_lite_decoder">解码器： %1$s</string>
+  Line  423: <string name="axi_add_computer_tips">温馨提示：\n1、PC端设备开启N卡GeForce Shield 服务或者安装Sunshine并启用串流服务\n
+  Line  424: 2、如果是默认端口[47989]，无需手动输入，自定义端口需要自行拼接\n
+  Line  425: 3、支持ipv4和ipv6地址 例如：\n
+  Line  430: <string name="axi_question_1">1、手柄测试界面可用，串流游戏中不识别？</string>
+  Line  431: <string name="axi_question_answer_1">大概率电脑端没有安装虚拟手柄驱动ViGEmBus，在sunshine首页查看是否有相关报错信息.ps:点击网盘资源，内有相关安装文件.
+  Line  432: \n或者手柄识别为DS4手柄，部分游戏不适配,可在sunshine后台，输入选项卡修改手柄类型为xbox360解决。</string>
+  Line  434: <string name="axi_question_2">2、串流如何全屏显示？如何息屏游玩？</string>
+  Line  435: <string name="axi_question_answer_2">使用虚拟显示器或者HDMI欺骗器创建本机相对于分辨率的显示器屏幕.
+  Line  436: \nHDMI欺骗器需要借助显卡驱动程序创建，设置完成需要设置为主屏幕，sunshine默认捕获主屏幕（可在sunshine后台修改默认捕获屏幕）
+  Line  437: \n息屏可Win+P或者系统设置-显示器，选择仅显示器1或者2，或者部分sunshine版本后台内置相关无头显示器设置.
+  Line  438: \n部分sunshine版本自带虚拟显示器，比如Apollo版 ps:点击网盘资源，内有相关安装文件</string>
+  Line  440: <string name="about_get_res"><u>网盘资源</u></string>
+  Line  441: <string name="about_update_tx"><u>检测更新</u></string>
+  Line  442: <string name="about_version_history"><u>版本日志</u></string>
+  Line  443: <string name="about_help"><u>使用帮助</u></string>
+  Line  444: <string name="credits_sponsored_dialog_title">赞赏</string>
+  Line  445: <string name="credits_sponsored_dialog_message">如果你愿意支持项目持续更新，可以直接扫码赞赏。非常感谢你的陪伴与鼓励。</string>
+  Line  446: <string name="game_menu_enable_virtual_mouse">虚拟鼠标</string>
+  Line  447: <string name="game_menu_disable_virtual_mouse">虚拟鼠标</string>
+  Line  448: <string name="virtual_mouse_accessibility_hidden">虚拟鼠标已隐藏</string>
+  Line  449: <string name="virtual_mouse_accessibility_compact">虚拟鼠标，点击展开，拖动可移动</string>
+  Line  450: <string name="virtual_mouse_accessibility_expanded">虚拟鼠标已展开，包含左右键、滚轮和指针移动区</string>
+  Line  451: <string name="virtual_mouse_accessibility_scroll">虚拟鼠标方向滚动</string>
+  Line  452: <string name="video_zoom_enabled_hint">画面缩放已开启：拖动平移，双指缩放，双击复位，轻点左键</string>
+  Line  453: <string name="video_zoom_disabled">画面缩放已关闭</string>
+  Line  454: <string name="video_zoom_disabled_retained">画面缩放已关闭，当前画面已保留</string>
+  Line  455: <string name="video_zoom_accessibility">画面缩放手势区域</string>
+  Line  458: <string name="home_action_back">返回</string>
+  Line  459: <string name="home_action_support">赞赏</string>
+  Line  460: <string name="version_history_title">版本日志</string>
+  Line  461: <string name="version_history_loading">正在读取版本日志…</string>
+  Line  462: <string name="version_history_empty">暂无版本日志</string>
+  Line  463: <string name="version_history_load_failed">版本日志加载失败，请稍后重试</string>
+  Line  464: <string name="version_history_retry">重新加载</string>
+  Line  465: <string name="version_history_current">当前版本</string>
+  Line  466: <string name="version_history_latest">最新版本</string>
+  Line  467: <string name="version_history_unknown">未知版本</string>
+  Line  468: <string name="version_history_empty_description">暂无更新说明</string>
+
+=============================
+File: app\src\main\res\xml\preferences.xml (147 lines)
+=============================
+  Line   37: android:dialogTitle="输入视频码率Mbps"
+  Line   38: android:summary="如果你感觉Seek控件滑动不太好用，可以选择手动输入。\n超过Seek滑动最大值，可能不显示但是串流时是生效的~"
+  Line   39: android:dialogMessage="请输入数字，小数点只能识别到x.5，超过会四舍五入~"
+  Line   40: android:title="强制设置视频码率（覆盖上方滑动码率）" />
+  Line   52: android:title="优化解码低延迟模式(Beta)"
+  Line   53: android:summary="(实验性) 高通8Gen1及以上和联发科9300及以下芯片机型生效。"
+  Line   58: android:title="小米玄戒 O1 优化"
+  Line   59: android:summary="仅小米玄戒 O1 机型生效，启用后使用专属解码兼容与低延迟优化；关闭则保持原逻辑。"
+  Line   64: android:title="渲染模式"
+  Line   67: android:summary="GLES 渲染支持 FSR 和画面处理功能。"
+  Line   72: android:title="3D输出"
+  Line   75: android:summary="全宽输出3840×1080/1200，半宽输出1920×1080/1200；仅支持GLES渲染。"
+  Line   80: android:title="3D景深"
+  Line   83: android:summary="控制左右眼最大视差，建议从标准开始。"
+  Line   88: android:title="3D汇聚"
+  Line   91: android:summary="调整画面位于屏幕前后的基准位置。"
+  Line   96: android:title="交换左右眼"
+  Line   97: android:summary="当远近关系相反或眼镜眼序不一致时开启。"
+  Line  102: android:title="超分目标"
+  Line  105: android:summary="GLES 渲染下启用 FSR 超分到 2K 或 4K。"
+  Line  111: android:title="锐化程度"
+  Line  114: android:summary="仅在启用 FSR 超分时生效，数值越高边缘越锐利。"
+  Line  120: android:title="FSR HDR输出"
+  Line  123: android:summary="兼容 SDR 映射更稳定；原生 HDR 直出为实验性，需要设备支持 BT2020 PQ。"
+  Line  132: android:title="填充刘海区域"
+  Line  137: android:title="横竖屏自由切换"
+  Line  142: android:title="画面显示位置（默认居中）"
+  Line  143: android:summary="可能对折叠屏手机或者平板有点帮助,请自行DIY分辨率和画面位置。"
+  Line  150: android:title="部分页面主题色为白色"
+  Line  151: android:summary="安卓10及以上生效"
+  Line  231: android:title="反转握把震动"
+  Line  232: android:summary="如果你发现扣动左扳机是右边握把震动，则开启此选项。"
+  Line  253: android:title="禁用默认13%的手柄扳机死区"
+  Line  254: android:summary="勾选后 手柄扳机死区 Moonlight不做限制【某些ASUS Gamepad设备除外】。"
+  Line  263: android:title="触控/鼠标模式 【默认多点触控】"
+  Line  264: android:summary="可选择一种鼠标模式，多点触控需要搭配sunshine使用~"
+  Line  271: android:title="使用本地鼠标光标"
+  Line  272: android:summary="默认外接物理鼠标的光标会被捕获，此选项可显示安卓系统光标"
+  Line  310: android:title="默认布局方案"
+  Line  311: android:summary="横竖屏支持单独配置。"
+  Line  352: android:summary="开启后，虚拟手柄摇杆无法触发L3和R3"
+  Line  353: android:title="禁用虚拟手柄摇杆中心区域" />
+  Line  357: android:title="导入虚拟手柄配置"
+  Line  358: android:summary="选择一个配置文件，覆盖默认选择的布局方案。(仅横屏模式)"
+  Line  363: android:title="导出虚拟手柄配置"
+  Line  364: android:summary="导出默认选择的布局方案的配置文件。(仅横屏模式)"
+  Line  442: android:title="开启Lite精简模式"
+  Line  443: android:summary="展示简化版性能信息：网速/延迟/解码/丢包率/FPS"
+  Line  449: android:title="Lite精简模式点击弹出快捷选项"
+  Line  450: android:summary="代替返回键逻辑，弹出游戏快捷菜单。"
+  Line  456: android:title="Lite精简模式扩展参数"
+  Line  457: android:summary="开启后，增加分辨率、HDR、解码器等参数。"
+  Line  462: android:dialogMessage="设置精简性能信息距屏幕顶部边距，默认是4dp"
+  Line  467: android:summary="设置精简性能信息距屏幕顶部边距，默认是4dp"
+  Line  469: android:title="精简性能控件距顶部距离" />
+  Line  478: <PreferenceCategory android:title="阿西西的日常设置"
+  Line  485: android:dialogTitle="设置完分辨率后，退出设置页面 重新打开生效！"
+  Line  486: android:summary="添加一个自定义分辨率,x号分割,比较奇怪的分辨率可能无法生效。
+  Line  487: \n例如：1920x1080
+  Line  488: \n非原生分辨率如果是刘海屏可能不会默认填充刘海区域，
+  Line  489: \n如果画面比例一样，可手动设置拉伸画面来充满全屏"
+  Line  490: android:title="自定义分辨率" />
+  Line  494: android:title="竖屏显示模式"
+  Line  495: android:summary="搭配自定义分辨率使用，确保你使用的串流端支持并且PC端分辨率是竖直方向"
+  Line  500: android:title="兼容Switch JoyCon手柄"
+  Line  501: android:summary="如果你的JoyCon无法使用或识别按键有问题，可以尝试开启此功能。适配Android 10及以上"
+  Line  506: android:summary="在可用时汇报手柄电池状态。\n如果在使用触摸屏/触摸板/手写笔/鼠标时偶尔有卡顿现象发生，关闭此选项可能会有用。"
+  Line  507: android:title="启用手柄电池状态报告"
+  Line  513: android:title="启用悬浮球（Beta）"
+  Line  514: android:summary="开启后，点击打开快捷菜单。"
+  Line  525: android:title="虚拟全键盘透明度" />
+  Line  533: android:summary="调整虚拟全键盘的高度"
+  Line  535: android:title="虚拟全键盘高度" />
+  Line  539: android:title="全键盘组合键模式"
+  Line  540: android:summary="勾选后默认为选中组合键模式"
+  Line  545: android:title="外接显示器模式（Beta）"
+  Line  546: android:summary="串流画面显示在显示器，虚拟按键及性能信息等控件在手机屏幕。"
+  Line  551: android:title="强制使用设备本身的震动马达"
+  Line  552: android:summary="你如果对连接的手柄本身震动效果不满意，可以开启此选项！【对强制使用月光自带USB驱动无效】"
+  Line  557: android:title="虚拟手柄使用设备本身的陀螺仪"
+  Line  558: android:summary="如果你希望虚拟手柄支持陀螺仪功能，开启此选项。\n可能需要在sunshine后台设置手柄强制为ps4手柄。\n建议连接物理手柄时关闭此选项。"
+  Line  563: android:title="禁用默认的特殊按键指令(快捷键)"
+  Line  564: android:summary="如果你感觉内置的指令对你没什么用的话，可以禁用，使用自己导入的。"
+  Line  569: android:title="禁用游戏模式"
+  Line  570: android:summary="可能对Quest 安卓13及以上版本有用"
+  Line  575: android:title="导入自定义无障碍配置文件"
+  Line  576: android:summary="每次都会覆盖原来的，请注意备份。"
+  Line  581: android:title="无障碍键盘模式显示捕获的键值"
+  Line  582: android:summary="打开无障碍键盘，在月光app任意界面，输入按键，会弹出键值，用于自定义无障碍配置文件使用。"
+  Line  588: <PreferenceCategory android:title="虚拟按键"
+  Line  593: android:title="显示虚拟按键"
+  Line  594: android:summary="在触摸屏上显示一层虚拟特殊按键。
+  Line  595: \n按键透明度与上方选项中虚拟手柄共用。"
+  Line  600: android:title="默认布局方案"
+  Line  601: android:summary="横竖屏支持单独配置。"
+  Line  609: android:summary="点按屏幕按键时，会触发手机马达震动，此选项也可用于虚拟手柄按钮。"
+  Line  614: android:title="导入虚拟按键配置"
+  Line  615: android:summary="选择一个配置文件，覆盖默认选择的布局方案。(仅横屏模式)"
+  Line  620: android:title="导出虚拟按键配置"
+  Line  621: android:summary="导出默认选择的布局方案的配置文件。(仅横屏模式)"
+  Line  626: <PreferenceCategory android:title="音频震动Beta"
+  Line  630: android:title="启用音频震动"
+  Line  631: android:summary="把串流音频转换成震动反馈，更适合爆炸、撞击、低频场景"
+  Line  636: android:title="音频震动输出目标"
+  Line  637: android:summary="选择输出到手机，或输出到已接入的手柄"
+  Line  649: android:summary="调整手机或者手柄音频震动强度。"
+  Line  651: android:title="音频震动强度" />
+  Line  655: android:title="语音过滤"
+  Line  656: android:summary="降低人声、语音聊天、播报声对震动的触发"
+  Line  663: android:title="保留普通手柄震动"
+  Line  664: android:summary="当输出目标为手柄时，是否继续保留游戏原本的手柄震动。默认关闭。"
+  Line  669: <PreferenceCategory android:title="备份恢复数据【注意数据安全】"
+  Line  674: android:title="导出配对的电脑数据库文件"
+  Line  675: android:summary="导出一个db格式的sqlite数据库文件"
+  Line  680: android:title="导出网络请求的证书文件"
+  Line  681: android:summary="导出一个crt格式的证书文件"
+  Line  686: android:title="导出网络请求的key文件"
+  Line  687: android:summary="导出一个key格式的验证文件"
+  Line  692: android:title="导入配对的电脑数据库文件"
+  Line  693: android:summary="选择db数据库文件，会覆盖更新原有的电脑列表，需要重新打开APP生效。"
+  Line  698: android:title="导入网络请求的证书文件"
+  Line  699: android:summary="导入一个crt格式的证书文件"
+  Line  704: android:title="导入网络请求的key文件"
+  Line  705: android:summary="导入一个key格式的验证文件"
+  Line  710: <PreferenceCategory android:title="主屏幕设置"
+  Line  715: android:title="使用自定义背景图"
+  Line  716: android:summary="不勾选则使用默认背景,安卓10以上支持"
+  Line  721: android:title="设置主屏幕背景图"
+  Line  722: android:summary="选择一张图片，旋转屏幕生效~\n容错率不是很高，所以图片大小和类型别太过分，小心崩溃~\n如果崩溃了清除数据可解决~"
+  Line  727: android:title="背景图高斯模糊"
+  Line  728: android:summary="自定义背景图是否进行高斯模糊处理，安卓12以上支持。"
+  Line  735: android:dialogTitle="设置主屏幕左侧文本"
+  Line  736: android:summary="输入你喜欢的文本"
+  Line  737: android:dialogMessage="输入你喜欢的文本~"
+  Line  738: android:title="设置主屏幕左侧文本" />
+  Line  742: android:title="忽略掉应用列表菜单选项"
+  Line  743: android:summary="开启此功能，点击图标可直接进入串流界面，无需再点击弹出的菜单选项。"
+  Line  748: <PreferenceCategory android:title="关于"
+  Line  752: android:title="关于我们"
+  Line  753: android:summary="版本信息·获取更新·关注作者"
+  Line  757: android:title="Moonlight帮助指南"
+  Line  758: android:summary="官方使用文档"
+  Line  765: android:title="串流日志">
+  Line  769: android:title="串流日志采集"
+  Line  770: android:summary="每次串流生成一份新日志，用于记录连接、画面、网络、手柄和异常中断；默认关闭"
+  Line  775: android:title="日志列表"
+  Line  776: android:summary="查看、导出或删除已保存的串流日志" />

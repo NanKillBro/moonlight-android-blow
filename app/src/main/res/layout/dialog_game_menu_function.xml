@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="操作"
+            android:text="Actions"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="快捷操作"
+                    android:text="Quick Actions"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -85,7 +85,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_display_1"
-                    android:text="显示器1"
+                    android:text="Display 1"
                     android:textSize="9dp" />
 
                 <Button
@@ -99,7 +99,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_display_2"
-                    android:text="显示器2"
+                    android:text="Display 2"
                     android:textSize="9dp" />
 
                 <Button
@@ -113,7 +113,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_display_3"
-                    android:text="显示器3"
+                    android:text="Display 3"
                     android:textSize="9dp" />
 
                 <Button
@@ -127,7 +127,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_display_4"
-                    android:text="显示器4"
+                    android:text="Display 4"
                     android:textSize="9dp" />
 
             </LinearLayout>
@@ -149,7 +149,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_logout"
-                    android:text="注销"
+                    android:text="Sign Out"
                     android:textSize="9dp" />
 
                 <Button
@@ -163,7 +163,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_shutdown"
-                    android:text="关机"
+                    android:text="Shut Down"
                     android:textSize="9dp" />
 
                 <Button
@@ -177,7 +177,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_sleep"
-                    android:text="睡眠"
+                    android:text="Sleep"
                     android:textSize="9dp" />
 
                 <Button
@@ -191,7 +191,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_reboot"
-                    android:text="重启"
+                    android:text="Restart"
                     android:textSize="9dp" />
 
             </LinearLayout>
@@ -213,7 +213,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_task_manager"
-                    android:text="任务管理器"
+                    android:text="Task Manager"
                     android:textSize="9dp" />
 
                 <Button
@@ -227,7 +227,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_clipboard_send"
-                    android:text="发送剪切板"
+                    android:text="Send Clipboard"
                     android:textSize="9dp" />
 
 
@@ -242,7 +242,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_clipboard_open"
-                    android:text="打开剪切板"
+                    android:text="Open Clipboard"
                     android:textSize="9dp" />
 
                 <Button
@@ -256,7 +256,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_open_setting"
-                    android:text="Win系统设置"
+                    android:text="Windows Settings"
                     android:textSize="9dp" />
 
             </LinearLayout>
@@ -278,7 +278,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_computer"
-                    android:text="我的电脑"
+                    android:text="This PC"
                     android:textSize="9dp" />
 
                 <Button
@@ -292,7 +292,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_win_center"
-                    android:text="移动中心"
+                    android:text="Mobility Center"
                     android:textSize="9dp" />
 
                 <Button
@@ -306,7 +306,7 @@
                     android:gravity="center"
                     android:padding="4dp"
                     android:id="@+id/btn_win_p"
-                    android:text="显示器模式"
+                    android:text="Display Mode"
                     android:textSize="9dp" />
 
                 <Button
@@ -320,7 +320,7 @@
                     android:gravity="center"
                     android:id="@+id/btn_hdr"
                     android:padding="4dp"
-                    android:text="HDR开关"
+                    android:text="Toggle HDR"
                     android:textSize="9dp" />
 
 

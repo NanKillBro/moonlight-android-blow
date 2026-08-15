@@ -186,7 +186,7 @@ public class GameAudioHapticsFragment extends BaseGameMenuDialog {
     }
 
     private void updateStrengthLabel() {
-        txStrength.setText("音频震动强度：" + prefConfig.audioHapticsStrength + "%");
+        txStrength.setText("Audio Haptics Strength: " + prefConfig.audioHapticsStrength + "%");
     }
 
     private void updateDetailsVisibility() {

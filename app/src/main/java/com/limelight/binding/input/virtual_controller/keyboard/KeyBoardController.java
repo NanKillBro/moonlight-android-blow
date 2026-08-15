@@ -186,9 +186,9 @@ public class KeyBoardController {
                 }else{
                     fragment.setWidth((context.getResources().getDisplayMetrics().heightPixels*2)/3);
                 }
-                fragment.setTitle("手柄按键");
+                fragment.setTitle("Gamepad Buttons");
                 fragment.setOnClick(bean -> {
-                    LimeLog.info("axi->组合键:"+new Gson().toJson(bean));
+                    LimeLog.info("axi->combo:"+new Gson().toJson(bean));
                     addItem(bean);
                 });
                 fragment.show(context.getFragmentManager());
@@ -206,9 +206,9 @@ public class KeyBoardController {
             }else{
                 fragment.setWidth((context.getResources().getDisplayMetrics().heightPixels*2)/3);
             }
-            fragment.setTitle("组合键");
+            fragment.setTitle("Combo Keys");
             fragment.setOnClick(bean -> {
-                LimeLog.info("axi->组合键:"+new Gson().toJson(bean));
+                LimeLog.info("axi->combo:"+new Gson().toJson(bean));
                 addItem(bean);
             });
             fragment.show(context.getFragmentManager());
@@ -262,7 +262,7 @@ public class KeyBoardController {
         sb_zoom_x.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                txZoom.setText("缩放比例："+progress+"%");
+                txZoom.setText("Scale: "+progress+"%");
                 beanList.get(currentIndex).setZoom(progress);
                 switch (beanList.get(currentIndex).getBtnType()){
                     case 1://1鼠标 2触控板 3摇杆 4普通按钮 5十字键
@@ -301,7 +301,7 @@ public class KeyBoardController {
         sb_zoom_w.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tx_zoom_w.setText("缩放宽度："+progress+"%");
+                tx_zoom_w.setText("Scale Width: "+progress+"%");
                 beanList.get(currentIndex).setZoomW(progress);
                 switch (beanList.get(currentIndex).getBtnType()){
                     case 2:
@@ -328,7 +328,7 @@ public class KeyBoardController {
         sb_zoom_h.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                tx_zoom_h.setText("缩放高度："+progress+"%");
+                tx_zoom_h.setText("Scale Height: "+progress+"%");
                 beanList.get(currentIndex).setZoomH(progress);
                 switch (beanList.get(currentIndex).getBtnType()){
                     case 2:
@@ -359,8 +359,8 @@ public class KeyBoardController {
     private void addItem(GameMenuQuickBean bean){
         int w=context.getResources().getDisplayMetrics().widthPixels;
         int h=context.getResources().getDisplayMetrics().heightPixels;
-        LimeLog.info("axi->宽度:"+w);
-        LimeLog.info("axi->高度:"+h);
+        LimeLog.info("axi->width:"+w);
+        LimeLog.info("axi->height:"+h);
         bean.setmLeft(w/2);
         bean.setmTop(h/2);
         switch(bean.getBtnType()){
@@ -415,7 +415,7 @@ public class KeyBoardController {
                 return;
             }
             if(TextUtils.isEmpty(tips)){
-                tips="无按键可用，打开编辑模式新增按钮后使用！(菜单-虚拟手柄与按键-编辑模式)";
+                tips="No buttons available. Open Edit Mode to add buttons first! (Menu > Virtual Gamepad & Keys > Edit Mode)";
                 Toast.makeText(context,tips,Toast.LENGTH_LONG).show();
             }
 //            switchMode(ControllerMode.MoveButtons);
@@ -542,9 +542,9 @@ public class KeyBoardController {
         if(lastView!=null){
             lastView.invalidate();
         }
-        txName.setText("当前按钮："+beanList.get(index).getName());
-        txDesc.setText("键值："+beanList.get(index).getDesc());
-        tx_margin.setText("坐标："+beanList.get(index).getmLeft()+"，"+beanList.get(index).getmTop());
+        txName.setText("Button: "+beanList.get(index).getName());
+        txDesc.setText("Keycode: "+beanList.get(index).getDesc());
+        tx_margin.setText("Position: "+beanList.get(index).getmLeft()+"，"+beanList.get(index).getmTop());
 
         if(beanList.get(index).getBtnType()==4||beanList.get(index).getBtnType()==2){
             cb_round.setChecked(beanList.get(index).getShapeType()==1);
@@ -566,8 +566,8 @@ public class KeyBoardController {
             txZoom.setVisibility(beanList.get(index).getShapeType()==1?View.GONE:View.VISIBLE);
             sb_zoom_x.setVisibility(beanList.get(index).getShapeType()==1?View.GONE:View.VISIBLE);
 
-            tx_zoom_w.setText("缩放宽度："+beanList.get(index).getZoomW()+"%");
-            tx_zoom_h.setText("缩放高度："+beanList.get(index).getZoomH()+"%");
+            tx_zoom_w.setText("Scale Width: "+beanList.get(index).getZoomW()+"%");
+            tx_zoom_h.setText("Scale Height: "+beanList.get(index).getZoomH()+"%");
             sb_zoom_w.setProgress(beanList.get(index).getZoomW());
             sb_zoom_h.setProgress(beanList.get(index).getZoomH());
         }else{
@@ -576,7 +576,7 @@ public class KeyBoardController {
             lv_left_view.findViewById(R.id.lv_zoom_wh).setVisibility(View.GONE);
             txZoom.setVisibility(View.VISIBLE);
             sb_zoom_x.setVisibility(View.VISIBLE);
-            txZoom.setText("缩放比例："+beanList.get(index).getZoom()+"%");
+            txZoom.setText("Scale: "+beanList.get(index).getZoom()+"%");
             sb_zoom_x.setProgress(beanList.get(index).getZoom());
         }
 
@@ -586,7 +586,7 @@ public class KeyBoardController {
     }
 
     private void save(){
-        LimeLog.info("axi->保存："+fileName);
+        LimeLog.info("axi->save:"+fileName);
         FileUriUtils.saveKeyBoardJson(context,fileName,new Gson().toJson(beanList));
         this.currentMode=ControllerMode.Active;
         buttonConfigure.setVisibility(View.GONE);
@@ -595,7 +595,7 @@ public class KeyBoardController {
         for (keyBoardVirtualControllerElement element : elements) {
             element.invalidate();
         }
-        Toast.makeText(context,"已保存！",Toast.LENGTH_SHORT).show();
+        Toast.makeText(context,"Saved!",Toast.LENGTH_SHORT).show();
     }
 
 
@@ -604,12 +604,12 @@ public class KeyBoardController {
         String message="";
         switch (currentMode){
             case Active:
-                message="正常模式~";
+                message="Normal Mode";
                 buttonConfigure.setVisibility(View.GONE);
                 lv_left_view.setVisibility(View.GONE);
                 break;
             case MoveButtons:
-                message="位移模式~";
+                message="Move Mode";
                 buttonConfigure.setVisibility(View.VISIBLE);
                 break;
         }

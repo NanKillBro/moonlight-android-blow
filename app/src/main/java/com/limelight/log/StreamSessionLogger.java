@@ -49,29 +49,29 @@ public final class StreamSessionLogger {
         ACTIVE_FILES.add(file.getAbsolutePath());
         previousExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         exceptionHandler = (thread, throwable) -> {
-            error("CRASH", "Java 未捕获异常，线程=" + thread.getName(), throwable);
-            close("Java 异常退出");
+            error("CRASH", "Java uncaught exception, thread=" + thread.getName(), throwable);
+            close("Java abnormal exit");
             if (previousExceptionHandler != null) {
                 previousExceptionHandler.uncaughtException(thread, throwable);
             }
         };
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
-        writeRaw("Moonlight 串流会话日志");
-        writeRaw("应用版本: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
-        writeRaw("设备: " + Build.MANUFACTURER + " " + Build.MODEL + ", Android " + Build.VERSION.RELEASE
+        writeRaw("Moonlight Stream Session Log");
+        writeRaw("App Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
+        writeRaw("Device: " + Build.MANUFACTURER + " " + Build.MODEL + ", Android " + Build.VERSION.RELEASE
                 + " (API " + Build.VERSION.SDK_INT + "), ABI " + firstAbi());
-        writeRaw("目标: " + safe(pcName) + " / " + safe(appName));
+        writeRaw("Target: " + safe(pcName) + " / " + safe(appName));
         writeRaw(String.format(Locale.US,
-                "配置: %dx%d@%d, 码率=%d Kbps, HDR=%s, USB驱动=%s, 音频震动=%s",
+                "Config: %dx%d@%d, Bitrate=%d Kbps, HDR=%s, USB Driver=%s, Audio Haptics=%s",
                 config.width, config.height, config.fps, config.bitrate,
                 onOff(config.enableHdr), onOff(config.usbDriver),
                 onOff(config.enableAudioHaptics)));
-        writeRaw("触觉: 音频输出=" + safe(config.audioHapticsOutputTarget)
-                + ", 强度=" + config.audioHapticsStrength + "%"
-                + ", 保留普通震动=" + onOff(config.audioHapticsKeepControllerRumble));
+        writeRaw("Haptics: Audio Output=" + safe(config.audioHapticsOutputTarget)
+                + ", Strength=" + config.audioHapticsStrength + "%"
+                + ", Keep Standard Rumble=" + onOff(config.audioHapticsKeepControllerRumble));
         writeRaw("------------------------------------------------------------");
-        info("SESSION", "会话日志开始");
+        info("SESSION", "Session log started");
     }
 
     public synchronized void info(String category, String message) {
@@ -154,7 +154,7 @@ public final class StreamSessionLogger {
     }
 
     private static String onOff(boolean enabled) {
-        return enabled ? "开" : "关";
+        return enabled ? "On" : "Off";
     }
 
     private static String firstAbi() {

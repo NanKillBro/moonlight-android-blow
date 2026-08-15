@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/appListText"
-            tools:text="我的电脑"
+            tools:text="My PC"
             android:textStyle="bold"
             android:textColor="@android:color/white"
             android:layout_width="wrap_content"
@@ -35,7 +35,7 @@
             android:textSize="16dp"/>
 
         <TextView
-            android:text="长按选中菜单有更多选项"
+            android:text="Long press menu item for more options"
             android:layout_marginTop="20dp"
             android:textStyle="italic"
             android:textSize="10dp"

@@ -492,17 +492,17 @@ public class GameDisplaySettingFragment extends BaseGameMenuDialog {
     }
 
     private void initPrefZoom(){
-        tx_game_setting_pref_zoom.setText("性能信息·缩放："+prefConfig.gameSettingPrefZoom+"%");
+        tx_game_setting_pref_zoom.setText("Overlay Scale: "+prefConfig.gameSettingPrefZoom+"%");
         sb_game_setting_pref_zoom.setProgress(prefConfig.gameSettingPrefZoom);
     }
 
     private void initPrefMagin(){
-        tx_game_setting_pref_magin_top.setText("性能信息·边距："+prefConfig.performanceOverlayLiteMaginTop);
+        tx_game_setting_pref_magin_top.setText("Overlay Margin: "+prefConfig.performanceOverlayLiteMaginTop);
         sb_game_setting_pref_magin_top.setProgress(prefConfig.performanceOverlayLiteMaginTop);
     }
 
     private void initGyroSensitivity(){
-        tx_game_setting_gyro_sensitivity.setText("强制体感·灵敏度："+prefConfig.gameForceGyroSensitivity);
+        tx_game_setting_gyro_sensitivity.setText("Gyro Sensitivity: "+prefConfig.gameForceGyroSensitivity);
         sb_game_setting_gyro_sensitivity.setProgress(prefConfig.gameForceGyroSensitivity);
     }
 

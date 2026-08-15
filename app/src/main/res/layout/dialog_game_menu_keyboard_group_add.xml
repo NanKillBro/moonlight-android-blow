@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="组合键"
+            android:text="Combo Keys"
             android:id="@+id/tx_title"
             android:textColor="@android:color/white"
             android:textSize="13dp" />
@@ -29,7 +29,7 @@
             android:layout_width="50dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:text="清空"
+            android:text="Clear"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -43,7 +43,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:text="保存"
+            android:text="Save"
             android:background="@drawable/ic_game_menu_btn_side_selector"
             android:layout_marginRight="5dp"
             android:gravity="center"
@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="按键名称"
+                android:text="Key Name"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:textSize="10dp" />
@@ -78,7 +78,7 @@
                 android:layout_height="30dp"
                 android:layout_marginTop="4dp"
                 android:background="@drawable/ic_game_menu_btn_selector"
-                android:hint="请输入按键名称，不易过长~"
+                android:hint="Enter button name (keep it short)"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"
                 android:singleLine="true"
@@ -88,7 +88,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                android:text="组合键值"
+                android:text="Combo Keycode"
                 android:textColor="@android:color/white"
                 android:layout_marginTop="5dp"
                 android:textStyle="bold"
@@ -106,7 +106,7 @@
 <!--                android:textSize="8sp" />-->
 
             <TextView
-                android:hint="请输入1~5个按键"
+                android:hint="Enter 1 to 5 keys"
                 android:id="@+id/tx_content"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
@@ -143,7 +143,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_1"
-                    android:text="电脑全键盘"
+                    android:text="Full Keyboard"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -155,7 +155,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_2"
-                    android:text="数字键盘"
+                    android:text="Numpad"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -167,7 +167,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_3"
-                    android:text="鼠标与轮盘按键"
+                    android:text="Mouse &amp; Wheel Buttons"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -179,7 +179,7 @@
                     android:padding="4dp"
                     android:button="@null"
                     android:id="@+id/rbt_keyboard_4"
-                    android:text="功能按键"
+                    android:text="Function Keys"
                     android:textSize="10dp" />
 
             </RadioGroup>
