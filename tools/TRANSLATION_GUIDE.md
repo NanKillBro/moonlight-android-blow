@@ -62,3 +62,11 @@ When maintaining this fork against upstream commits:
 - **Submodules**: `submodules: recursive` (required for `moonlight-common-c`)
 - **Gradle Command**: `./gradlew assembleDebug assembleRelease`
 - **Artifacts Output**: `app/build/outputs/apk/**/*.apk`
+
+## Custom instruction (original promt)
+help me translate this project to english
+just ignore the chinese, we don't need it so you can delete it if you want.
+the problem with this project some line is hardcoded chinsese and not in locale file.
+i have some chinese tools that you may can use in tools folder, it also contain some instruction that you can read
+try your best to not make to much edit, because i don't want it to conflict with future upstream commit
+use your knowledge to translate, AI translate is still far better than any legacy translator like google translator 

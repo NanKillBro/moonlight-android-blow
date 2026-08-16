@@ -9,8 +9,6 @@ import android.view.WindowManager;
 import com.limelight.LimeLog;
 import com.limelight.nvstream.StreamConfiguration;
 
-import java.text.DecimalFormat;
-
 /**
  * Description
  * Date: 2025-01-08
@@ -60,28 +58,43 @@ public class RazerUtils {
 
     // 获取屏幕对角线尺寸（单位：英寸）
     public static double getDiagonalInches(Context context) {
-        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
-        Point screenResolution = getScreenResolution(context);
-        int width = screenResolution.x;
-        int height = screenResolution.y;
+        try {
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            Point screenResolution = getScreenResolution(context);
+            int width = screenResolution.x;
+            int height = screenResolution.y;
 
-        double wi = width / (double) displayMetrics.xdpi;
-        double hi = height / (double) displayMetrics.ydpi;
-        double x = Math.pow(wi, 2.0);
-        double y = Math.pow(hi, 2.0);
+            float xdpi = displayMetrics.xdpi > 0 ? displayMetrics.xdpi : displayMetrics.densityDpi;
+            float ydpi = displayMetrics.ydpi > 0 ? displayMetrics.ydpi : displayMetrics.densityDpi;
 
-        DecimalFormat decimalFormat = new DecimalFormat("#.#");
-        return Double.parseDouble(decimalFormat.format(Math.sqrt(x + y)));
+            double wi = width / (double) xdpi;
+            double hi = height / (double) ydpi;
+            double x = Math.pow(wi, 2.0);
+            double y = Math.pow(hi, 2.0);
+
+            return Math.round(Math.sqrt(x + y) * 10.0) / 10.0;
+        } catch (Exception e) {
+            LimeLog.warning("Failed to get diagonal inches: " + e.getMessage());
+            return 0;
+        }
     }
 
     // 获取设备的PPI值
     public static int getPPI(Context context) {
-        Point screenResolution = getScreenResolution(context);
-        int width = screenResolution.x;
-        int height = screenResolution.y;
+        try {
+            Point screenResolution = getScreenResolution(context);
+            int width = screenResolution.x;
+            int height = screenResolution.y;
 
-        double diagonalPixels = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
-        return (int) (diagonalPixels / getDiagonalInches(context));
+            double diagonalInches = getDiagonalInches(context);
+            if (diagonalInches > 0) {
+                double diagonalPixels = Math.sqrt(Math.pow(width, 2) + Math.pow(height, 2));
+                return (int) (diagonalPixels / diagonalInches);
+            }
+        } catch (Exception e) {
+            LimeLog.warning("Failed to get PPI: " + e.getMessage());
+        }
+        return context.getResources().getDisplayMetrics().densityDpi;
     }
 
     // 获取设备的实际屏幕分辨率
@@ -90,10 +103,15 @@ public class RazerUtils {
         DisplayMetrics realMetrics = new DisplayMetrics();
 
         WindowManager display = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        display.getDefaultDisplay().getRealMetrics(realMetrics);
-
-        screenResolution.x = realMetrics.widthPixels;
-        screenResolution.y = realMetrics.heightPixels;
+        if (display != null && display.getDefaultDisplay() != null) {
+            display.getDefaultDisplay().getRealMetrics(realMetrics);
+            screenResolution.x = realMetrics.widthPixels;
+            screenResolution.y = realMetrics.heightPixels;
+        } else {
+            DisplayMetrics dm = context.getResources().getDisplayMetrics();
+            screenResolution.x = dm.widthPixels;
+            screenResolution.y = dm.heightPixels;
+        }
 
         return screenResolution;
     }
