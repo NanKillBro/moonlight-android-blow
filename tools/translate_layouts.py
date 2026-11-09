@@ -389,7 +389,7 @@ def translate_layouts():
         for file in sorted(os.listdir(folder)):
             if file.endswith('.xml'):
                 filepath = os.path.join(folder, file)
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, 'r', encoding='utf-8', newline='') as f:
                     content = f.read()
                 orig_content = content
                 for old, new in REPLACEMENTS:

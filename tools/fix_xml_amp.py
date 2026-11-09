@@ -6,7 +6,7 @@ def fix_ampersands():
         for file in os.listdir(folder):
             if file.endswith('.xml'):
                 filepath = os.path.join(folder, file)
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, 'r', encoding='utf-8', newline='') as f:
                     c = f.read()
                 orig = c
                 # Fix unescaped ampersands in XML attributes

@@ -9,7 +9,7 @@ def translate_configs():
     # 1. buttonSwitch.json
     p_button_switch = 'app/src/main/assets/config/buttonSwitch.json'
     if os.path.exists(p_button_switch):
-        with open(p_button_switch, 'r', encoding='utf-8') as f:
+        with open(p_button_switch, 'r', encoding='utf-8', newline='') as f:
             c = f.read()
         c = c.replace('无障碍模式 按键映射对应关系 键值：https://developer.android.com/reference/android/view/KeyEvent', 'Accessibility mode key mappings. Keycodes: https://developer.android.com/reference/android/view/KeyEvent')
         c = c.replace('win键 这个值给自己看的，程序不需要', 'Win Key (User reference note)')
@@ -20,7 +20,7 @@ def translate_configs():
     # 2. config_keyboard.txt
     p_config_kb = 'app/src/main/assets/config/config_keyboard.txt'
     if os.path.exists(p_config_kb):
-        with open(p_config_kb, 'r', encoding='utf-8') as f:
+        with open(p_config_kb, 'r', encoding='utf-8', newline='') as f:
             c = f.read()
         c = c.replace('"name":"桌面"', '"name":"Desktop"')
         c = c.replace('"desc":"常规模式"', '"desc":"Normal Mode"')
@@ -37,7 +37,7 @@ def translate_configs():
     for kb_file in ['keyboard.json', 'keyboard_1.json', 'keyboard_2.json']:
         p_kb = os.path.join('app/src/main/assets/config', kb_file)
         if os.path.exists(p_kb):
-            with open(p_kb, 'r', encoding='utf-8') as f:
+            with open(p_kb, 'r', encoding='utf-8', newline='') as f:
                 c = f.read()
             c = c.replace('rocker=摇杆|dpad=十字键|keystroke=普通按钮', 'rocker=Stick|dpad=D-Pad|keystroke=Button')
             c = c.replace('"name": "摇杆"', '"name": "Stick"')
@@ -62,7 +62,7 @@ def translate_configs():
     # 4. specialbuttons.json
     p_special = 'app/src/main/assets/config/specialbuttons.json'
     if os.path.exists(p_special):
-        with open(p_special, 'r', encoding='utf-8') as f:
+        with open(p_special, 'r', encoding='utf-8', newline='') as f:
             c = f.read()
         c = c.replace('游戏快捷菜单中快捷指令，键值参考PC端：https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes', 'Quick menu shortcuts. Virtual keycodes reference: https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes')
         c = c.replace('"name": "自定义导入数据 (切换显示器)"', '"name": "Custom Import (Switch Display)"')

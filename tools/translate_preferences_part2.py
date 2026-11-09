@@ -6,7 +6,7 @@ if sys.platform == "win32":
 
 def translate_preferences():
     filepath = 'app/src/main/res/xml/preferences.xml'
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, 'r', encoding='utf-8', newline='') as f:
         content = f.read()
 
     replacements = [

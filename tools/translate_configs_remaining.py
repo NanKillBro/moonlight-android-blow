@@ -8,7 +8,7 @@ def fix_configs():
     # config_gamepad.txt
     p_gp = 'app/src/main/assets/config/config_gamepad.txt'
     if os.path.exists(p_gp):
-        with open(p_gp, 'r', encoding='utf-8') as f:
+        with open(p_gp, 'r', encoding='utf-8', newline='') as f:
             c = f.read()
         c = c.replace('"desc":"视图键"', '"desc":"View / Back"')
         c = c.replace('"name":"十字键"', '"name":"D-Pad"')
@@ -29,7 +29,7 @@ def fix_configs():
     for kb_file in ['keyboard.json', 'keyboard_1.json']:
         p_kb = os.path.join('app/src/main/assets/config', kb_file)
         if os.path.exists(p_kb):
-            with open(p_kb, 'r', encoding='utf-8') as f:
+            with open(p_kb, 'r', encoding='utf-8', newline='') as f:
                 c = f.read()
             c = c.replace('Standard on-screen trackpad widget没有点击事件', 'Trackpad widget without click events')
             with open(p_kb, 'w', encoding='utf-8', newline='') as f:

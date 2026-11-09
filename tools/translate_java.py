@@ -432,7 +432,7 @@ def translate_java_files():
         for file in files:
             if file in FILE_REPLACEMENTS:
                 filepath = os.path.normpath(os.path.join(root, file))
-                with open(filepath, 'r', encoding='utf-8') as f:
+                with open(filepath, 'r', encoding='utf-8', newline='') as f:
                     content = f.read()
                 orig_content = content
                 for old, new in FILE_REPLACEMENTS[file]:

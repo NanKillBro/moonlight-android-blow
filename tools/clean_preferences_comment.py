@@ -2,7 +2,7 @@ import sys
 
 def main():
     filepath = 'app/src/main/res/xml/preferences.xml'
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, 'r', encoding='utf-8', newline='') as f:
         c = f.read()
     c = c.replace('android:title="多点触控屏幕模式"', 'android:title="Multi-touch Screen Mode"')
     c = c.replace('开启此选项可以实现surface一样多点触控操作windows系统效果。', 'Enable multi-touch gestures on Windows like Surface.')
