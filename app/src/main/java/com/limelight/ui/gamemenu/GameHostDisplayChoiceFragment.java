@@ -73,15 +73,15 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
             buildChoices();
             render();
         } catch (JSONException error) {
-            status.setText("无法读取显示参数，请返回刷新后重试");
+            status.setText("Unable to read display settings. Go back, refresh, and try again.");
         }
     }
 
     private String title() {
         switch (kind) {
-            case "resolution": return "分辨率";
-            case "refresh": return "刷新率";
-            case "scale": return "缩放比例";
+            case "resolution": return "Resolution";
+            case "refresh": return "Refresh Rate";
+            case "scale": return "Scale";
             default: return "HDR";
         }
     }
@@ -129,8 +129,8 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
                 }
             }
         } else if ("hdr".equals(kind)) {
-            choices.add(new Choice("on", "开启", operation("hdr").put("enabled", true)));
-            choices.add(new Choice("off", "关闭", operation("hdr").put("enabled", false)));
+            choices.add(new Choice("on", "On", operation("hdr").put("enabled", true)));
+            choices.add(new Choice("off", "Off", operation("hdr").put("enabled", false)));
             if (selectedKey == null) selectedKey = device.optBoolean("hdr_enabled") ? "on" : "off";
         }
     }
@@ -145,7 +145,7 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
         View focus = content.findFocus();
         Object focusTag = focus == null ? null : focus.getTag();
         content.removeAllViews();
-        HostDisplayMenuViews.section(content, "可用" + title());
+        HostDisplayMenuViews.section(content, "Available " + title());
         for (Choice choice : choices) {
             HostDisplayMenuViews.row(content, choice.title, "", "", "choice-" + choice.key,
                     choice.key.equals(selectedKey), false, !busy, () -> {
@@ -154,13 +154,13 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
                     });
         }
         if (busy) {
-            status.setText("正在应用主机显示设置…");
+            status.setText("Applying host display settings…");
         } else if (choices.isEmpty()) {
-            status.setText("此显示器暂无可用选项，请返回刷新后重试。");
+            status.setText("No options are available for this display. Go back, refresh, and try again.");
         } else if ("refresh".equals(kind)) {
-            status.setText(device.optInt("width") + " × " + device.optInt("height") + " · 点击刷新率即可应用。");
+            status.setText(device.optInt("width") + " × " + device.optInt("height") + " · Tap a refresh rate to apply.");
         } else {
-            status.setText("点击选项即可应用到 PC 显示器。");
+            status.setText("Tap an option to apply it to the PC display.");
         }
         if (focusTag != null) {
             View restored = content.findViewWithTag(focusTag);
@@ -173,7 +173,7 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
         Choice picked = selected();
         if (busy || picked == null) return;
         if (!(getTargetFragment() instanceof GameHostDisplaysFragment)) {
-            status.setText("显示器页面已关闭，请返回重试");
+            status.setText("The display page was closed. Go back and try again.");
             return;
         }
         busy = true;
@@ -189,7 +189,7 @@ public class GameHostDisplayChoiceFragment extends BaseGameMenuDialog {
             dismiss();
         } else {
             render();
-            status.setText("应用失败：" + error);
+            status.setText("Apply failed: " + error);
         }
     }
 

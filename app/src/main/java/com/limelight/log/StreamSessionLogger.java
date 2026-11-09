@@ -78,7 +78,7 @@ public final class StreamSessionLogger {
         Thread.setDefaultUncaughtExceptionHandler(exceptionHandler);
 
         writeRawDirect("Moonlight Stream Session Log");
-        writeRawDirect("日志格式: " + LOG_FORMAT_VERSION);
+        writeRawDirect("Log format: " + LOG_FORMAT_VERSION);
         writeRawDirect("App Version: " + BuildConfig.VERSION_NAME + " (" + BuildConfig.VERSION_CODE + ")");
         writeRawDirect("Device: " + Build.MANUFACTURER + " " + Build.MODEL + ", Android " + Build.VERSION.RELEASE
                 + " (API " + Build.VERSION.SDK_INT + "), ABI " + firstAbi());
@@ -88,16 +88,16 @@ public final class StreamSessionLogger {
                 config.width, config.height, config.fps, config.bitrate,
                 onOff(config.enableHdr), onOff(config.usbDriver),
                 onOff(config.enableAudioHaptics)));
-        writeRawDirect("控制连接: 触控卡顿兼容=" + onOff(config.touchStutterCompatibility)
-                + ", 请求RTT容忍=" + (config.touchStutterCompatibility ? 10 : 0) + " ms");
+        writeRawDirect("Control connection: Touch stutter compatibility=" + onOff(config.touchStutterCompatibility)
+                + ", Requested RTT tolerance=" + (config.touchStutterCompatibility ? 10 : 0) + " ms");
         writeRawDirect("Haptics: Audio Output=" + safe(config.audioHapticsOutputTarget)
                 + ", Strength=" + config.audioHapticsStrength + "%"
                 + ", Keep Standard Rumble=" + onOff(config.audioHapticsKeepControllerRumble));
         boolean explicitDs5 = PreferenceConfiguration.GAMEPAD_EMULATION_DS5.equals(
                 PreferenceConfiguration.normalizeGamepadEmulation(config.gamepadEmulation));
-        writeRawDirect("手柄: 串流类型=" + safe(config.gamepadEmulation)
-                + ", 原生DS5触觉PCM=" + onOff(explicitDs5 && config.ds5NativePcmEnabled)
-                + ", DS5扬声器=" + onOff(explicitDs5 && config.ds5ControllerSpeakerEnabled));
+        writeRawDirect("Gamepad: Emulation type=" + safe(config.gamepadEmulation)
+                + ", Native DS5 haptic PCM=" + onOff(explicitDs5 && config.ds5NativePcmEnabled)
+                + ", DS5 speaker=" + onOff(explicitDs5 && config.ds5ControllerSpeakerEnabled));
         writeRawDirect("------------------------------------------------------------");
 
         writerThread = new Thread(this::runWriter, "StreamSessionLogger");
@@ -262,7 +262,7 @@ public final class StreamSessionLogger {
         if (dropped > 0L) {
             writeLine(timestamp(System.currentTimeMillis()) + " [WARN] [LOGGER] [t="
                     + (SystemClock.elapsedRealtime() - sessionStartElapsedMs)
-                    + "ms] 日志队列拥塞，已丢弃低优先级记录=" + dropped, true);
+                    + "ms] Log queue congested, dropped low-priority records=" + dropped, true);
         }
     }
 
@@ -271,7 +271,7 @@ public final class StreamSessionLogger {
             sessionLimitReported = true;
             writeLine(timestamp(System.currentTimeMillis()) + " [WARN] [LOGGER] [t="
                     + (SystemClock.elapsedRealtime() - sessionStartElapsedMs)
-                    + "ms] 单会话日志达到 8 MiB 上限，已省略普通记录="
+                    + "ms] Session log reached the 8 MiB limit, omitted normal records="
                     + sessionLimitDroppedRecords, true);
         }
     }

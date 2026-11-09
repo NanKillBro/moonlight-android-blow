@@ -4856,7 +4856,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (stats == null) {
             addPerfRow("Status", "--");
             addPerfRow("USB/IP", buildUsbIpStatusText());
-            addPerfRow("USB/IP地址", buildUsbIpAddressText(), true);
+            addPerfRow("USB/IP Address", buildUsbIpAddressText(), true);
             return;
         }
 
@@ -4866,12 +4866,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 + (prefConfig.enableHdr && !stereo3dEnabled ? " HDR" : ""));
         if (stats.hdr) {
             Display hdrDisplay = getActiveRenderDisplay();
-            addPerfRow("系统HDR峰值亮度", buildHdrTargetPeakLuminanceText(hdrDisplay));
+            addPerfRow("System HDR Peak Brightness", buildHdrTargetPeakLuminanceText(hdrDisplay));
             String hdrSdrRatioText = buildHdrSdrRatioText(hdrDisplay);
             if (hdrSdrRatioText != null) {
-                addPerfRow("HDR/SDR比率", hdrSdrRatioText);
+                addPerfRow("HDR/SDR Ratio", hdrSdrRatioText);
             }
-            addPerfRow("主机HDR母版峰值",
+            addPerfRow("Host HDR Mastering Peak",
                     formatHdrMetadataLuminance(currentHdrMasteringPeakLuminanceNits));
         }
         addPerfRow("Codec", nonEmpty(stats.codecName, "--"));
@@ -4903,7 +4903,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         addPerfRow("Audio Haptics", buildAudioHapticsStatusText());
         addPerfRow("USB Gamepad", buildUsbControllerStatusText());
         addPerfRow("USB/IP", buildUsbIpStatusText());
-        addPerfRow("USB/IP地址", buildUsbIpAddressText(), true);
+        addPerfRow("USB/IP Address", buildUsbIpAddressText(), true);
     }
 
     /** Read the service-owned USB/IP state without retaining an old handoff state in the UI. */
@@ -4986,23 +4986,23 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildHdrTargetPeakLuminanceText(Display display) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || display == null) {
-            return "系统未报告";
+            return "Not reported by system";
         }
 
         try {
             Display.HdrCapabilities hdrCapabilities = display.getHdrCapabilities();
             if (hdrCapabilities == null) {
-                return "系统未报告";
+                return "Not reported by system";
             }
             float peakLuminance = hdrCapabilities.getDesiredMaxLuminance();
             if (!isValidPositiveDisplayValue(peakLuminance)
                     || peakLuminance == Display.HdrCapabilities.INVALID_LUMINANCE) {
-                return "系统未报告";
+                return "Not reported by system";
             }
             return String.format(Locale.US, "%,.0f nit", peakLuminance);
         }
         catch (RuntimeException e) {
-            return "系统未报告";
+            return "Not reported by system";
         }
     }
 
@@ -5044,7 +5044,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private static String formatHdrMetadataLuminance(int luminanceNits) {
         return luminanceNits > 0
                 ? String.format(Locale.US, "%,d nit", luminanceNits)
-                : "主机未提供";
+                : "Not provided by host";
     }
 
     private String buildUpscaleStatusText() {
@@ -6607,8 +6607,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         int rttVarianceMs = rttInfo == -1L ? -1 : (int) rttInfo;
         logSessionInfo("PERF", String.format(Locale.US,
                 "%dx%d %s, FPS %.1f/%.1f, Net %.0f Kbps, Video %.0f Kbps, Audio %.0f Kbps, "
-                        + "延迟 %d±%d ms, 视频帧丢失 %.2f%%, 解码 %.2f ms, 主机 %.2f ms, "
-                        + "统计年龄 %d ms",
+                        + "Latency %d±%d ms, video frame loss %.2f%%, decode %.2f ms, host %.2f ms, "
+                        + "stats age %d ms",
                 stats.width, stats.height, nonEmpty(stats.codecName, "--"),
                 stats.renderedFps, stats.receivedFps, stats.networkRateKbps,
                 stats.videoRateKbps, stats.audioRateKbps, rttMs, rttVarianceMs,
@@ -6622,8 +6622,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     private String buildSessionStateText() {
         return "Render=" + buildRenderPipelineText()
-                + "；系统手柄=" + (controllerHandler != null
-                        ? controllerHandler.getSystemControllerDiagnosticsDisplayName() : "未初始化")
+                + "; System Gamepad=" + (controllerHandler != null
+                        ? controllerHandler.getSystemControllerDiagnosticsDisplayName() : "not initialized")
                 + "; USB Gamepad=" + buildUsbControllerStatusText()
                 + "; Game Rumble=" + buildNativeGameHapticsStatusText()
                 + "; Audio Haptics=" + buildAudioHapticsStatusText();
@@ -6663,7 +6663,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             throws java.io.IOException, org.json.JSONException {
         StreamReqBean request = streamReqBean;
         if (!connected || request == null) {
-            throw new java.io.IOException("串流已断开");
+            throw new java.io.IOException("Stream disconnected");
         }
         NvHTTP http = new NvHTTP(request.getActiveAddress(), request.getHttpsPort(), request.getUniqueId(),
                 request.getServerCert(), request.getCryptoProvider());

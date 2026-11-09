@@ -891,7 +891,7 @@ public class NvHTTP {
                 throw HostDisplayApiUnavailableException.forStatus(response.code());
             }
             if (response.body() == null) {
-                throw new IOException("主机返回空的显示器管理响应");
+                throw new IOException("Host returned an empty display management response");
             }
             String payload = response.body().string();
             if (payload.trim().startsWith("<")) {
@@ -903,7 +903,7 @@ public class NvHTTP {
                     classified.initCause(error);
                     throw classified;
                 } catch (XmlPullParserException | NumberFormatException error) {
-                    throw new IOException("主机返回无效的显示器管理响应", error);
+                    throw new IOException("Host returned an invalid display management response", error);
                 }
             }
             return new org.json.JSONObject(payload);

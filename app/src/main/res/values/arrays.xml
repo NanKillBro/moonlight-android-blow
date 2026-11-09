@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="gamepad_emulation_names">
-        <item>自动</item>
+        <item>Auto</item>
         <item>Xbox 360</item>
         <item>DualShock 4</item>
         <item>DualSense</item>
@@ -267,7 +267,7 @@
         <item>Trackpad (Move Only)</item>
         <item>Trackpad (Move + Left Click)</item>
         <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN -->
-        <item>触控板「多手势」</item>
+        <item>Trackpad (Multi-gesture)</item>
         <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END -->
     </string-array>
 

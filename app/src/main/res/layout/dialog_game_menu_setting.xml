@@ -547,7 +547,7 @@
                     android:layout_width="match_parent" android:layout_height="wrap_content"
                     android:orientation="vertical" android:visibility="gone">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp" android:text="启动条件"
+                    android:layout_marginTop="8dp" android:text="Activation"
                     android:textColor="@android:color/white" android:textSize="8dp" />
                 <RadioGroup android:id="@+id/gyro_activation_choices" android:layout_width="match_parent"
                     android:layout_height="27dp" android:layout_marginTop="4dp" android:orientation="horizontal">
@@ -561,7 +561,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/gyro_activation_always"
-                        android:text="始终"
+                        android:text="Always"
                         android:textSize="8dp" />
                     <RadioButton
                         android:layout_width="match_parent"
@@ -573,7 +573,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/gyro_activation_left"
-                        android:text="按下左扳机"
+                        android:text="Left Trigger"
                         android:textSize="8dp" />
                     <RadioButton
                         android:layout_width="match_parent"
@@ -585,7 +585,7 @@
                         android:padding="4dp"
                         android:button="@null"
                         android:id="@+id/gyro_activation_right"
-                        android:text="按下右扳机"
+                        android:text="Right Trigger"
                         android:textSize="8dp" />
                 </RadioGroup>
                 </LinearLayout>

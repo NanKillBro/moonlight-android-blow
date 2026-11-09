@@ -145,7 +145,7 @@
 
         <ListPreference
             android:key="screen_gravity_list"
-            android:title="画面显示位置"
+            android:title="Screen Position"
             android:summary="Aligns video stream on foldable devices or tablets with custom resolutions."
             android:entries="@array/screen_gravity_list_names"
             android:entryValues="@array/screen_gravity_list_values"
@@ -278,7 +278,7 @@
 
         <ListPreference
             android:key="mouse_model_list_axi"
-            android:title="触控/鼠标模式"
+            android:title="Mouse/Touch Mode"
             android:summary="Select mouse/touch mode (multi-touch requires Sunshine host)."
             android:entries="@array/mouse_model_names_axi"
             android:entryValues="@array/mouse_model_values_axi"
@@ -470,7 +470,7 @@
         <CheckBoxPreference
             android:key="checkbox_enable_perf_overlay_lite_dialog"
             android:dependency="checkbox_enable_perf_overlay_lite"
-            android:title="精简模式点击选项"
+            android:title="Lite Overlay Tap Action"
             android:summary="Opens in-game quick menu instead of back button behavior."
             android:defaultValue="true" />
 
@@ -485,7 +485,7 @@
         <CheckBoxPreference
             android:key="checkbox_enable_perf_overlay_lite_ext"
             android:dependency="checkbox_enable_perf_overlay_lite"
-            android:title="精简模式扩展参数"
+            android:title="Lite Overlay Extended Stats"
             android:summary="Adds resolution, HDR, decoder, and other details to the overlay."
             android:defaultValue="true" />
 
@@ -539,7 +539,7 @@
 
         <CheckBoxPreference
             android:key="checkbox_enable_ax_floating"
-            android:title="启用悬浮球"
+            android:title="Enable Floating Button"
             android:summary="When enabled, tap floating button to open quick menu."
             android:defaultValue="true"/>
 
@@ -783,36 +783,36 @@
 
 
     <!-- Additional persistent controls also available through the in-stream quick menu. -->
-    <PreferenceCategory android:key="category_settings_additional" android:title="其他配置">
+    <PreferenceCategory android:key="category_settings_additional" android:title="Additional Settings">
         <CheckBoxPreference
             android:key="checkbox_enable_hdr_high_brightness"
-            android:title="HDR 高亮度"
-            android:summary="在支持的设备上提高 HDR 画面亮度"
+            android:title="HDR High Brightness"
+            android:summary="Increases HDR brightness on supported devices"
             android:defaultValue="false" />
         <CheckBoxPreference
             android:key="checkbox_enforce_display_mode"
-            android:title="强制显示模式"
-            android:summary="优先使用匹配串流帧率的显示模式；显示异常时可关闭"
+            android:title="Force Display Mode"
+            android:summary="Prefers a display mode matching the stream frame rate; disable if display issues occur"
             android:defaultValue="false" />
         <CheckBoxPreference
             android:key="checkbox_keep_video_zoom_on_disable"
-            android:title="保留画面缩放"
-            android:summary="关闭缩放调节时保留已调整的画面比例"
+            android:title="Keep Video Zoom"
+            android:summary="Keeps the adjusted video scaling when zoom is disabled"
             android:defaultValue="false" />
         <CheckBoxPreference
             android:key="checkbox_keyboard_esc_opens_game_menu"
-            android:title="Esc 打开游戏菜单"
-            android:summary="使用实体键盘 Esc 键打开串流快捷菜单"
+            android:title="Esc Opens Game Menu"
+            android:summary="Use the physical keyboard Esc key to open the in-stream quick menu"
             android:defaultValue="false" />
         <CheckBoxPreference
             android:key="checkbox_ds5_native_pcm"
-            android:title="DualSense 原生音频震动"
-            android:summary="接收支持的主机发送的原生 PCM 触觉数据"
+            android:title="DualSense Native Audio Haptics"
+            android:summary="Receives native PCM haptic data from supported hosts"
             android:defaultValue="true" />
         <CheckBoxPreference
             android:key="checkbox_ds5_controller_speaker"
-            android:title="DualSense 手柄扬声器"
-            android:summary="向支持的 DualSense 手柄输出游戏扬声器音频"
+            android:title="DualSense Controller Speaker"
+            android:summary="Routes game speaker audio to supported DualSense controllers"
             android:defaultValue="false" />
     </PreferenceCategory>
 

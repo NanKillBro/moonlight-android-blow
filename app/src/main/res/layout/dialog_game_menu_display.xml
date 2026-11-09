@@ -417,7 +417,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="HDR窗口亮度最大"
+                        android:text="Max HDR Window Brightness"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="12dp" />
@@ -427,7 +427,7 @@
                         android:layout_marginLeft="5dp"
                         android:singleLine="true"
                         android:ellipsize="end"
-                        android:text="提高整体亮度，部分设备可能降低HDR高光对比度。"
+                        android:text="Raises overall brightness; may reduce HDR highlight contrast on some devices."
                         android:textStyle="italic|bold"
                         android:textColor="#FFC107"
                         android:textSize="8dp" />
@@ -1161,7 +1161,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="串流手柄类型"
+                    android:text="Streaming Gamepad Type"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -1171,7 +1171,7 @@
                     android:layout_marginLeft="5dp"
                     android:singleLine="true"
                     android:ellipsize="end"
-                    android:text="使用 sunshine·阿西西 生效"
+                    android:text="Takes effect with Sunshine · Axixi"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
                     android:textSize="6dp" />
@@ -1253,7 +1253,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="DS5手柄扬声器"
+                        android:text="DS5 Controller Speaker"
                         android:textColor="@android:color/white"
                         android:textSize="12dp"
                         android:textStyle="bold" />
@@ -1264,7 +1264,7 @@
                         android:layout_marginLeft="5dp"
                         android:ellipsize="end"
                         android:singleLine="true"
-                        android:text="关闭不影响原生触觉反馈"
+                        android:text="Disabling does not affect native haptic feedback"
                         android:textColor="#FFC107"
                         android:textSize="8dp"
                         android:textStyle="italic|bold" />
@@ -1327,7 +1327,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="原生 DS5 触觉 PCM"
+                        android:text="Native DS5 Haptic PCM"
                         android:textColor="@android:color/white"
                         android:textSize="12dp"
                         android:textStyle="bold" />
@@ -1338,7 +1338,7 @@
                         android:layout_marginLeft="5dp"
                         android:ellipsize="end"
                         android:singleLine="true"
-                        android:text="关闭后退回普通震动，保存后重连生效"
+                        android:text="When off, reverts to standard rumble; reconnect after saving to apply"
                         android:textColor="#FFC107"
                         android:textSize="8dp"
                         android:textStyle="italic|bold" />

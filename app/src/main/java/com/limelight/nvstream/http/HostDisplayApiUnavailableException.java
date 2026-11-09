@@ -7,7 +7,7 @@ public final class HostDisplayApiUnavailableException extends IOException {
     private static final long serialVersionUID = 1L;
 
     private HostDisplayApiUnavailableException() {
-        super("此主机不支持显示器管理接口");
+        super("This host does not support the display management API");
     }
 
     /** Classify either an HTTP status or a status parsed from a GameStream XML error body. */
@@ -15,6 +15,6 @@ public final class HostDisplayApiUnavailableException extends IOException {
         if (status == 404 || status == 405 || status == 501) {
             return new HostDisplayApiUnavailableException();
         }
-        return new HostHttpResponseException(status, "显示器管理请求失败");
+        return new HostHttpResponseException(status, "Display management request failed");
     }
 }

@@ -235,7 +235,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sunshine·阿西西"
+                        android:text="Sunshine · Axixi"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="13sp"/>
@@ -243,7 +243,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="搭配月光支持虚拟显示器、麦克风、DS5虚拟手柄等功能"
+                        android:text="Works with Moonlight to support virtual displays, microphones, virtual DS5 gamepads, and more"
                         android:textColor="@android:color/white"
                         android:textSize="10sp"/>
 
@@ -279,7 +279,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="StarCore 星核"
+                        android:text="StarCore"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="13sp"/>
@@ -287,7 +287,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Mac被控端应用，搭配月光实现macOS端串流。"
+                        android:text="Mac host app; works with Moonlight to stream from macOS."
                         android:textColor="@android:color/white"
                         android:textSize="10sp"/>
 

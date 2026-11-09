@@ -3749,7 +3749,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
         if (submitted) {
             lastNativeControllerPcmTimeMs = SystemClock.uptimeMillis();
-            markNativeGameHapticsOutput("原生PCM", outputDevices);
+            markNativeGameHapticsOutput("Native PCM", outputDevices);
         }
         return submitted;
     }
@@ -4524,7 +4524,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     /** Privacy-safe summary for distinguishing Android system input from app-owned USB drivers. */
     public synchronized String getSystemControllerDiagnosticsDisplayName() {
         if (inputDeviceContexts.size() == 0) {
-            return "无";
+            return "None";
         }
 
         StringBuilder summary = new StringBuilder();
