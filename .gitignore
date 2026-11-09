@@ -46,5 +46,9 @@ app/.externalNativeBuild/
 # Optional private AI 2D-to-3D implementation
 /private/3d-sbs-android/
 
+# Local project documentation
+/docs/
+
 # NDK stuff
 .cxx/
+/.codex/

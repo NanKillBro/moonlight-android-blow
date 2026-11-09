@@ -89,6 +89,7 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
     private final AtomicBoolean firstFrameReported = new AtomicBoolean(false);
 
     private static final int CR_MAX_TRIES = 10;
+    private static final long INPUT_BUFFER_TIMEOUT_MS = 5000;
     private static final int CR_RECOVERY_TYPE_NONE = 0;
     private static final int CR_RECOVERY_TYPE_FLUSH = 1;
     private static final int CR_RECOVERY_TYPE_RESTART = 2;
@@ -303,11 +304,16 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
     }
 
     public void setRenderTarget(Surface renderTarget) {
+        setRenderTarget(renderTarget, false);
+    }
+
+    public void setRenderTarget(Surface renderTarget, boolean forceRebind) {
         Surface previousRenderTarget = this.renderTarget;
         this.renderTarget = renderTarget;
 
         MediaCodec decoder = videoDecoder;
-        if (decoder == null || renderTarget == null || previousRenderTarget == renderTarget) {
+        if (stopping || decoder == null || renderTarget == null ||
+                (!forceRebind && previousRenderTarget == renderTarget)) {
             return;
         }
 
@@ -321,7 +327,7 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
 
         try {
             decoder.setOutputSurface(renderTarget);
-            LimeLog.info("Updated MediaCodec output surface without restart");
+            LimeLog.info("Updated MediaCodec output surface without restart: forceRebind=" + forceRebind);
         } catch (IllegalStateException | IllegalArgumentException e) {
             LimeLog.warning("Unable to hot-swap MediaCodec output surface; requesting decoder restart");
             if (!codecRecoveryType.compareAndSet(CR_RECOVERY_TYPE_NONE, CR_RECOVERY_TYPE_RESTART)) {
@@ -1212,12 +1218,15 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
                                 outputBufferQueue.add(lastIndex);
                             }
 
-                            // Add delta time to the totals (excluding probable outliers)
-                            long delta = SystemClock.uptimeMillis() - (presentationTimeUs / 1000);
-                            if (delta >= 0 && delta < 1000) {
-                                activeWindowVideoStats.decoderTimeMs += delta;
+                            // MediaCodec returns the Java monotonic timestamp that we supplied with
+                            // the input buffer, so the output delta does not depend on Moonlight Core's
+                            // session-relative clock epoch.
+                            long deltaUs = getMonotonicTimeUs() - presentationTimeUs;
+                            if (deltaUs >= 0 && deltaUs < 1_000_000) {
+                                activeWindowVideoStats.decoderTimeUs += deltaUs;
+                                activeWindowVideoStats.decoderTimeSamples++;
                                 if (!USE_FRAME_RENDER_TIME) {
-                                    activeWindowVideoStats.totalTimeMs += delta;
+                                    activeWindowVideoStats.totalTimeMs += deltaUs / 1000;
                                 }
                             }
                         } else {
@@ -1249,6 +1258,13 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
     private boolean fetchNextInputBuffer() {
         long startTime;
         boolean codecRecovered;
+        boolean timedOut = false;
+
+        if (stopping || !foreground) {
+            // Still participate in any pending recovery to release quiesced codec threads.
+            doCodecRecoveryIfRequired(CR_FLAG_INPUT_THREAD);
+            return false;
+        }
 
         if (nextInputBuffer != null) {
             // We already have an input buffer
@@ -1259,12 +1275,25 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
 
         try {
             // If we don't have an input buffer index yet, fetch one now
-            while (nextInputBufferIndex < 0 && !stopping) {
+            while (nextInputBufferIndex < 0 && !stopping && foreground &&
+                    codecRecoveryType.get() == CR_RECOVERY_TYPE_NONE) {
                 nextInputBufferIndex = videoDecoder.dequeueInputBuffer(10000);
+                if (nextInputBufferIndex < 0 && !stopping && foreground &&
+                        SystemClock.uptimeMillis() - startTime >= INPUT_BUFFER_TIMEOUT_MS) {
+                    timedOut = true;
+                    // A stalled output surface can exhaust input buffers without a CodecException.
+                    // Use the existing bounded recovery path before treating it as a fatal hang.
+                    if (codecRecoveryAttempts < CR_MAX_TRIES) {
+                        LimeLog.warning("Timed out waiting for MediaCodec input; requesting decoder restart");
+                        codecRecoveryType.compareAndSet(CR_RECOVERY_TYPE_NONE, CR_RECOVERY_TYPE_RESTART);
+                    }
+                    break;
+                }
             }
 
             // Get the backing ByteBuffer for the input buffer index
-            if (nextInputBufferIndex >= 0) {
+            if (nextInputBufferIndex >= 0 && !stopping && foreground &&
+                    codecRecoveryType.get() == CR_RECOVERY_TYPE_NONE) {
                 // Using the new getInputBuffer() API on Lollipop allows
                 // the framework to do some performance optimizations for us
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1292,7 +1321,7 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
 
         // If codec recovery is required, always return false to ensure the caller will request
         // an IDR frame to complete the codec recovery.
-        if (codecRecovered) {
+        if (codecRecovered || stopping || !foreground) {
             return false;
         }
 
@@ -1303,9 +1332,9 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
         }
 
         if (nextInputBuffer == null) {
-            // We've been hung for 5 seconds and no other exception was reported,
-            // so generate a decoder hung exception
-            if (deltaMs >= 5000 && initialException == null) {
+            // Only report a foreground hang after exhausting codec recovery. Stopping or
+            // backgrounding must never turn cancellation into an uncaught decoder exception.
+            if (timedOut && initialException == null) {
                 DecoderHungException decoderHungException = new DecoderHungException(deltaMs);
                 if (!reportedCrash) {
                     reportedCrash = true;
@@ -1531,7 +1560,7 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
 
         // Flip stats windows roughly every second
         if (SystemClock.uptimeMillis() >= activeWindowVideoStats.measurementStartTimestamp + 1000) {
-            if (prefs.enablePerfOverlay) {
+            if (prefs.enablePerfOverlay || prefs.enableStreamSessionLogging) {
                 VideoStats lastTwo = new VideoStats();
                 lastTwo.add(lastWindowVideoStats);
                 lastTwo.add(activeWindowVideoStats);
@@ -1556,9 +1585,9 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
                     video_format+="???";
                 }
 
-                float decodeTimeMs = lastTwo.totalFramesReceived > 0
-                        ? (float)lastTwo.decoderTimeMs / lastTwo.totalFramesReceived
-                        : 0f;
+                float decodeTimeMs = lastTwo.decoderTimeSamples > 0
+                        ? (float)lastTwo.decoderTimeUs / 1000f / lastTwo.decoderTimeSamples
+                        : -1f;
                 long rttInfo = MoonBridge.getEstimatedRttInfo();
                 long now = SystemClock.uptimeMillis();
                 float audioRateKbps = estimateAudioRateKbps();
@@ -1574,9 +1603,10 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
                 stats.totalFps = fps.totalFps;
                 stats.receivedFps = fps.receivedFps;
                 stats.renderedFps = fps.renderedFps;
-                stats.packetLossPercent = lastTwo.totalFrames > 0
+                stats.frameLossPercent = lastTwo.totalFrames > 0
                         ? (float)lastTwo.framesLost / lastTwo.totalFrames * 100
                         : 0f;
+                stats.packetLossPercent = stats.frameLossPercent;
                 stats.networkLatencyMs = (int)(rttInfo >> 32);
                 stats.networkLatencyVarianceMs = (int)rttInfo;
                 stats.decodeTimeMs = decodeTimeMs;
@@ -1595,6 +1625,14 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
                 stats.hdr = (videoFormat & MoonBridge.VIDEO_FORMAT_MASK_10BIT) != 0;
                 stats.codecName = video_format;
                 stats.decoderName = decoder;
+
+                VideoStats cumulativeStats = new VideoStats();
+                cumulativeStats.add(globalVideoStats);
+                cumulativeStats.add(activeWindowVideoStats);
+                stats.framesReceived = cumulativeStats.totalFramesReceived;
+                stats.framesRendered = cumulativeStats.totalFramesRendered;
+                stats.framesLost = cumulativeStats.framesLost;
+                stats.frameLossEvents = cumulativeStats.frameLossEvents;
 
                 perfListener.onPerfUpdate(stats);
             }
@@ -1837,6 +1875,10 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
             activeWindowVideoStats.totalTimeMs += enqueueTimeMs - receiveTimeMs;
         }
 
+        // Stamp the frame in Java's monotonic clock domain before waiting for an input
+        // buffer. This preserves decoder backpressure in the latency measurement without
+        // depending on Moonlight Core's session-relative timestamp epoch.
+        long timestampUs = getMonotonicTimeUs();
         if (!fetchNextInputBuffer()) {
             return MoonBridge.DR_NEED_IDR;
         }
@@ -1860,7 +1902,6 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
             }
         }
 
-        long timestampUs = enqueueTimeMs * 1000;
         if (timestampUs <= lastTimestampUs) {
             // We can't submit multiple buffers with the same timestamp
             // so bump it up by one before queuing
@@ -1950,10 +1991,14 @@ public class MediaCodecDecoderRenderer extends VideoDecoderRenderer implements C
     }
 
     public int getAverageDecoderLatency() {
-        if (globalVideoStats.totalFramesReceived == 0) {
+        if (globalVideoStats.decoderTimeSamples == 0) {
             return 0;
         }
-        return (int)(globalVideoStats.decoderTimeMs / globalVideoStats.totalFramesReceived);
+        return (int)(globalVideoStats.decoderTimeUs / 1000 / globalVideoStats.decoderTimeSamples);
+    }
+
+    private static long getMonotonicTimeUs() {
+        return System.nanoTime() / 1000;
     }
 
     private float estimateAudioRateKbps() {

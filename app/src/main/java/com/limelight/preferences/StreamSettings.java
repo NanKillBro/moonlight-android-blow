@@ -22,7 +22,6 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
-import android.support.v4.content.FileProvider;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -43,25 +42,123 @@ import com.limelight.R;
 import com.limelight.StreamLogFilesActivity;
 import com.limelight.binding.input.virtual_controller.keyboard.KeyBoardControllerConfigurationLoader;
 import com.limelight.binding.video.MediaCodecHelper;
-import com.limelight.computers.ComputerDatabaseManager;
-import com.limelight.nvstream.http.ComputerDetails;
+import com.limelight.ui.AppDialog;
+import com.limelight.utils.PairingBackupManager;
 import com.limelight.log.StreamLogStore;
 import com.limelight.utils.Dialog;
 import com.limelight.utils.FileUriUtils;
 import com.limelight.utils.UiHelper;
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class StreamSettings extends Activity {
     private PreferenceConfiguration previousPrefs;
     private int previousDisplayPixelCount;
+    private boolean backupOperationRunning;
+    private AlertDialog backupProgress;
+    private boolean profileOperationRunning;
+    private AlertDialog profileProgress;
+
+    void changeSettingsProfile(int target, boolean reset) {
+        if (profileOperationRunning || isFinishing()) return;
+        if (!reset && target == SettingsProfileStore.active(this)) return;
+        profileOperationRunning = true;
+        profileProgress = AppDialog.showProgress(this,
+                getString(reset ? R.string.settings_profile_reset : R.string.settings_profile_switch),
+                getString(R.string.settings_profile_working), null);
+        // Remove the old Preference model before replacing live keys, so its pending
+        // dependency bindings cannot write values back into the newly selected profile.
+        SettingsFragment model = getSettingsModel();
+        if (model != null) {
+            getFragmentManager().beginTransaction().remove(model).commit();
+            getFragmentManager().executePendingTransactions();
+        }
+        Context context = getApplicationContext();
+        new Thread(() -> {
+            Exception failure = null;
+            try {
+                SettingsProfileStore.change(context, target, reset);
+            } catch (Exception e) {
+                failure = e;
+                LimeLog.warning("Settings profile update failed: " + e);
+            }
+            final Exception result = failure;
+            runOnUiThread(() -> {
+                profileOperationRunning = false;
+                if (profileProgress != null) {
+                    profileProgress.dismiss();
+                    profileProgress = null;
+                }
+                if (isFinishing() || isDestroyed()) return;
+                UiHelper.setLocale(this);
+                reloadSettings();
+                if (result != null) {
+                    AppDialog.showMessage(this, getString(R.string.settings_profile_switch),
+                            getString(R.string.settings_profile_failed), getString(R.string.dialog_action_close), null);
+                }
+            });
+        }, "Settings profiles").start();
+    }
+
+    private void runBackupOperation(Uri uri, boolean export) {
+        if (backupOperationRunning) {
+            return;
+        }
+        backupOperationRunning = true;
+        backupProgress = AppDialog.showProgress(this,
+                getString(export ? R.string.pairing_backup_export : R.string.pairing_backup_import),
+                getString(R.string.pairing_backup_working), null);
+        Context context = getApplicationContext();
+        new Thread(() -> {
+            Exception failure = null;
+            try {
+                if (export) {
+                    PairingBackupManager.exportBackup(context, uri);
+                } else {
+                    PairingBackupManager.importBackup(context, uri);
+                }
+            } catch (Exception e) {
+                failure = e;
+                LimeLog.warning("Pairing backup " + (export ? "export" : "import") + " failed: " + e);
+            }
+            final Exception result = failure;
+            runOnUiThread(() -> {
+                backupOperationRunning = false;
+                if (backupProgress != null) {
+                    backupProgress.dismiss();
+                    backupProgress = null;
+                }
+                if (!isFinishing() && !isDestroyed()) {
+                    AppDialog.showMessage(this,
+                            getString(export ? R.string.pairing_backup_export : R.string.pairing_backup_import),
+                            getString(result == null
+                                    ? (export ? R.string.pairing_backup_export_success : R.string.pairing_backup_import_success)
+                                    : (export ? R.string.pairing_backup_export_failed : R.string.pairing_backup_import_failed)),
+                            getString(R.string.dialog_action_close), null);
+                }
+            });
+        }, "Pairing backup").start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (profileProgress != null) {
+            profileProgress.dismiss();
+            profileProgress = null;
+        }
+        if (backupProgress != null) {
+            backupProgress.dismiss();
+            backupProgress = null;
+        }
+        super.onDestroy();
+    }
 
     // HACK for Android 9
     static DisplayCutout displayCutoutP;
 
     void reloadSettings() {
+        if (profileOperationRunning) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Display.Mode mode = getWindowManager().getDefaultDisplay().getMode();
             previousDisplayPixelCount = mode.getPhysicalWidth() * mode.getPhysicalHeight();
@@ -71,11 +168,26 @@ public class StreamSettings extends Activity {
         ).commitAllowingStateLoss();
     }
 
+    SettingsFragment getSettingsModel() {
+        android.app.Fragment fragment = getFragmentManager().findFragmentById(R.id.stream_settings);
+        return fragment instanceof SettingsFragment ? (SettingsFragment) fragment : null;
+    }
+
+    private void showSettingsPanel() {
+        if (isFinishing() || isDestroyed()
+                || (Build.VERSION.SDK_INT >= 26 && getFragmentManager().isStateSaved())) return;
+        SettingsPanelDialog panel = (SettingsPanelDialog) getFragmentManager()
+                .findFragmentByTag(SettingsPanelDialog.TAG);
+        if (panel == null) {
+            new SettingsPanelDialog().show(getFragmentManager(), SettingsPanelDialog.TAG);
+        } else {
+            panel.refresh();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !PreferenceConfiguration.readPreferences(this).uiThemeColorWhite) {
-            setTheme(R.style.AppTheme);
-        }
+        setTheme(R.style.SettingsHostTheme);
         super.onCreate(savedInstanceState);
 
         previousPrefs = PreferenceConfiguration.readPreferences(this);
@@ -86,9 +198,6 @@ public class StreamSettings extends Activity {
 
         UiHelper.notifyNewRootView(this);
 
-        if (previousPrefs.uiThemeColorWhite) {
-            UiHelper.setStatusBarLightMode(getWindow(),true);
-        }
     }
 
     @Override
@@ -377,6 +486,13 @@ public class StreamSettings extends Activity {
         public void onResume() {
             super.onResume();
             updateStreamLogSummary();
+            // Keep the Preference lifecycle for dependencies and activity results. Only the
+            // independent settings sheet is visible; never open native preference dialogs.
+            new Handler().post(() -> {
+                if (isResumed() && getActivity() instanceof StreamSettings) {
+                    ((StreamSettings) getActivity()).showSettingsPanel();
+                }
+            });
         }
 
         private void updateStreamLogSummary() {
@@ -519,15 +635,11 @@ public class StreamSettings extends Activity {
             }*/
             PreferenceCategory category_gamepad_settings =
                     (PreferenceCategory) findPreference("category_gamepad_settings");
-            PreferenceCategory category_audio_settings =
-                    (PreferenceCategory) findPreference("category_audio_settings");
             // Remove the vibration options if the device can't vibrate
             if (!((Vibrator)getActivity().getSystemService(Context.VIBRATOR_SERVICE)).hasVibrator()) {
                 category_gamepad_settings.removePreference(findPreference("checkbox_vibrate_fallback"));
                 category_gamepad_settings.removePreference(findPreference("seekbar_vibrate_fallback_strength"));
-                category_audio_settings.removePreference(findPreference("checkbox_enable_audio_haptics"));
-                category_audio_settings.removePreference(findPreference("seekbar_audio_haptics_strength"));
-                category_audio_settings.removePreference(findPreference("list_audio_haptics_voice_filter"));
+                // Audio haptics also supports external controllers without a phone vibrator.
                 // The entire OSC category may have already been removed by the touchscreen check above
                 PreferenceCategory category = (PreferenceCategory) findPreference("category_onscreen_controls");
                 if (category != null) {
@@ -892,39 +1004,15 @@ public class StreamSettings extends Activity {
                     }
                 });
             }
-            findPreference("import_computers_data_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-                    startActivityForResult(intent, READ_DATABASE_REQUEST_CODE);
-                    return false;
-                }
+            findPreference("import_pairing_backup").setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("*/*");
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[] {
+                        "application/zip", "application/x-zip-compressed", "application/octet-stream" });
+                startActivityForResult(intent, READ_BACKUP_REQUEST_CODE);
+                return true;
             });
-
-            findPreference("import_https_data_crt_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-                    startActivityForResult(intent, READ_DATA_CRT_REQUEST_CODE);
-                    return false;
-                }
-            });
-
-            findPreference("import_https_data_key_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("*/*");
-                    startActivityForResult(intent, READ_DATA_KEY_REQUEST_CODE);
-                    return false;
-                }
-            });
-
             findPreference("import_switch_button_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -983,63 +1071,16 @@ public class StreamSettings extends Activity {
                 });
             }
 
-            findPreference("export_computers_data_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    File dataFile=new File(getActivity().getDatabasePath(ComputerDatabaseManager.COMPUTER_DB_NAME).getPath());
-                    if(!dataFile.exists()){
-                        return false;
-                    }
-                    Uri uri;
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    String authority= getActivity().getPackageName()+".fileprovider";
-                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
-                    intent.putExtra(Intent.EXTRA_STREAM, uri);
-                    intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"Save Data File"));
-                    return false;
-                }
+            findPreference("export_pairing_backup").setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                intent.setType("application/zip");
+                intent.putExtra(Intent.EXTRA_TITLE, "moonlight-backup-"
+                        + new java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
+                                .format(new java.util.Date()) + ".zip");
+                startActivityForResult(intent, WRITE_BACKUP_REQUEST_CODE);
+                return true;
             });
-
-            findPreference("export_https_data_crt_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    File dataFile=new File(getActivity().getFilesDir().getAbsolutePath()+ File.separator + "client.crt");
-                    if(!dataFile.exists()){
-                        return false;
-                    }
-                    Uri uri;
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    String authority= getActivity().getPackageName()+".fileprovider";
-                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
-                    intent.putExtra(Intent.EXTRA_STREAM, uri);
-                    intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"Save Data File"));
-                    return false;
-                }
-            });
-
-            findPreference("export_https_data_key_file").setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    File dataFile=new File(getActivity().getFilesDir().getAbsolutePath()+ File.separator + "client.key");
-                    if(!dataFile.exists()){
-                        return false;
-                    }
-                    Uri uri;
-                    Intent intent = new Intent(Intent.ACTION_SEND);
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    String authority= getActivity().getPackageName()+".fileprovider";
-                    uri= FileProvider.getUriForFile(getActivity(),authority,dataFile);
-                    intent.putExtra(Intent.EXTRA_STREAM, uri);
-                    intent.setType("*/*");
-                    startActivity(Intent.createChooser(intent,"Save Data File"));
-                    return false;
-                }
-            });
-
             EditTextPreference bitrateEditPre= (EditTextPreference) findPreference("edit_diy_bitrate");
             EditText editText=bitrateEditPre.getEditText();
 
@@ -1080,11 +1121,8 @@ public class StreamSettings extends Activity {
 
         int GAMEPAD_READ_REQUEST_CODE=1002;
 
-        int READ_DATABASE_REQUEST_CODE=1003;
-
-        int READ_DATA_CRT_REQUEST_CODE=1004;
-
-        int READ_DATA_KEY_REQUEST_CODE=1005;
+        private static final int READ_BACKUP_REQUEST_CODE = 1003;
+        private static final int WRITE_BACKUP_REQUEST_CODE = 1004;
 
         int READ_REQUEST_SWITCH_BUTTON_CODE=1007;
 
@@ -1093,6 +1131,16 @@ public class StreamSettings extends Activity {
         @Override
         public void onActivityResult(int requestCode, int resultCode, Intent data) {
             super.onActivityResult(requestCode, resultCode, data);
+            if (resultCode != Activity.RESULT_OK || data == null || data.getData() == null) {
+                return;
+            }
+            if (requestCode == READ_BACKUP_REQUEST_CODE || requestCode == WRITE_BACKUP_REQUEST_CODE) {
+                StreamSettings activity = (StreamSettings) getActivity();
+                if (activity != null) {
+                    activity.runBackupOperation(data.getData(), requestCode == WRITE_BACKUP_REQUEST_CODE);
+                }
+                return;
+            }
             if ((requestCode == READ_REQUEST_CODE || requestCode == GAMEPAD_READ_REQUEST_CODE) && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
                 try {
                     Uri uri = data.getData();
@@ -1111,62 +1159,6 @@ public class StreamSettings extends Activity {
                     }else{
                         Toast.makeText(getActivity(),"Import failed!",Toast.LENGTH_SHORT).show();
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(),"An error occurred"+e.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-
-            if (requestCode == READ_DATABASE_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
-                try {
-                    Uri uri = data.getData();
-                    File dataBaseFile= null;
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                        dataBaseFile = FileUriUtils.uriToFileApiQ(uri,getActivity());
-                    }else{
-                        String displayName = System.currentTimeMillis() + Math.round((Math.random() + 1) * 1000)+".db";
-                        dataBaseFile=new File(getActivity().getCacheDir().getAbsolutePath(), displayName);
-                        FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    }
-                    ComputerDatabaseManager importManager=new ComputerDatabaseManager(getActivity(),dataBaseFile);
-                    List<ComputerDetails> importComputers=importManager.getAllComputers();
-                    ComputerDatabaseManager manager=new ComputerDatabaseManager(getActivity());
-                    for (ComputerDetails computer : importComputers) {
-                        manager.updateComputer(computer);
-                    }
-                    Toast.makeText(getActivity(),"Imported successfully! Reopen app to take effect.",Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(),"An error occurred"+e.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-                return;
-            }
-
-            if (requestCode == READ_DATA_CRT_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
-                try {
-                    Uri uri = data.getData();
-                    File dataBaseFile= null;
-                    String displayName = "client.crt";
-                    dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
-                    FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    Toast.makeText(getActivity(),"Imported successfully!",Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Toast.makeText(getActivity(),"An error occurred"+e.getMessage(),Toast.LENGTH_SHORT).show();
-                }
-                return;
-
-            }
-
-            if (requestCode == READ_DATA_KEY_REQUEST_CODE && resultCode == Activity.RESULT_OK &&data.getData()!=null) {
-                try {
-                    Uri uri = data.getData();
-                    File dataBaseFile= null;
-                    String displayName = "client.key";
-                    dataBaseFile=new File(getActivity().getFilesDir().getAbsolutePath(), displayName);
-                    FileUriUtils.copyUriToInternalStorage(getActivity(),uri,dataBaseFile);
-                    Toast.makeText(getActivity(),"Imported successfully!",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getActivity(),"An error occurred"+e.getMessage(),Toast.LENGTH_SHORT).show();

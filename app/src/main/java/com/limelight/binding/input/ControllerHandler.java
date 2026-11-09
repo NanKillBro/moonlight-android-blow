@@ -64,6 +64,12 @@ import java.util.List;
 import java.util.Map;
 
 public class ControllerHandler implements InputManager.InputDeviceListener, UsbDriverListener {
+    private static final long NATIVE_CONTROLLER_PCM_SUPPRESSION_MS = 250L;
+    private static final int NATIVE_CONTROLLER_PCM_SOURCE_RATE = 48000;
+    private static final int OPTIONAL_PCM_HAPTICS_RATE = 3000;
+    private static final int NATIVE_CONTROLLER_PCM_CHANNELS = 4;
+    private static final int NATIVE_CONTROLLER_PCM_DOWNSAMPLE_FACTOR =
+            NATIVE_CONTROLLER_PCM_SOURCE_RATE / OPTIONAL_PCM_HAPTICS_RATE;
     private static final int MAXIMUM_BUMPER_UP_DELAY_MS = 100;
 
     private static final int START_DOWN_TIME_MOUSE_MODE_MS = 750;
@@ -122,6 +128,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private final Vector2d inputVector = new Vector2d();
 
     private final SparseArray<InputDeviceContext> inputDeviceContexts = new SparseArray<>();
+    private final SparseArray<Short> hostGyroReportRates = new SparseArray<>();
     private final SparseArray<UsbDeviceContext> usbDeviceContexts = new SparseArray<>();
 
     private final NvConnection conn;
@@ -131,13 +138,17 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private final GameGestures gestures;
     private final InputManager inputManager;
     private final Vibrator deviceVibrator;
-    private final VibratorManager deviceVibratorManager;
     private final SensorManager deviceSensorManager;
     private final SceManager sceManager;
     private final Handler mainThreadHandler;
     private final HandlerThread backgroundHandlerThread;
     private final Handler backgroundThreadHandler;
     private final PcmHapticsBackend optionalPcmHapticsBackend;
+    private final String gamepadEmulationPreference;
+    private final boolean ds5ControllerSpeakerEnabled;
+    private final boolean ds5NativePcmEnabled;
+    private final NativePcmDownsampler[] nativePcmDownsamplers =
+            new NativePcmDownsampler[MAX_GAMEPADS];
     private boolean hasGameController;
     private boolean stopped = false;
     private boolean streamReady;
@@ -150,9 +161,17 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private volatile long nativeGameHapticsOutputTimeMs;
     private volatile String audioHapticsOutputRoute = "";
     private volatile long audioHapticsOutputTimeMs;
+    private volatile long lastNativeControllerPcmTimeMs;
 
     private final PreferenceConfiguration prefConfig;
     private short currentControllers, initialControllers;
+    private int reportedControllerArrivalMask;
+    private boolean virtualDsTouchpadSessionUsed;
+    // Bit 31 is stripped by moonlight-common to guard against sign extension.
+    private static final int USBIP_RETIRE_CONTROLLER_FLAG = 0x40000000;
+    private UsbDevice usbIpHandoffDevice;
+    private int usbIpHandoffSlots;
+    private boolean usbIpHandoffActive;
 
     private final Runnable mouseEmulationRunnable = new Runnable() {
         @Override
@@ -185,6 +204,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     }
 
     private boolean shouldSuppressControllerRumble(AbstractController controller) {
+        if (controller.isAdvancedAudioHapticsActive() &&
+                SystemClock.uptimeMillis() - lastNativeControllerPcmTimeMs <
+                        NATIVE_CONTROLLER_PCM_SUPPRESSION_MS) {
+            return true;
+        }
         return shouldUseControllerAudioHaptics() &&
                 !prefConfig.audioHapticsKeepControllerRumble;
     }
@@ -198,6 +222,15 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                                              short lowFreqMotor, short highFreqMotor) {
         deviceContext.lowFreqMotor = lowFreqMotor;
         deviceContext.highFreqMotor = highFreqMotor;
+
+        // Keep forced body vibration as an explicit, live preference. Binding the device
+        // vibrator to a controller context during discovery allowed controllers incorrectly
+        // reported as internal by Android to bypass both device-rumble settings.
+        if (prefConfig.enableDeviceRumble && deviceVibrator != null && deviceVibrator.hasVibrator()) {
+            rumbleSingleVibrator(deviceVibrator,
+                    deviceContext.lowFreqMotor, deviceContext.highFreqMotor);
+            return true;
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && deviceContext.vibratorManager != null) {
             if (deviceContext.quadVibrators) {
@@ -225,6 +258,12 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     private boolean isHandledByOptionalPcmHaptics(int vendorId, int productId) {
         return optionalPcmHapticsBackend.isActive()
                 && optionalPcmHapticsBackend.handlesDevice(vendorId, productId);
+    }
+
+    private short configureNativePcmCapability(short capabilities,
+                                                int vendorId, int productId) {
+        return applyNativeDs5PcmCapability(capabilities, ds5NativePcmEnabled,
+                optionalPcmHapticsBackend.handlesDevice(vendorId, productId));
     }
 
     private static boolean hasRumbleAmplitude(short lowFreqMotor, short highFreqMotor) {
@@ -408,13 +447,16 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             addOutputDevice(outputDevices,
                     optionalPcmHapticsBackend.getActiveDeviceDisplayName());
         }
-        for (int i = 0; i < usbDeviceContexts.size(); i++) {
-            UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
-            if (deviceContext.device.isAdvancedAudioHapticsActive() &&
-                    deviceContext.device.submitAdvancedAudioHapticsFrame(frame, intensityGain)) {
-                submitted = true;
-                addOutputDevice(outputDevices,
-                        getUsbControllerTypeDisplayName(deviceContext.device));
+        if (SystemClock.uptimeMillis() - lastNativeControllerPcmTimeMs >=
+                NATIVE_CONTROLLER_PCM_SUPPRESSION_MS) {
+            for (int i = 0; i < usbDeviceContexts.size(); i++) {
+                UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+                if (deviceContext.device.isAdvancedAudioHapticsActive() &&
+                        deviceContext.device.submitAdvancedAudioHapticsFrame(frame, intensityGain)) {
+                    submitted = true;
+                    addOutputDevice(outputDevices,
+                            getUsbControllerTypeDisplayName(deviceContext.device));
+                }
             }
         }
 
@@ -482,6 +524,13 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         this.conn = conn;
         this.gestures = gestures;
         this.prefConfig = prefConfig;
+        this.gamepadEmulationPreference = PreferenceConfiguration.normalizeGamepadEmulation(
+                prefConfig.gamepadEmulation);
+        this.ds5ControllerSpeakerEnabled =
+                PreferenceConfiguration.GAMEPAD_EMULATION_DS5.equals(gamepadEmulationPreference) &&
+                        prefConfig.ds5ControllerSpeakerEnabled;
+        this.ds5NativePcmEnabled = isNativeDs5PcmEnabled(
+                gamepadEmulationPreference, prefConfig.ds5NativePcmEnabled);
         this.optionalPcmHapticsBackend = optionalPcmHapticsBackend == null
                 ? NoOpPcmHapticsBackend.INSTANCE : optionalPcmHapticsBackend;
         this.deviceVibrator = (Vibrator) activityContext.getSystemService(Context.VIBRATOR_SERVICE);
@@ -494,13 +543,6 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         this.backgroundHandlerThread = new HandlerThread("ControllerHandler");
         this.backgroundHandlerThread.start();
         this.backgroundThreadHandler = new Handler(backgroundHandlerThread.getLooper());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            this.deviceVibratorManager = (VibratorManager) activityContext.getSystemService(Context.VIBRATOR_MANAGER_SERVICE);
-        }
-        else {
-            this.deviceVibratorManager = null;
-        }
 
         this.sceManager = new SceManager(activityContext);
         this.sceManager.start();
@@ -585,6 +627,9 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     public synchronized void onInputDeviceRemoved(int deviceId) {
         InputDeviceContext context = inputDeviceContexts.get(deviceId);
         if (context != null) {
+            if (context.assignedControllerNumber && matchesUsbIpDevice(context.inputDevice)) {
+                usbIpHandoffSlots |= getControllerNumberBit(context.controllerNumber);
+            }
             LimeLog.info("Removed controller: "+context.name+" ("+deviceId+")");
             inputDeviceContexts.remove(deviceId);
             releaseControllerNumber(context);
@@ -626,11 +671,14 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             return;
         }
 
+        stopAllHaptics();
+
         // Stop new device contexts from being created or used
         releaseMouseEmulationButtons();
         mouseEmulationActive = false;
         mainThreadHandler.removeCallbacks(mouseEmulationRunnable);
         stopped = true;
+        defaultContext.destroy();
         optionalPcmHapticsBackend.stop();
         optionalPcmHapticsWasActive = false;
 
@@ -647,7 +695,61 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             deviceContext.destroy();
         }
 
-        deviceVibrator.cancel();
+    }
+
+    /**
+     * Explicitly clears every haptics route while the device handles are still valid.
+     * This deliberately uses the normal zero-rumble path so the optional 1 ms
+     * "震动停止方案A" compatibility pulse is preserved for the device vibrator.
+     */
+    public synchronized void stopAllHaptics() {
+        if (stopped) {
+            return;
+        }
+
+        optionalPcmHapticsBackend.stopRumble();
+
+        boolean deviceVibratorStopped = false;
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext deviceContext = inputDeviceContexts.valueAt(i);
+            deviceContext.leftTriggerMotor = 0;
+            deviceContext.rightTriggerMotor = 0;
+
+            if (prefConfig.enableDeviceRumble && deviceVibrator != null &&
+                    deviceVibrator.hasVibrator()) {
+                deviceContext.lowFreqMotor = 0;
+                deviceContext.highFreqMotor = 0;
+                if (!deviceVibratorStopped) {
+                    rumbleSingleVibrator(deviceVibrator, (short) 0, (short) 0);
+                    deviceVibratorStopped = true;
+                }
+            }
+            else {
+                rumbleInputDeviceContext(deviceContext, (short) 0, (short) 0);
+            }
+        }
+
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            AbstractController controller = usbDeviceContexts.valueAt(i).device;
+            controller.stopAdvancedAudioHaptics();
+            controller.rumbleTriggers((short) 0, (short) 0);
+            controller.rumble((short) 0, (short) 0);
+        }
+
+        // Device-body rumble may have been used by on-screen controls or fallback routing even
+        // when there are no physical input contexts, so always clear it exactly once.
+        if (!deviceVibratorStopped && deviceVibrator != null && deviceVibrator.hasVibrator()) {
+            rumbleSingleVibrator(deviceVibrator, (short) 0, (short) 0);
+        }
+
+        for (int i = 0; i < nativePcmDownsamplers.length; i++) {
+            nativePcmDownsamplers[i] = null;
+        }
+        lastNativeControllerPcmTimeMs = 0L;
+        nativeGameHapticsOutputRoute = "";
+        nativeGameHapticsOutputTimeMs = 0L;
+        audioHapticsOutputRoute = "";
+        audioHapticsOutputTimeMs = 0L;
     }
 
     public void destroy() {
@@ -902,7 +1004,13 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         // We must do this after clearing the currentControllers entry so this
         // causes the device to be removed on the server PC.
         if (context.assignedControllerNumber) {
-            conn.sendControllerInput(context.controllerNumber, getActiveControllerMask(),
+            short activeControllerMask = getActiveControllerMask();
+            if (!hasAssignedControllerForSlot(context.controllerNumber) &&
+                    !hasOnscreenControllerSourceForSlot(context.controllerNumber)) {
+                clearControllerArrival(context.controllerNumber);
+                conn.cancelPendingControllerArrivalEvent((byte) context.controllerNumber);
+            }
+            conn.sendControllerInput(context.controllerNumber, activeControllerMask,
                     (short) 0,
                     (byte) 0, (byte) 0,
                     (short) 0, (short) 0,
@@ -932,6 +1040,9 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 // releaseControllerNumber() sends a neutral packet. If another input path still
                 // contributes to the same player, immediately restore its aggregated state.
                 sendControllerInputPacket(remainingContext);
+            }
+            else if (hasOnscreenControllerSourceForSlot(controllerNumber)) {
+                sendControllerInputPacket(defaultContext);
             }
         }
 
@@ -977,6 +1088,16 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             }
         }
         return null;
+    }
+
+    private boolean hasAssignedControllerForSlot(short controllerNumber) {
+        return findAssignedControllerContext(controllerNumber, false) != null ||
+                findAssignedControllerContext(controllerNumber, true) != null;
+    }
+
+    private boolean hasOnscreenControllerSourceForSlot(short controllerNumber) {
+        return controllerNumber == defaultContext.controllerNumber && !usbIpHandoffActive &&
+                (prefConfig.onscreenController || virtualDsTouchpadSessionUsed);
     }
 
     private boolean isAssociatedJoystick(InputDevice originalDevice, InputDevice possibleAssociatedJoystick) {
@@ -1289,35 +1410,18 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         context.hasPaddles = MoonBridge.guessControllerHasPaddles(context.vendorId, context.productId);
         context.hasShare = MoonBridge.guessControllerHasShareButton(context.vendorId, context.productId);
 
-        if(prefConfig.enableDeviceRumble){
-            context.vibrator = deviceVibrator;
-        }else{
-            // Try to use the InputDevice's associated vibrators first
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasQuadAmplitudeControlledRumbleVibrators(dev.getVibratorManager())) {
-                context.vibratorManager = dev.getVibratorManager();
-                context.quadVibrators = true;
-            }
-            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasDualAmplitudeControlledRumbleVibrators(dev.getVibratorManager())) {
-                context.vibratorManager = dev.getVibratorManager();
-                context.quadVibrators = false;
-            }
-            else if (dev.getVibrator().hasVibrator()) {
-                context.vibrator = dev.getVibrator();
-            }
-            else if (!context.external) {
-                // If this is an internal controller, try to use the device's vibrator
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasQuadAmplitudeControlledRumbleVibrators(deviceVibratorManager)) {
-                    context.vibratorManager = deviceVibratorManager;
-                    context.quadVibrators = true;
-                }
-                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasDualAmplitudeControlledRumbleVibrators(deviceVibratorManager)) {
-                    context.vibratorManager = deviceVibratorManager;
-                    context.quadVibrators = false;
-                }
-                else if (deviceVibrator.hasVibrator()) {
-                    context.vibrator = deviceVibrator;
-                }
-            }
+        // Bind only vibrators owned by the InputDevice here. Device-body vibration is routed
+        // later by handleRumble() so the force and fallback preferences are always respected.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasQuadAmplitudeControlledRumbleVibrators(dev.getVibratorManager())) {
+            context.vibratorManager = dev.getVibratorManager();
+            context.quadVibrators = true;
+        }
+        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && hasDualAmplitudeControlledRumbleVibrators(dev.getVibratorManager())) {
+            context.vibratorManager = dev.getVibratorManager();
+            context.quadVibrators = false;
+        }
+        else if (dev.getVibrator().hasVibrator()) {
+            context.vibrator = dev.getVibrator();
         }
         // On Android 12, we can try to use the InputDevice's sensors. This may not work if the
         // Linux kernel version doesn't have motion sensor support, which is common for third-party
@@ -1588,6 +1692,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             return null;
         }
 
+        if (usbIpHandoffActive && matchesUsbIpDevice(event.getDevice())) {
+            return null;
+        }
+
         // HACK for https://issuetracker.google.com/issues/163120692
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.R) {
             if (event.getDeviceId() == -1) {
@@ -1632,11 +1740,12 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
     private short getActiveControllerMask() {
         if (prefConfig.multiController) {
-            return (short)(currentControllers | initialControllers | (prefConfig.onscreenController ? 1 : 0));
+            return (short)(currentControllers | initialControllers |
+                    (hasOnscreenControllerSourceForSlot((short) 0) ? 1 : 0));
         }
         else {
             // Only Player 1 is active with multi-controller disabled
-            return 1;
+            return (short) (usbIpHandoffActive && !hasAssignedControllerForSlot((short) 0) ? 0 : 1);
         }
     }
 
@@ -1761,6 +1870,9 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
     }
 
     private synchronized void sendControllerInputPacket(GenericControllerContext originalContext) {
+        if (usbIpHandoffActive && originalContext == defaultContext) {
+            return;
+        }
         assignControllerNumberIfNeeded(originalContext);
 
         // Take the context's controller number and fuse all inputs with the same number
@@ -1787,8 +1899,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 rightTrigger |= maxByMagnitude(rightTrigger, context.rightTrigger);
                 leftStickX |= maxByMagnitude(leftStickX, context.leftStickX);
                 leftStickY |= maxByMagnitude(leftStickY, context.leftStickY);
-                rightStickX |= maxByMagnitude(rightStickX, context.rightStickX);
-                rightStickY |= maxByMagnitude(rightStickY, context.rightStickY);
+                rightStickX |= maxByMagnitude(rightStickX, maxByMagnitude(context.rightStickX, context.gyroStickX));
+                rightStickY |= maxByMagnitude(rightStickY, maxByMagnitude(context.rightStickY, context.gyroStickY));
             }
         }
         for (int i = 0; i < usbDeviceContexts.size(); i++) {
@@ -1801,8 +1913,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 rightTrigger |= maxByMagnitude(rightTrigger, context.rightTrigger);
                 leftStickX |= maxByMagnitude(leftStickX, context.leftStickX);
                 leftStickY |= maxByMagnitude(leftStickY, context.leftStickY);
-                rightStickX |= maxByMagnitude(rightStickX, context.rightStickX);
-                rightStickY |= maxByMagnitude(rightStickY, context.rightStickY);
+                rightStickX |= maxByMagnitude(rightStickX, maxByMagnitude(context.rightStickX, context.gyroStickX));
+                rightStickY |= maxByMagnitude(rightStickY, maxByMagnitude(context.rightStickY, context.gyroStickY));
             }
         }
         if (!mouseEmulationContext && defaultContext.controllerNumber == controllerNumber) {
@@ -1811,8 +1923,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             rightTrigger |= maxByMagnitude(rightTrigger, defaultContext.rightTrigger);
             leftStickX |= maxByMagnitude(leftStickX, defaultContext.leftStickX);
             leftStickY |= maxByMagnitude(leftStickY, defaultContext.leftStickY);
-            rightStickX |= maxByMagnitude(rightStickX, defaultContext.rightStickX);
-            rightStickY |= maxByMagnitude(rightStickY, defaultContext.rightStickY);
+            rightStickX |= maxByMagnitude(rightStickX, maxByMagnitude(defaultContext.rightStickX, defaultContext.gyroStickX));
+            rightStickY |= maxByMagnitude(rightStickY, maxByMagnitude(defaultContext.rightStickY, defaultContext.gyroStickY));
         }
 
         if (isMouseEmulationEligible(originalContext) &&
@@ -1836,6 +1948,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             //强制体感模拟右摇杆
             if(PreferenceConfiguration.readPreferences(activityContext).gameForceGyro){
                 sensorLeftTrigger=leftTrigger;
+                sensorRightTrigger=rightTrigger;
             }
             conn.sendControllerInput(controllerNumber, getActiveControllerMask(),
                     inputMap,
@@ -1845,7 +1958,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         }
     }
 
-    private short sensorLeftTrigger=0x00;
+    private volatile short sensorLeftTrigger=0x00;
+    private volatile short sensorRightTrigger=0x00;
 
     private final int REMAP_IGNORE = -1;
     private final int REMAP_CONSUME = -2;
@@ -2455,6 +2569,302 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         }
     }
 
+    private static int getControllerNumberBit(short controllerNumber) {
+        int index = controllerNumber & 0xFFFF;
+        return index < MAX_GAMEPADS ? 1 << index : 0;
+    }
+
+    private boolean hasReportedControllerArrival(short controllerNumber) {
+        int controllerBit = getControllerNumberBit(controllerNumber);
+        return controllerBit != 0 && (reportedControllerArrivalMask & controllerBit) != 0;
+    }
+
+    private void sendControllerArrival(short controllerNumber, byte type,
+                                       int supportedButtonFlags, short capabilities) {
+        supportedButtonFlags = addVirtualDsTouchpadButtonFlag(
+                controllerNumber, gamepadEmulationPreference, supportedButtonFlags);
+        capabilities = addVirtualDsTouchpadCapability(
+                controllerNumber, gamepadEmulationPreference, capabilities);
+        short activeControllerMask = getActiveControllerMask();
+        int result = conn.sendControllerArrivalEvent((byte) controllerNumber, activeControllerMask,
+                type, supportedButtonFlags, capabilities);
+        LimeLog.info("Controller arrival gamepad " + controllerNumber +
+                ": active=0x" + Integer.toHexString(activeControllerMask & 0xFFFF) +
+                " type=" + (type & 0xFF) +
+                " buttons=0x" + Integer.toHexString(supportedButtonFlags) +
+                " capabilities=0x" + Integer.toHexString(capabilities & 0xFFFF) +
+                " result=" + result);
+        if (result == 0) {
+            reportedControllerArrivalMask |= getControllerNumberBit(controllerNumber);
+        }
+    }
+
+    private void clearControllerArrival(short controllerNumber) {
+        int controllerBit = getControllerNumberBit(controllerNumber);
+        if (controllerBit != 0) {
+            reportedControllerArrivalMask &= ~controllerBit;
+        }
+    }
+
+    /**
+     * Converts the UI preference into controller-arrival capability bits.
+     *
+     * @param preference normalized or persisted gamepad emulation preference
+     * @return emulation preference capability bits
+     */
+    public static short getGamepadEmulationCapabilities(String preference) {
+        switch (PreferenceConfiguration.normalizeGamepadEmulation(preference)) {
+            case PreferenceConfiguration.GAMEPAD_EMULATION_X360:
+                return MoonBridge.LI_CCAP_EMULATION_X360;
+            case PreferenceConfiguration.GAMEPAD_EMULATION_DS4:
+                return MoonBridge.LI_CCAP_EMULATION_DS4;
+            case PreferenceConfiguration.GAMEPAD_EMULATION_DS5:
+                return MoonBridge.LI_CCAP_EMULATION_DS5;
+            default:
+                return MoonBridge.LI_CCAP_EMULATION_AUTO;
+        }
+    }
+
+    public static boolean isDsGamepadEmulation(String preference) {
+        String normalizedPreference = PreferenceConfiguration.normalizeGamepadEmulation(preference);
+        return PreferenceConfiguration.GAMEPAD_EMULATION_DS4.equals(normalizedPreference) ||
+                PreferenceConfiguration.GAMEPAD_EMULATION_DS5.equals(normalizedPreference);
+    }
+
+    static short addVirtualDsTouchpadCapability(short controllerNumber, String emulationPreference,
+                                                 short capabilities) {
+        if (controllerNumber == 0 && isDsGamepadEmulation(emulationPreference)) {
+            capabilities |= MoonBridge.LI_CCAP_TOUCHPAD;
+        }
+        return capabilities;
+    }
+
+    static int addVirtualDsTouchpadButtonFlag(short controllerNumber, String emulationPreference,
+                                               int supportedButtonFlags) {
+        if (controllerNumber == 0 && isDsGamepadEmulation(emulationPreference)) {
+            supportedButtonFlags |= ControllerPacket.TOUCHPAD_FLAG;
+        }
+        return supportedButtonFlags;
+    }
+
+    static short applyGamepadEmulationPreference(short capabilities, String preference) {
+        return (short) ((capabilities & ~MoonBridge.LI_CCAP_EMULATION_MASK) |
+                getGamepadEmulationCapabilities(preference));
+    }
+
+    static boolean isNativeDs5PcmEnabled(String emulationPreference, boolean preferenceEnabled) {
+        return preferenceEnabled && PreferenceConfiguration.GAMEPAD_EMULATION_DS5.equals(
+                PreferenceConfiguration.normalizeGamepadEmulation(emulationPreference));
+    }
+
+    static short applyNativeDs5PcmCapability(short capabilities, boolean enabled,
+                                              boolean optionalBackendSupportsDevice) {
+        boolean physicalControllerSupportsPcm =
+                (capabilities & MoonBridge.LI_CCAP_HAPTIC_PCM) != 0;
+        capabilities = (short) (capabilities & ~MoonBridge.LI_CCAP_HAPTIC_PCM);
+        if (enabled && (physicalControllerSupportsPcm || optionalBackendSupportsDevice)) {
+            capabilities |= MoonBridge.LI_CCAP_HAPTIC_PCM;
+        }
+        return capabilities;
+    }
+
+    private short addGamepadEmulationPreference(short capabilities) {
+        return applyGamepadEmulationPreference(capabilities, gamepadEmulationPreference);
+    }
+
+    static short getOnscreenControllerCapabilities(String emulationPreference,
+                                                    boolean canRumble,
+                                                    boolean hasAccelerometer,
+                                                    boolean hasGyroscope) {
+        short capabilities = MoonBridge.LI_CCAP_ANALOG_TRIGGERS;
+        if (canRumble) {
+            capabilities |= MoonBridge.LI_CCAP_RUMBLE;
+        }
+        if (hasAccelerometer) {
+            capabilities |= MoonBridge.LI_CCAP_ACCEL;
+        }
+        if (hasGyroscope) {
+            capabilities |= MoonBridge.LI_CCAP_GYRO;
+        }
+        return applyGamepadEmulationPreference(capabilities, emulationPreference);
+    }
+
+    static int getOnscreenControllerSupportedButtonFlags(boolean onlyStickClicks,
+                                                          boolean showGuideButton) {
+        int supportedButtonFlags = ControllerPacket.LS_CLK_FLAG | ControllerPacket.RS_CLK_FLAG;
+        if (!onlyStickClicks) {
+            supportedButtonFlags |= ControllerPacket.A_FLAG | ControllerPacket.B_FLAG |
+                    ControllerPacket.X_FLAG | ControllerPacket.Y_FLAG |
+                    ControllerPacket.UP_FLAG | ControllerPacket.DOWN_FLAG |
+                    ControllerPacket.LEFT_FLAG | ControllerPacket.RIGHT_FLAG |
+                    ControllerPacket.LB_FLAG | ControllerPacket.RB_FLAG |
+                    ControllerPacket.BACK_FLAG | ControllerPacket.PLAY_FLAG |
+                    ControllerPacket.TOUCHPAD_FLAG;
+        }
+        if (showGuideButton) {
+            supportedButtonFlags |= ControllerPacket.SPECIAL_BUTTON_FLAG;
+        }
+        return supportedButtonFlags;
+    }
+
+    private boolean matchesUsbIpDevice(InputDevice device) {
+        return device != null && usbIpHandoffDevice != null &&
+                device.getVendorId() == usbIpHandoffDevice.getVendorId() &&
+                device.getProductId() == usbIpHandoffDevice.getProductId();
+    }
+
+    /** Remember the affected slots before Android unbinds its system HID interface. */
+    public synchronized void beginUsbIpHandoff(UsbDevice device) {
+        usbIpHandoffDevice = device;
+        usbIpHandoffSlots = 0;
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext context = inputDeviceContexts.valueAt(i);
+            if (context.assignedControllerNumber && matchesUsbIpDevice(context.inputDevice)) {
+                usbIpHandoffSlots |= getControllerNumberBit(context.controllerNumber);
+            }
+        }
+    }
+
+    /** Replace only unshared virtual slots after successful USB/IP input. */
+    public synchronized void confirmUsbIpHandoff() {
+        if (stopped || usbIpHandoffDevice == null || usbIpHandoffActive) {
+            return;
+        }
+        if (hasOnscreenControllerSourceForSlot((short) 0)) {
+            usbIpHandoffSlots |= 1;
+        }
+        usbIpHandoffActive = true;
+        virtualDsTouchpadSessionUsed = false;
+        defaultContext.inputMap = 0;
+        defaultContext.gyroStickX = defaultContext.gyroStickY = 0;
+        defaultContext.leftStickX = defaultContext.leftStickY = 0;
+        defaultContext.rightStickX = defaultContext.rightStickY = 0;
+        defaultContext.leftTrigger = defaultContext.rightTrigger = 0;
+        for (int i = inputDeviceContexts.size() - 1; i >= 0; i--) {
+            InputDeviceContext context = inputDeviceContexts.valueAt(i);
+            if (matchesUsbIpDevice(context.inputDevice)) {
+                onInputDeviceRemoved(inputDeviceContexts.keyAt(i));
+            }
+        }
+        for (short slot = 0; slot < MAX_GAMEPADS; slot++) {
+            int bit = getControllerNumberBit(slot);
+            if ((usbIpHandoffSlots & bit) == 0 || hasAssignedControllerForSlot(slot)) {
+                continue;
+            }
+            initialControllers &= ~bit;
+            clearControllerArrival(slot);
+            conn.cancelPendingControllerArrivalEvent((byte) slot);
+            short mask = (short) (getActiveControllerMask() & ~bit);
+            conn.sendControllerInput(slot, mask, USBIP_RETIRE_CONTROLLER_FLAG,
+                    (byte) 0, (byte) 0, (short) 0, (short) 0, (short) 0, (short) 0);
+            LimeLog.info("USB/IP handoff retired virtual controller slot " + slot);
+        }
+    }
+
+    /** Reenable the normal controller path on failure or detach. */
+    public synchronized void finishUsbIpHandoff() {
+        usbIpHandoffActive = false;
+        usbIpHandoffDevice = null;
+        usbIpHandoffSlots = 0;
+    }
+
+    private void sendOnscreenControllerArrivalIfNeeded() {
+        if (usbIpHandoffActive || (!prefConfig.onscreenController && !virtualDsTouchpadSessionUsed) ||
+                hasReportedControllerArrival(defaultContext.controllerNumber)) {
+            return;
+        }
+
+        boolean motionEnabled = prefConfig.enableVirtualControllerMotion &&
+                deviceSensorManager != null;
+        boolean hasAccelerometer = motionEnabled &&
+                deviceSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null;
+        boolean hasGyroscope = motionEnabled &&
+                deviceSensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null;
+        boolean canRumble = prefConfig.vibrateOsc && !prefConfig.onlyL3R3 &&
+                deviceVibrator != null;
+
+        sendControllerArrival(defaultContext.controllerNumber, MoonBridge.LI_CTYPE_XBOX,
+                getOnscreenControllerSupportedButtonFlags(
+                        prefConfig.onlyL3R3, prefConfig.showGuideButton),
+                getOnscreenControllerCapabilities(gamepadEmulationPreference,
+                        canRumble, hasAccelerometer, hasGyroscope));
+    }
+
+    /**
+     * Copies native DualSense PCM while silencing only the speaker channels.
+     *
+     * <p>Each 48 kHz, 16-bit, four-channel frame contains speaker left/right followed by
+     * haptic left/right. The haptic samples are preserved byte-for-byte.</p>
+     *
+     * @param pcm validated interleaved DualSense PCM
+     * @return copied PCM with channels zero and one cleared, or an empty array for invalid input
+     */
+    static byte[] copyNativePcmWithoutSpeaker(byte[] pcm) {
+        if (pcm == null || pcm.length == 0 || pcm.length % 8 != 0) {
+            return new byte[0];
+        }
+
+        byte[] output = pcm.clone();
+        for (int offset = 0; offset < output.length; offset += 8) {
+            output[offset] = 0;
+            output[offset + 1] = 0;
+            output[offset + 2] = 0;
+            output[offset + 3] = 0;
+        }
+        return output;
+    }
+
+    /**
+     * Stateful converter for native DualSense USB PCM.
+     *
+     * <p>DualSense composite audio is 48 kHz, four-channel, signed 16-bit PCM. Channels zero and
+     * one drive the speaker while channels two and three drive the voice-coil haptics. This
+     * converter averages each group of sixteen haptic samples to the 3 kHz stereo format consumed
+     * by the optional Kishi native-haptics backend. State is retained across transport windows so
+     * uneven USB packet sizes do not alter playback speed.</p>
+     */
+    static final class NativePcmDownsampler {
+        private int sourceFrames;
+        private int leftSum;
+        private int rightSum;
+
+        byte[] convert(byte[] pcm) {
+            if (pcm == null || pcm.length == 0 || pcm.length % 8 != 0) {
+                return new byte[0];
+            }
+
+            int outputFrames = (sourceFrames + pcm.length / 8) /
+                    NATIVE_CONTROLLER_PCM_DOWNSAMPLE_FACTOR;
+            byte[] output = new byte[outputFrames * 4];
+            int outputOffset = 0;
+            for (int offset = 0; offset < pcm.length; offset += 8) {
+                leftSum += readSigned16LittleEndian(pcm, offset + 4);
+                rightSum += readSigned16LittleEndian(pcm, offset + 6);
+                sourceFrames++;
+                if (sourceFrames == NATIVE_CONTROLLER_PCM_DOWNSAMPLE_FACTOR) {
+                    writeSigned16LittleEndian(output, outputOffset,
+                            leftSum / NATIVE_CONTROLLER_PCM_DOWNSAMPLE_FACTOR);
+                    writeSigned16LittleEndian(output, outputOffset + 2,
+                            rightSum / NATIVE_CONTROLLER_PCM_DOWNSAMPLE_FACTOR);
+                    outputOffset += 4;
+                    sourceFrames = 0;
+                    leftSum = 0;
+                    rightSum = 0;
+                }
+            }
+            return output;
+        }
+
+        private static int readSigned16LittleEndian(byte[] bytes, int offset) {
+            return (short) ((bytes[offset] & 0xFF) | (bytes[offset + 1] << 8));
+        }
+
+        private static void writeSigned16LittleEndian(byte[] bytes, int offset, int sample) {
+            bytes[offset] = (byte) sample;
+            bytes[offset + 1] = (byte) (sample >> 8);
+        }
+    }
+
     private void sendEmulatedMouseMotion(GenericControllerContext context) {
         if (prefConfig.analogStickForScrolling == PreferenceConfiguration.AnalogStickForScrolling.RIGHT) {
             sendEmulatedMouseMove(context.leftStickX, context.leftStickY);
@@ -2895,6 +3305,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
+                if (stopped) return;
                 // Android will invoke our callback any time we get a new reading,
                 // even if the values are the same as last time. Don't report a
                 // duplicate set of values to save bandwidth.
@@ -2951,10 +3362,14 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 }
                 //强制体感
                 if (PreferenceConfiguration.readPreferences(activityContext).gameForceGyro) {
-                    //按下左扳机生效
-                    if((PreferenceConfiguration.readPreferences(activityContext).gameForceGyroLeftTrigger && (sensorLeftTrigger & 0xFF) < 200 )){
-                        context.rightStickX = 0x0000;
-                        context.rightStickY = 0x0000;
+                    // Only gyroscope samples drive the emulated stick.
+                    if (motionType != MoonBridge.LI_MOTION_TYPE_GYRO) return;
+                    if (!GyroActivation.isActive(PreferenceConfiguration.readPreferences(activityContext).gameForceGyroActivation,
+                            sensorLeftTrigger, sensorRightTrigger)) {
+                        filterGyroX = 0f;
+                        filterGyroY = 0f;
+                        context.gyroStickX = 0x0000;
+                        context.gyroStickY = 0x0000;
                         sendControllerInputPacket(context);
                         return;
                     }
@@ -2992,8 +3407,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                         // --- 4. 限制范围并发送 ---
                         short rightX=(short) (clamp(filterGyroX) * 0x7FFF);
                         short rightY=(short) (clamp(filterGyroY) * 0x7FFF);
-                        context.rightStickX = (short) -rightX;
-                        context.rightStickY = (short) -rightY;
+                        context.gyroStickX = (short) -rightX;
+                        context.gyroStickY = (short) -rightY;
                         sendControllerInputPacket(context);
                     }
                     return;
@@ -3052,16 +3467,54 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
 
     public synchronized void handleSetMotionEventState(final short controllerNumber, final byte motionType, short reportRateHz) {
+        if (motionType == MoonBridge.LI_MOTION_TYPE_GYRO) {
+            hostGyroReportRates.put(controllerNumber, reportRateHz);
+        }
+        applyMotionEventState(controllerNumber, motionType, reportRateHz);
+    }
+
+    public synchronized void refreshMotionSettings() {
+        if (stopped) return;
+        filterGyroX = 0f;
+        filterGyroY = 0f;
+        clearGyroStick(defaultContext);
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext context = inputDeviceContexts.valueAt(i);
+            clearGyroStick(context);
+        }
+        applyMotionEventState((short) 0, MoonBridge.LI_MOTION_TYPE_GYRO,
+                hostGyroReportRates.get(0, (short) 0));
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext context = inputDeviceContexts.valueAt(i);
+            if (context.assignedControllerNumber && context.controllerNumber != 0) {
+                applyMotionEventState(context.controllerNumber, MoonBridge.LI_MOTION_TYPE_GYRO,
+                        hostGyroReportRates.get(context.controllerNumber, (short) 0));
+            }
+        }
+    }
+
+    private void clearGyroStick(GenericControllerContext context) {
+        if (context.gyroStickX != 0 || context.gyroStickY != 0) {
+            context.gyroStickX = context.gyroStickY = 0;
+            if (context.assignedControllerNumber) sendControllerInputPacket(context);
+        }
+    }
+
+    private synchronized void applyMotionEventState(final short controllerNumber, final byte motionType, short reportRateHz) {
         if (stopped) {
             return;
         }
 
         // Report rate is restricted to <= 200 Hz without the HIGH_SAMPLING_RATE_SENSORS permission
         reportRateHz = (short) Math.min(200, reportRateHz);
+        if (motionType == MoonBridge.LI_MOTION_TYPE_GYRO) {
+            reportRateHz = GyroActivation.reportRate(reportRateHz, prefConfig.gameForceGyro);
+        }
 
         //开启虚拟手柄陀螺仪功能
-        if(prefConfig.enableVirtualControllerMotion){
-            enableVirtualControllerMotionType(controllerNumber,motionType,reportRateHz);
+        if (controllerNumber == defaultContext.controllerNumber) {
+            enableVirtualControllerMotionType(controllerNumber, motionType,
+                    prefConfig.enableVirtualControllerMotion ? reportRateHz : (short) 0);
         }
 
         for (int i = 0; i < inputDeviceContexts.size(); i++) {
@@ -3154,6 +3607,151 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 }
             }
         }
+
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+            if (deviceContext.assignedControllerNumber &&
+                    deviceContext.controllerNumber == controllerNumber) {
+                deviceContext.device.setControllerLED(r, g, b);
+            }
+        }
+    }
+
+    /**
+     * Applies an adaptive-trigger update to the matching app-owned USB controller.
+     *
+     * @param controllerNumber Controller slot receiving the update.
+     * @param eventFlags Bitmask identifying the triggers to update.
+     * @param typeLeft Left trigger effect type.
+     * @param typeRight Right trigger effect type.
+     * @param left Left trigger effect payload.
+     * @param right Right trigger effect payload.
+     */
+    public synchronized void handleSetAdaptiveTriggers(short controllerNumber, byte eventFlags,
+                                                       byte typeLeft, byte typeRight,
+                                                       byte[] left, byte[] right) {
+        if (stopped) {
+            return;
+        }
+
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+            if (deviceContext.assignedControllerNumber &&
+                    deviceContext.controllerNumber == controllerNumber) {
+                deviceContext.device.setAdaptiveTriggerEffects(eventFlags, typeLeft, typeRight,
+                        left, right);
+            }
+        }
+    }
+
+    /**
+     * Applies a player-indicator update to the matching app-owned USB controller.
+     *
+     * @param controllerNumber Controller slot receiving the update.
+     * @param playerIndicator Native controller LED bitmask.
+     */
+    public synchronized void handleSetPlayerIndicator(short controllerNumber, byte playerIndicator) {
+        if (stopped) {
+            return;
+        }
+
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+            if (deviceContext.assignedControllerNumber &&
+                    deviceContext.controllerNumber == controllerNumber) {
+                deviceContext.device.setPlayerIndicator(playerIndicator);
+            }
+        }
+    }
+
+    /**
+     * Routes authored four-channel DualSense PCM to the matching app-owned USB controller.
+     *
+     * @param controllerNumber Controller slot receiving the PCM.
+     * @param sampleRate PCM sample rate in Hz.
+     * @param channels Interleaved channel count.
+     * @param bitsPerSample Bits stored for each sample.
+     * @param pcm Interleaved little-endian PCM bytes.
+     * @return true when a matching controller accepted the frame.
+     */
+    public synchronized boolean handleControllerNativePcm(short controllerNumber, int sampleRate,
+                                                          byte channels, byte bitsPerSample,
+                                                          byte[] pcm) {
+        if (stopped || !ds5NativePcmEnabled || sampleRate != NATIVE_CONTROLLER_PCM_SOURCE_RATE ||
+                (channels & 0xFF) != NATIVE_CONTROLLER_PCM_CHANNELS ||
+                (bitsPerSample & 0xFF) != 16 || pcm == null || pcm.length == 0 ||
+                pcm.length > 3920 || pcm.length % 8 != 0) {
+            return false;
+        }
+
+        boolean submitted = false;
+        List<String> outputDevices = new ArrayList<>();
+
+        boolean optionalPcmTarget = false;
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext deviceContext = inputDeviceContexts.valueAt(i);
+            if (deviceContext.assignedControllerNumber &&
+                    deviceContext.controllerNumber == controllerNumber &&
+                    optionalPcmHapticsBackend.handlesDevice(
+                            deviceContext.vendorId, deviceContext.productId)) {
+                optionalPcmTarget = true;
+                break;
+            }
+        }
+        if (!optionalPcmTarget) {
+            for (int i = 0; i < usbDeviceContexts.size(); i++) {
+                UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+                if (deviceContext.assignedControllerNumber &&
+                        deviceContext.controllerNumber == controllerNumber &&
+                        optionalPcmHapticsBackend.handlesDevice(
+                                deviceContext.device.getVendorId(),
+                                deviceContext.device.getProductId())) {
+                    optionalPcmTarget = true;
+                    break;
+                }
+            }
+        }
+        if (optionalPcmTarget && optionalPcmHapticsBackend.isActive()) {
+            int index = controllerNumber & 0xFFFF;
+            if (index < nativePcmDownsamplers.length) {
+                NativePcmDownsampler downsampler = nativePcmDownsamplers[index];
+                if (downsampler == null) {
+                    downsampler = new NativePcmDownsampler();
+                    nativePcmDownsamplers[index] = downsampler;
+                }
+                byte[] hapticPcm = downsampler.convert(pcm);
+                if (hapticPcm.length > 0 && optionalPcmHapticsBackend.submitPcm(
+                        hapticPcm, OPTIONAL_PCM_HAPTICS_RATE, 2, 1.0f)) {
+                    submitted = true;
+                    addOutputDevice(outputDevices,
+                            optionalPcmHapticsBackend.getActiveDeviceDisplayName());
+                }
+            }
+        }
+
+        byte[] physicalDs5Pcm = null;
+        for (int i = 0; i < usbDeviceContexts.size(); i++) {
+            UsbDeviceContext deviceContext = usbDeviceContexts.valueAt(i);
+            if (deviceContext.assignedControllerNumber &&
+                    deviceContext.controllerNumber == controllerNumber &&
+                    deviceContext.device.hasAdvancedAudioHapticsSupport()) {
+                if (physicalDs5Pcm == null) {
+                    physicalDs5Pcm = ds5ControllerSpeakerEnabled
+                            ? pcm : copyNativePcmWithoutSpeaker(pcm);
+                }
+                if (deviceContext.device.submitNativeAudioHapticsFrame(physicalDs5Pcm)) {
+                    submitted = true;
+                    addOutputDevice(outputDevices,
+                            getUsbControllerTypeDisplayName(deviceContext.device));
+                }
+            }
+        }
+
+        if (submitted) {
+            lastNativeControllerPcmTimeMs = SystemClock.uptimeMillis();
+            markNativeGameHapticsOutput("原生PCM", outputDevices);
+        }
+        return submitted;
     }
 
     public synchronized boolean handleButtonUp(KeyEvent event) {
@@ -3645,6 +4243,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                                short leftStickX, short leftStickY,
                                short rightStickX, short rightStickY,
                                byte leftTrigger, byte rightTrigger) {
+        if (usbIpHandoffActive) {
+            return;
+        }
+        sendOnscreenControllerArrivalIfNeeded();
+
         defaultContext.leftStickX = leftStickX;
         defaultContext.leftStickY = leftStickY;
 
@@ -3657,6 +4260,47 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         defaultContext.inputMap = buttonFlags;
 
         sendControllerInputPacket(defaultContext);
+    }
+
+    /**
+     * Makes the session-local DS touchpad a player-one controller source. Once enabled for a
+     * session, it remains in the active controller mask even after its view is hidden so the host
+     * doesn't hot-unplug the virtual controller while a game is running.
+     */
+    public synchronized boolean prepareVirtualDsTouchpad() {
+        if (stopped || usbIpHandoffActive || !isDsGamepadEmulation(gamepadEmulationPreference)) {
+            return false;
+        }
+
+        virtualDsTouchpadSessionUsed = true;
+        sendOnscreenControllerArrivalIfNeeded();
+        return true;
+    }
+
+    public synchronized boolean reportVirtualDsTouchpadEvent(byte eventType, int pointerId,
+                                                               float x, float y, float pressure) {
+        if (!prepareVirtualDsTouchpad()) {
+            return false;
+        }
+
+        return conn.sendControllerTouchEvent((byte) defaultContext.controllerNumber, eventType,
+                pointerId, clampUnitRange(x), clampUnitRange(y), clampUnitRange(pressure)) !=
+                MoonBridge.LI_ERR_UNSUPPORTED;
+    }
+
+    public synchronized boolean reportVirtualDsTouchpadButton(boolean pressed) {
+        if (!prepareVirtualDsTouchpad()) {
+            return false;
+        }
+
+        if (pressed) {
+            defaultContext.inputMap |= ControllerPacket.TOUCHPAD_FLAG;
+        }
+        else {
+            defaultContext.inputMap &= ~ControllerPacket.TOUCHPAD_FLAG;
+        }
+        sendControllerInputPacket(defaultContext);
+        return true;
     }
 
     @Override
@@ -3877,6 +4521,53 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         return getUsbControllerProtocolDisplayName(context.device);
     }
 
+    /** Privacy-safe summary for distinguishing Android system input from app-owned USB drivers. */
+    public synchronized String getSystemControllerDiagnosticsDisplayName() {
+        if (inputDeviceContexts.size() == 0) {
+            return "无";
+        }
+
+        StringBuilder summary = new StringBuilder();
+        for (int i = 0; i < inputDeviceContexts.size(); i++) {
+            InputDeviceContext context = inputDeviceContexts.valueAt(i);
+            if (summary.length() > 0) {
+                summary.append(';');
+            }
+            summary.append('P').append(context.controllerNumber & 0xFFFF)
+                    .append(':').append(getInputControllerTypeDisplayName(context))
+                    .append("(vid=0x").append(Integer.toHexString(context.vendorId))
+                    .append(",pid=0x").append(Integer.toHexString(context.productId))
+                    .append(",name=").append(sanitizeDiagnosticValue(context.name))
+                    .append(",source=0x").append(Integer.toHexString(
+                            context.inputDevice != null ? context.inputDevice.getSources() : 0))
+                    .append(",rumble=").append(getSystemRumbleRouteName(context))
+                    .append(')');
+        }
+        return summary.toString();
+    }
+
+    private String getSystemRumbleRouteName(InputDeviceContext context) {
+        if (prefConfig.enableDeviceRumble && deviceVibrator != null && deviceVibrator.hasVibrator()) {
+            return "forced-device";
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && context.vibratorManager != null) {
+            return context.quadVibrators ? "vibrator-manager-4" : "vibrator-manager";
+        }
+        if (context.vibrator != null && context.vibrator.hasVibrator()) {
+            return "input-vibrator";
+        }
+        return "sce-or-none";
+    }
+
+    private static String sanitizeDiagnosticValue(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return "--";
+        }
+        String sanitized = value.replace(',', '_').replace(';', '_')
+                .replace('\r', ' ').replace('\n', ' ');
+        return sanitized.length() <= 48 ? sanitized : sanitized.substring(0, 48);
+    }
+
     public String getNativeGameHapticsOutputRouteDisplayName() {
         return getRecentHapticsRoute(
                 nativeGameHapticsOutputRoute, nativeGameHapticsOutputTimeMs);
@@ -3907,6 +4598,8 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         public byte rightTrigger = 0x00;
         public short rightStickX = 0x0000;
         public short rightStickY = 0x0000;
+        public short gyroStickX = 0;
+        public short gyroStickY = 0;
         public short leftStickX = 0x0000;
         public short leftStickY = 0x0000;
 
@@ -4005,10 +4698,11 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
             public void run() {
                 // Turn back on any sensors that should be reporting but are currently unregistered
                 if (accelReportRateHz != 0 && accelListener == null) {
-                    handleSetMotionEventState(controllerNumber, MoonBridge.LI_MOTION_TYPE_ACCEL, accelReportRateHz);
+                    applyMotionEventState(controllerNumber, MoonBridge.LI_MOTION_TYPE_ACCEL, accelReportRateHz);
                 }
                 if (gyroReportRateHz != 0 && gyroListener == null) {
-                    handleSetMotionEventState(controllerNumber, MoonBridge.LI_MOTION_TYPE_GYRO, gyroReportRateHz);
+                    applyMotionEventState(controllerNumber, MoonBridge.LI_MOTION_TYPE_GYRO,
+                            hostGyroReportRates.get(controllerNumber, (short) 0));
                 }
             }
         };
@@ -4162,8 +4856,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
                 }
             }
 
-            conn.sendControllerArrivalEvent((byte)controllerNumber, getActiveControllerMask(),
-                    reportedType, supportedButtonFlags, capabilities);
+            capabilities = configureNativePcmCapability(
+                    capabilities, inputDevice.getVendorId(), inputDevice.getProductId());
+            ControllerHandler.this.sendControllerArrival(controllerNumber, reportedType, supportedButtonFlags,
+                    addGamepadEmulationPreference(capabilities));
 
             // After reporting arrival to the host, send initial battery state and begin monitoring
             //是否上报电池状态
@@ -4248,8 +4944,10 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
 
         @Override
         public void sendControllerArrival() {
-            conn.sendControllerArrivalEvent((byte)controllerNumber, getActiveControllerMask(),
-                    device.getType(), device.getSupportedButtonFlags(), device.getCapabilities());
+            short capabilities = configureNativePcmCapability(device.getCapabilities(),
+                    device.getVendorId(), device.getProductId());
+            ControllerHandler.this.sendControllerArrival(controllerNumber, device.getType(),
+                    device.getSupportedButtonFlags(), addGamepadEmulationPreference(capabilities));
         }
     }
 
@@ -4273,6 +4971,7 @@ public class ControllerHandler implements InputManager.InputDeviceListener, UsbD
         backgroundThreadHandler.removeCallbacks(defaultContext.enableSensorRunnable);
 
         SensorManager sm = defaultContext.sensorManager;
+        if (sm == null) return;
 
         switch (motionType) {
             case MoonBridge.LI_MOTION_TYPE_ACCEL:

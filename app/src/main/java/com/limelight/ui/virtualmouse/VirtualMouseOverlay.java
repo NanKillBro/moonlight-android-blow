@@ -10,6 +10,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.SparseIntArray;
+import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -294,6 +295,12 @@ public final class VirtualMouseOverlay extends View implements VirtualMouseContr
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // Only finger touches operate this overlay. Physical mice (including DeX pointers)
+        // and pens must reach the stream even over the overlay's interactive regions.
+        if (!isTouchscreenFingerEvent(event)) {
+            return false;
+        }
+
         if (controller == null || !controller.isEnabled() || controller.isInputSuppressed()) {
             return false;
         }
@@ -324,6 +331,31 @@ public final class VirtualMouseOverlay extends View implements VirtualMouseContr
             default:
                 return pointerTargets.size() > 0;
         }
+    }
+
+    @Override
+    public boolean onHoverEvent(MotionEvent event) {
+        // This full-screen View remains visible even when the virtual mouse is disabled.
+        // Clickable Views consume hover by default, so let physical pointer movement reach
+        // the StreamView instead of swallowing it while allowing only clicks through.
+        if (!isTouchscreenFingerEvent(event)
+                || controller == null || !controller.isEnabled() || controller.isInputSuppressed()) {
+            return false;
+        }
+        return super.onHoverEvent(event);
+    }
+
+    private static boolean isTouchscreenFingerEvent(MotionEvent event) {
+        if (!event.isFromSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+            return false;
+        }
+
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            if (event.getToolType(i) != MotionEvent.TOOL_TYPE_FINGER) {
+                return false;
+            }
+        }
+        return event.getPointerCount() > 0;
     }
 
     @Override

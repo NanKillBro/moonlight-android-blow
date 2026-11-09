@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="gamepad_emulation_names">
+        <item>自动</item>
+        <item>Xbox 360</item>
+        <item>DualShock 4</item>
+        <item>DualSense</item>
+    </string-array>
+    <string-array name="gamepad_emulation_values" translatable="false">
+        <item>auto</item>
+        <item>x360</item>
+        <item>ds4</item>
+        <item>ds5</item>
+    </string-array>
+
     <string-array name="resolution_names">
         <item>@string/resolution_360p</item>
         <item>@string/resolution_480p</item>
@@ -253,6 +266,9 @@
         <item>Normal Mouse (Swap Left/Right)</item>
         <item>Trackpad (Move Only)</item>
         <item>Trackpad (Move + Left Click)</item>
+        <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN -->
+        <item>触控板「多手势」</item>
+        <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END -->
     </string-array>
 
     <string-array name="mouse_model_values_axi" translatable="false">
@@ -263,6 +279,9 @@
         <item>4</item>
         <item>5</item>
         <item>6</item>
+        <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN -->
+        <item>7</item>
+        <!-- EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END -->
     </string-array>
 
 
@@ -301,4 +320,17 @@
         <item>gamePad_5</item>
     </string-array>
 
+    <string-array name="perf_overlay_lite_positions">
+        <item>@string/perf_overlay_position_top</item>
+        <item>@string/perf_overlay_position_bottom</item>
+    </string-array>
+    <string-array name="perf_overlay_lite_position_values" translatable="false">
+        <item>top</item>
+        <item>bottom</item>
+    </string-array>
+    <string-array name="virtual_display_modes">
+        <item>@string/virtual_display_off</item>
+        <item>@string/virtual_display_extend</item>
+        <item>@string/virtual_display_only</item>
+    </string-array>
 </resources>

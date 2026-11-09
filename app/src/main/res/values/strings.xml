@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pairing_backup_category">Back up and restore data</string>
+    <string name="pairing_backup_export">Export backup ZIP</string>
+    <string name="pairing_backup_import">Import backup ZIP</string>
+    <string name="pairing_backup_export_summary">Save your host database, client certificate and private key in one ZIP file. Keep the backup private.</string>
+    <string name="pairing_backup_import_summary">Choose a backup ZIP to restore hosts and the client identity. Matching hosts are updated. Restart the app after importing.</string>
+    <string name="pairing_backup_working">Processing backup…</string>
+    <string name="pairing_backup_export_success">Backup ZIP saved.</string>
+    <string name="pairing_backup_import_success">Backup restored. Fully close and reopen the app to use the restored hosts and client identity.</string>
+    <string name="pairing_backup_export_failed">Could not export the backup. Check the save location and available storage, then try again.</string>
+    <string name="pairing_backup_import_failed">Could not restore this backup. Choose a complete backup ZIP containing a valid host database and a matching certificate and private key.</string>
+    <string name="home_refresh_hosts">Refresh hosts</string>
+    <string name="home_refreshing_hosts">Refreshing hosts…</string>
+    <string name="pc_switch_address">Switch address</string>
+    <string name="pc_address_automatic">Automatic selection</string>
+    <string name="pc_address_summary">%1$s\nCurrent address: %2$s\nChoose a known or previously added address. A manual selection stays fixed until you choose Automatic selection.</string>
+    <string name="pc_address_switching">Checking the selected address…</string>
+    <string name="pc_address_switch_failed">Could not switch address. Check that it is reachable and belongs to this PC. The previous selection has been kept.</string>
+    <string name="pc_address_switched">Address selection updated</string>
     <!-- Shortcut strings -->
     <string name="scut_deleted_pc">PC deleted</string>
     <string name="scut_not_paired">PC not paired</string>
@@ -230,7 +248,7 @@
     <string name="title_checkbox_enable_audiofx">Enable system equalizer support</string>
     <string name="summary_checkbox_enable_audiofx">Allows audio effects to function while streaming, but may increase audio latency</string>
 
-    <string name="category_gamepad_settings">Gamepad Settings</string>
+    <string name="category_gamepad_settings">Peripheral Settings</string>
     <string name="title_checkbox_multi_controller">Automatic gamepad presence detection</string>
     <string name="summary_checkbox_multi_controller">Unchecking this option forces a gamepad to always be present</string>
     <string name="title_checkbox_vibrate_fallback">Emulate rumble support with vibration</string>
@@ -252,6 +270,23 @@
     <string name="title_checkbox_gamepad_touchpad_as_mouse">Always control mouse with touchpad</string>
     <string name="summary_checkbox_gamepad_touchpad_as_mouse">Forces gamepad touchpad input to control the host mouse, even when emulating a gamepad with a touchpad.</string>
     <string name="title_checkbox_gamepad_motion_sensors">Allow use of gamepad motion sensors</string>
+    <string name="title_usbip_mode">USB/IP 模式</string>
+    <string name="summary_usbip_mode">搭配 StarCore星核 PC 端使用，将鼠标、键盘、PS5（DualSense）、Xbox、雷蛇等 USB 外设共享给 Windows。局域网 IPv4/IPv6 自动直连，公网 IPv6 使用加密连接；公网需要网络允许电脑回连本机。\n一次共享一个 USB 设备，需授权并由 Windows 导入。同一设备共享时与 Android 本地 USB 驱动互斥，共享失败时恢复本地输入。\n可在「完整性能信息」查看 USB/IP 状态、IP 和端口。修改后重新连接串流生效。</string>
+    <string name="usbip_waiting">USB/IP 等待 Windows 导入（TCP 3240，设备 1-1）</string>
+    <string name="usbip_imported">PC端已导入</string>
+    <string name="usbip_initializing">Windows 正在初始化 USB 设备</string>
+    <string name="usbip_disabled">未启用</string>
+    <string name="usbip_waiting_session">等待串流连接</string>
+    <string name="usbip_waiting_device">等待连接 USB 键鼠或手柄</string>
+    <string name="usbip_waiting_permission">等待 USB 设备授权</string>
+    <string name="usbip_permission_denied">USB 设备授权被拒绝</string>
+    <string name="usbip_open_failed">USB 设备打开失败</string>
+    <string name="usbip_fallback">USB/IP 未连接，已恢复本地输入</string>
+    <string name="usbip_host_required">当前连接不满足 USB/IP 条件。局域网支持 IPv4/IPv6；公网 IPv6 需要支持加密 USB/IP 的新版星核 PC 端。</string>
+    <string name="usbip_android_required">USB/IP 需要 Android 8.0 或更高版本</string>
+    <string name="usbip_secure_error">USB/IP 加密会话协商失败，请更新两端并重新连接串流</string>
+    <string name="title_gamepad_emulation">主机虚拟手柄类型</string>
+    <string name="summary_gamepad_emulation">自动时遵循 Sunshine 设置和手柄能力；明确选择时覆盖 Sunshine 的手柄类型</string>
     <string name="summary_checkbox_gamepad_motion_sensors">Enables supported hosts to request motion sensor data when emulating a gamepad with motion sensors. Disabling may slightly reduce power and network usage if motion sensors are not being used in game.</string>
     <string name="title_checkbox_gamepad_motion_fallback">Emulate gamepad motion sensor support</string>
     <string name="summary_checkbox_gamepad_motion_fallback">Uses your device\'s built-in motion sensors if gamepad sensors are not supported by your connected gamepad or your Android version.\nNote: Enabling this option may cause your gamepad to appear as a PlayStation controller on the host.</string>
@@ -443,6 +478,10 @@
     <string name="credits_sponsored_dialog_message">If you would like to support the ongoing development of this project, you can donate. Thank you very much for your encouragement and support.</string>
     <string name="game_menu_enable_virtual_mouse">Virtual Mouse</string>
     <string name="game_menu_disable_virtual_mouse">Virtual Mouse</string>
+    <string name="game_menu_ds_touchpad">DS触控板</string>
+    <string name="game_menu_ds_touchpad_shown">DS触控板已开启：5秒无操作后自动隐藏；触摸原位置可唤醒，按住右下角可拖动位置</string>
+    <string name="game_menu_ds_touchpad_hidden">DS触控板已隐藏</string>
+    <string name="game_menu_ds_touchpad_drag_handle">拖动DS触控板</string>
     <string name="virtual_mouse_accessibility_hidden">Virtual mouse hidden</string>
     <string name="virtual_mouse_accessibility_compact">Virtual mouse: tap to expand, drag to move</string>
     <string name="virtual_mouse_accessibility_expanded">Virtual mouse expanded: left/right click, wheel, and pointer area</string>
@@ -511,4 +550,16 @@
     <string name="home_host_connection_ipv6">IPv6</string>
     <string name="home_host_connection_unknown">Address pending</string>
     <string name="home_host_card_accessibility">%1$s, %2$s, %3$s</string>
+    <string name="title_touch_stutter_compatibility">Touch stutter compatibility</string>
+    <string name="summary_touch_stutter_compatibility">Tolerate brief control connection latency fluctuations to help with occasional stuttering during continuous dragging. Reconnect to apply.</string>
+    <string name="title_perf_overlay_lite_position">Compact performance overlay position</string>
+    <string name="perf_overlay_position_top">Top</string>
+    <string name="perf_overlay_position_bottom">Bottom</string>
+    <string name="title_perf_overlay_lite_margin">Compact performance overlay margin</string>
+    <string name="summary_perf_overlay_lite_margin">Distance from the selected top or bottom screen edge. Default: 4 dp.</string>
+    <string name="title_virtual_display">Virtual display</string>
+    <string name="summary_virtual_display">Supported by Sunshine · Axixi and Razer hosts; Apollo supports extended mode. Applies on the next stream connection.</string>
+    <string name="virtual_display_off">Off</string>
+    <string name="virtual_display_extend">Extended mode</string>
+    <string name="virtual_display_only">Virtual display only</string>
 </resources>

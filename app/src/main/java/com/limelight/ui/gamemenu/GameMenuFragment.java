@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -159,8 +158,20 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
             return;
         }
 
-        //操作 或 显示器
-        if(v.getId()==R.id.btn_soft_function || v.getId()==R.id.btn_display_1){
+        if (v.getId() == R.id.btn_display_1) {
+            if (game != null && game.isHostDisplayApiUnavailable()) {
+                showLegacyDisplayControls();
+                return;
+            }
+            GameHostDisplaysFragment fragment = new GameHostDisplaysFragment();
+            fragment.setTargetFragment(this, 0);
+            fragment.setWidth(UiHelper.dpToPx(getActivity(), 364));
+            fragment.show(getFragmentManager());
+            return;
+        }
+
+        //操作
+        if(v.getId()==R.id.btn_soft_function){
             GameFunctionFragment fragment=new GameFunctionFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
             fragment.setTitle("Actions");
@@ -370,33 +381,40 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
             return;
         }
         if(v.getId()==R.id.bt_touch_list){
+            // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+            // Keep actions appended after the mouse modes stable when extensions add modes.
+            final int mouseModeCount = getResources()
+                    .getStringArray(R.array.mouse_model_names_axi).length;
+            // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
             GameListMouseFragment fragment=new GameListMouseFragment();
             fragment.setWidth(UiHelper.dpToPx(getActivity(),364));
             fragment.setTitle("Mouse & Touch");
             fragment.setOnClick(new GameListMouseFragment.onClick() {
                 @Override
                 public void click(String title, int index) {
-                    if(!TextUtils.isEmpty(title)&&index!=8){
+                    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                    if(!TextUtils.isEmpty(title)&&index!=mouseModeCount + 1){
                         Toast.makeText(getActivity(),title,Toast.LENGTH_SHORT).show();
                     }
                     if(game==null||index<0){
                         return;
                     }
-                    if(index==7){
+                    if(index==mouseModeCount){
                         game.switchMouseLocalCursor();
                         return;
                     }
-                    if(index==8){
+                    if(index==mouseModeCount + 1){
                         game.prefConfig.absoluteMouseMode=!game.prefConfig.absoluteMouseMode;
                         Toast.makeText(getActivity(),"Remote Desktop Mouse Mode"+(game.prefConfig.absoluteMouseMode?"Enabled!":"Disabled!"),Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    if(index==9){
+                    if(index==mouseModeCount + 2){
                         if(conn!=null){
                             sendKeys(new short[]{KeyboardTranslator.VK_LCONTROL,KeyboardTranslator.VK_LMENU, KeyboardTranslator.VK_LSHIFT, KeyboardTranslator.VK_N});
                         }
                         return;
                     }
+                    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
                     game.switchMouseModel(index);
                 }
             });
@@ -522,6 +540,8 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
             fragment.setGamePadMode(game==null? KeyBoardController.ControllerMode.NONE:game.getVirtualControllerMode());
             fragment.setGameKeyMode(game==null? KeyBoardController.ControllerMode.NONE:game.getVirtualKeyControllerMode());
             fragment.setPrefConfig(game==null?new PreferenceConfiguration():game.prefConfig);
+            fragment.setDsTouchpadState(game != null && game.isDsTouchpadSupported(),
+                    game != null && game.isDsTouchpadVisible());
             fragment.setOnClick(new GameMenuVirtualViewFragment.onClick() {
                 @Override
                 public void click(String name, int index) {
@@ -546,6 +566,11 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
                         return;
                     }
                     game.switchVirtualKeyController(mode);
+                }
+
+                @Override
+                public boolean toggleDsTouchpad() {
+                    return game != null && game.toggleDsTouchpad();
                 }
             });
             fragment.show(getFragmentManager());
@@ -624,6 +649,14 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         }), KEY_UP_DELAY);
     }
 
+    /** Reuse the original operations sheet and its existing shortcut handlers for older hosts. */
+    void showLegacyDisplayControls() {
+        View view = getView();
+        if (view != null && isAdded()) {
+            onClick(view.findViewById(R.id.btn_soft_function));
+        }
+    }
+
     private static final long KEY_UP_DELAY = 25;
 
 
@@ -646,15 +679,11 @@ public class GameMenuFragment extends BaseGameMenuDialog implements View.OnClick
         }
         String[] keys=codes.split(",");
         for (int i = 0; i < keys.length; i++) {
-            KeyEvent keyEvent = new KeyEvent(KeyEvent.ACTION_DOWN,Integer.parseInt(keys[i]));
-            keyEvent.setSource(0);
-            Game.instance.onKey(null, keyEvent.getKeyCode(), keyEvent);
+            game.keyboardEvent(true, Short.parseShort(keys[i]));
         }
         new Handler().postDelayed((() -> {
             for (int i = keys.length - 1; i >= 0; i--) {
-                KeyEvent keyEvent = new KeyEvent(KeyEvent.ACTION_UP,Integer.parseInt(keys[i]));
-                keyEvent.setSource(0);
-                Game.instance.onKey(null, keyEvent.getKeyCode(), keyEvent);
+                game.keyboardEvent(false, Short.parseShort(keys[i]));
             }
         }), KEY_UP_DELAY);
     }

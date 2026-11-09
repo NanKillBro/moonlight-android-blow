@@ -336,7 +336,6 @@
 
             </RadioGroup>
 
-
             <LinearLayout
                 android:layout_marginTop="10dp"
                 android:layout_marginLeft="5dp"
@@ -418,7 +417,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="HDR Max Brightness"
+                        android:text="HDR窗口亮度最大"
                         android:textStyle="bold"
                         android:textColor="@android:color/white"
                         android:textSize="12dp" />
@@ -428,7 +427,7 @@
                         android:layout_marginLeft="5dp"
                         android:singleLine="true"
                         android:ellipsize="end"
-                        android:text="Maximizes window brightness in HDR mode (default off)."
+                        android:text="提高整体亮度，部分设备可能降低HDR高光对比度。"
                         android:textStyle="italic|bold"
                         android:textColor="#FFC107"
                         android:textSize="8dp" />
@@ -1083,72 +1082,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Bypass HDR Check"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    android:textSize="12dp" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="5dp"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:text="Reopen stream to apply!"
-                    android:textStyle="italic|bold"
-                    android:textColor="#FFC107"
-                    android:textSize="8dp" />
-            </LinearLayout>
-
-            <RadioGroup
-                android:layout_width="match_parent"
-                android:layout_height="27dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginBottom="5dp"
-                android:id="@+id/rg_game_display_ignore_hdr"
-                android:orientation="horizontal">
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_game_menu_btn_selector"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:id="@+id/rbt_game_display_ignore_hdr_1"
-                    android:button="@null"
-                    android:text="Enabled"
-                    android:checked="true"
-                    android:textSize="10dp" />
-
-                <RadioButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="5dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/ic_game_menu_btn_selector"
-                    android:gravity="center"
-                    android:padding="4dp"
-                    android:id="@+id/rbt_game_display_ignore_hdr_2"
-                    android:button="@null"
-                    android:text="Disabled"
-                    android:textSize="10dp" />
-
-            </RadioGroup>
-
-            <LinearLayout
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Virtual Display"
+                    android:text="@string/title_virtual_display"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="12dp" />
@@ -1184,7 +1118,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_1"
                     android:button="@null"
-                    android:text="Disabled"
+                    android:text="@string/virtual_display_off"
                     android:checked="true"
                     android:textSize="10dp" />
 
@@ -1198,7 +1132,7 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_2"
                     android:button="@null"
-                    android:text="Extend Mode"
+                    android:text="@string/virtual_display_extend"
                     android:textSize="10dp" />
 
                 <RadioButton
@@ -1211,10 +1145,243 @@
                     android:padding="4dp"
                     android:id="@+id/rbt_game_display_vd_3"
                     android:button="@null"
-                    android:text="Virtual Display Only"
+                    android:text="@string/virtual_display_only"
                     android:textSize="10dp" />
 
             </RadioGroup>
+
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="串流手柄类型"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:textSize="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="使用 sunshine·阿西西 生效"
+                    android:textStyle="italic|bold"
+                    android:textColor="#FFC107"
+                    android:textSize="6dp" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rg_game_display_gamepad_emulation"
+                android:layout_width="match_parent"
+                android:layout_height="27dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="5dp"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/rbt_game_display_gamepad_auto"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="Auto"
+                    android:textSize="8dp" />
+
+                <RadioButton
+                    android:id="@+id/rbt_game_display_gamepad_x360"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="Xbox"
+                    android:textSize="8dp" />
+
+                <RadioButton
+                    android:id="@+id/rbt_game_display_gamepad_ds4"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="DS4"
+                    android:textSize="8dp" />
+
+                <RadioButton
+                    android:id="@+id/rbt_game_display_gamepad_ds5"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:button="@null"
+                    android:gravity="center"
+                    android:text="DS5"
+                    android:textSize="8dp" />
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/v_game_display_ds5_controller_speaker"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="DS5手柄扬声器"
+                        android:textColor="@android:color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="关闭不影响原生触觉反馈"
+                        android:textColor="#FFC107"
+                        android:textSize="8dp"
+                        android:textStyle="italic|bold" />
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/rg_game_display_ds5_controller_speaker"
+                    android:layout_width="match_parent"
+                    android:layout_height="27dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbt_game_display_ds5_controller_speaker_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Enabled"
+                        android:textSize="10dp" />
+
+                    <RadioButton
+                        android:id="@+id/rbt_game_display_ds5_controller_speaker_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Disabled"
+                        android:textSize="10dp" />
+                </RadioGroup>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/v_game_display_ds5_native_pcm"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="原生 DS5 触觉 PCM"
+                        android:textColor="@android:color/white"
+                        android:textSize="12dp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:text="关闭后退回普通震动，保存后重连生效"
+                        android:textColor="#FFC107"
+                        android:textSize="8dp"
+                        android:textStyle="italic|bold" />
+                </LinearLayout>
+
+                <RadioGroup
+                    android:id="@+id/rg_game_display_ds5_native_pcm"
+                    android:layout_width="match_parent"
+                    android:layout_height="27dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbt_game_display_ds5_native_pcm_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:button="@null"
+                        android:checked="true"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Enabled"
+                        android:textSize="10dp" />
+
+                    <RadioButton
+                        android:id="@+id/rbt_game_display_ds5_native_pcm_2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginRight="5dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/ic_game_menu_btn_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:padding="4dp"
+                        android:text="Disabled"
+                        android:textSize="10dp" />
+                </RadioGroup>
+            </LinearLayout>
 
 
             <LinearLayout
@@ -1292,6 +1459,71 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Bypass HDR Check"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/white"
+                    android:textSize="12dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:text="Reopen stream to apply!"
+                    android:textStyle="italic|bold"
+                    android:textColor="#FFC107"
+                    android:textSize="6dp" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="27dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/rg_game_display_ignore_hdr"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:id="@+id/rbt_game_display_ignore_hdr_1"
+                    android:button="@null"
+                    android:text="Enabled"
+                    android:checked="true"
+                    android:textSize="10dp" />
+
+                <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/ic_game_menu_btn_selector"
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:id="@+id/rbt_game_display_ignore_hdr_2"
+                    android:button="@null"
+                    android:text="Disabled"
+                    android:textSize="10dp" />
+
+            </RadioGroup>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Audio Output"
                     android:textStyle="bold"
                     android:textColor="@android:color/white"
@@ -1305,7 +1537,7 @@
                     android:text="Reopen stream to apply!"
                     android:textStyle="italic|bold"
                     android:textColor="#FFC107"
-                    android:textSize="8dp" />
+                    android:textSize="6dp" />
             </LinearLayout>
 
             <RadioGroup

@@ -27,6 +27,8 @@ public class StreamConfiguration {
     private int encryptionFlags;
     private int colorRange;
     private int colorSpace;
+    private int controlStreamRttToleranceMs;
+    private boolean usbIpMode;
     private boolean persistGamepadsAfterDisconnect;
     private int ppi;
     //雷蛇虚拟显示器
@@ -101,6 +103,12 @@ public class StreamConfiguration {
             return this;
         }
 
+        /** Forward the existing USB/IP preference as an explicit host-side importer opt-in. */
+        public StreamConfiguration.Builder setUsbIpMode(boolean enabled) {
+            config.usbIpMode = enabled;
+            return this;
+        }
+
         public StreamConfiguration.Builder setPersistGamepadsAfterDisconnect(boolean value) {
             config.persistGamepadsAfterDisconnect = value;
             return this;
@@ -133,6 +141,14 @@ public class StreamConfiguration {
 
         public StreamConfiguration.Builder setPPI(int ppi) {
             config.ppi = ppi;
+            return this;
+        }
+
+        public StreamConfiguration.Builder setControlStreamRttToleranceMs(int toleranceMs) {
+            if (toleranceMs < 0) {
+                throw new IllegalArgumentException("RTT tolerance must not be negative");
+            }
+            config.controlStreamRttToleranceMs = toleranceMs;
             return this;
         }
         public StreamConfiguration.Builder setRazerVD(int vd) {
@@ -219,6 +235,11 @@ public class StreamConfiguration {
         return attachedGamepadMask;
     }
 
+    /** Whether this stream explicitly requests the StarCore LAN USB/IP importer. */
+    public boolean getUsbIpMode() {
+        return usbIpMode;
+    }
+
     public boolean getPersistGamepadsAfterDisconnect() {
         return persistGamepadsAfterDisconnect;
     }
@@ -237,6 +258,10 @@ public class StreamConfiguration {
 
     public int getPpi() {
         return ppi;
+    }
+
+    public int getControlStreamRttToleranceMs() {
+        return controlStreamRttToleranceMs;
     }
 
     public int getRrazerVD(){

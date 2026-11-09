@@ -6,6 +6,8 @@ import com.limelight.binding.PlatformBinding;
 import com.limelight.binding.audio.AndroidAudioRenderer;
 import com.limelight.binding.input.ControllerHandler;
 import com.limelight.binding.input.KeyboardTranslator;
+import com.limelight.binding.input.StylusInputRouter;
+import com.limelight.binding.input.TouchpadRotation;
 import com.limelight.binding.input.haptics.OptionalPcmHapticsLoader;
 import com.limelight.binding.input.capture.InputCaptureManager;
 import com.limelight.binding.input.capture.InputCaptureProvider;
@@ -16,6 +18,9 @@ import com.limelight.binding.input.driver.UsbDriverService;
 import com.limelight.binding.input.evdev.EvdevListener;
 import com.limelight.binding.input.touch.RelativeTouchSwitchContext;
 import com.limelight.binding.input.touch.TouchContext;
+// EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+import com.limelight.extensions.input.touch.MultiGestureTouchpadExtensionController;
+// EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
 import com.limelight.binding.input.virtual_controller.VirtualController;
 import com.limelight.binding.input.virtual_controller.keyboard.KeyBoardController;
 import com.limelight.binding.input.virtual_controller.keyboard.KeyBoardLayoutController;
@@ -26,6 +31,9 @@ import com.limelight.binding.video.PerfOverlayListener;
 import com.limelight.binding.video.PerfOverlayStats;
 import com.limelight.fsr.FsrVideoProcessor;
 import com.limelight.fsr.VideoProcessingGLSurfaceView;
+// EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] BEGIN
+import com.limelight.extensions.keyboard.ImeKeyboardExtensionController;
+// EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] END
 import com.limelight.stereo3d.Stereo3dOutputLayout;
 import com.limelight.nvstream.MicUplinkConnection;
 import com.limelight.nvstream.NvConnection;
@@ -35,10 +43,16 @@ import com.limelight.nvstream.http.ComputerDetails;
 import com.limelight.nvstream.http.NvApp;
 import com.limelight.nvstream.http.NvHTTP;
 import com.limelight.nvstream.input.KeyboardPacket;
+// EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+import com.limelight.extensions.input.ImeAsciiInputExtension;
+// EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
 import com.limelight.nvstream.input.MouseButtonPacket;
 import com.limelight.nvstream.jni.MoonBridge;
 import com.limelight.haptics.PcmHapticsBackend;
+import com.limelight.log.HapticsTelemetry;
+import com.limelight.log.StreamNetworkMonitor;
 import com.limelight.log.StreamSessionLogger;
+import com.limelight.log.StreamTelemetryReporter;
 import com.limelight.preferences.GlPreferences;
 import com.limelight.preferences.PreferenceConfiguration;
 import com.limelight.ui.gamemenu.GameMenuFragment;
@@ -47,6 +61,7 @@ import com.limelight.ui.GameGestures;
 import com.limelight.ui.BaseFragmentDialog.BaseGameMenuFragmentDialog;
 import com.limelight.ui.StreamView;
 import com.limelight.ui.StreamLoadingOverlayController;
+import com.limelight.ui.virtualcontroller.DsTouchpadView;
 import com.limelight.ui.virtualmouse.RemoteMouseSink;
 import com.limelight.ui.virtualmouse.VirtualMouseController;
 import com.limelight.ui.virtualmouse.VirtualMouseOverlay;
@@ -104,6 +119,7 @@ import android.text.format.Formatter;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.util.Rational;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -117,6 +133,7 @@ import android.view.View;
 import android.view.View.OnGenericMotionListener;
 import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.View.OnTouchListener;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.ViewOutlineProvider;
 import android.view.ViewParent;
@@ -148,10 +165,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private static final String EXTRA_BACKGROUND_RECONNECT_ATTEMPT = "BackgroundReconnectAttempt";
     private static final int MAX_BACKGROUND_RECONNECT_ATTEMPTS = 3;
     private static final long BACKGROUND_RECONNECT_GRACE_MS = 10_000L;
+    private static final long SESSION_TELEMETRY_LOG_INTERVAL_MS = 5_000L;
     private static final int STEREO_FULL_SBS_WIDTH = 3840;
     private static final int STEREO_HALF_SBS_WIDTH = 1920;
     private static final int STEREO_FULL_SBS_HEIGHT_1080 = 1080;
     private static final int STEREO_FULL_SBS_HEIGHT_1200 = 1200;
+    private static final int HDR_METADATA_MASTERING_PEAK_OFFSET = 16;
+    private static final int HDR_METADATA_MASTERING_PEAK_REQUIRED_LENGTH = 18;
     public static Game instance;
 
     public static boolean resumeBackgroundStreamIfPresent(Activity launcherActivity) {
@@ -197,14 +217,22 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private static final int STYLUS_UP_DEAD_ZONE_RADIUS = 50;
 
     private static final int THREE_FINGER_TAP_THRESHOLD = 300;
+    private static final long DS_TOUCHPAD_CLICK_DURATION_MS = 60L;
+    private static final long DS_TOUCHPAD_AUTO_HIDE_DELAY_MS = 5_000L;
+    private static final long DS_TOUCHPAD_FADE_DURATION_MS = 200L;
 
     private ControllerHandler controllerHandler;
+    private boolean controllerHandlerStopped;
     private KeyboardTranslator keyboardTranslator;
     private KeyBoardController virtualController;
 
     private KeyBoardController keyBoardController;
 
     private KeyBoardLayoutController keyBoardLayoutController;
+
+    // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] BEGIN
+    private ImeKeyboardExtensionController imeKeyboardExtensionController;
+    // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] END
 
     public PreferenceConfiguration prefConfig;
     private SharedPreferences tombstonePrefs;
@@ -224,7 +252,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private String streamHost;
     private long streamStartElapsedMs;
     private StreamSessionLogger streamSessionLogger;
-    private long lastSessionPerfLogElapsedMs;
+    private StreamNetworkMonitor streamNetworkMonitor;
+    private HapticsTelemetry hapticsTelemetry;
+    private StreamTelemetryReporter streamTelemetryReporter;
+    private volatile PerfOverlayStats latestSessionPerfStats;
+    private volatile long latestSessionPerfStatsElapsedMs;
+    private volatile int currentHdrMasteringPeakLuminanceNits;
     private int lastLoggedConnectionStatus = Integer.MIN_VALUE;
     private NvApp app;
     private float desiredRefreshRate;
@@ -240,8 +273,43 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private VideoProcessingGLSurfaceView fsrView;
     private FsrVideoProcessor fsrVideoProcessor;
     private VirtualMouseOverlay virtualMouseOverlay;
+    private FrameLayout dsTouchpadPanel;
+    private FrameLayout dsTouchpadWindow;
+    private DsTouchpadView dsTouchpadView;
+    private View dsTouchpadDragHandle;
+    private boolean dsTouchpadVisible;
+    private boolean dsTouchpadSessionPrepared;
+    private boolean dsTouchpadTouchActive;
+    private boolean dsTouchpadDragging;
+    private boolean dsTouchpadDragMoved;
+    private boolean dsTouchpadPositionCustomized;
+    private float dsTouchpadPositionRatioX = 0.5f;
+    private float dsTouchpadPositionRatioY;
+    private float dsTouchpadDragStartRawX;
+    private float dsTouchpadDragStartRawY;
+    private int dsTouchpadDragStartLeft;
+    private int dsTouchpadDragStartTop;
+    private int dsTouchpadDragTouchSlop;
+    private final Runnable dsTouchpadButtonReleaseRunnable = () -> {
+        if (controllerHandler != null) {
+            controllerHandler.reportVirtualDsTouchpadButton(false);
+        }
+    };
+    private final Runnable dsTouchpadAutoHideRunnable = () -> {
+        if (!isDsTouchpadAutoHideEligible() || dsTouchpadTouchActive || dsTouchpadDragging) {
+            return;
+        }
+
+        dsTouchpadWindow.animate()
+                .alpha(0.0f)
+                .setDuration(DS_TOUCHPAD_FADE_DURATION_MS)
+                .start();
+    };
     private VideoZoomController videoZoomController;
     private VideoZoomGestureOverlay videoZoomGestureOverlay;
+    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+    private MultiGestureTouchpadExtensionController multiGestureTouchpadController;
+    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
     private final PointF videoZoomTapPoint = new PointF();
     private final PointF videoZoomInputPoint = new PointF();
     private final RectF videoZoomBaseRect = new RectF();
@@ -270,13 +338,18 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private WifiManager.WifiLock lowLatencyWifiLock;
 
     private boolean connectedToUsbDriverService = false;
+    private UsbDriverService.UsbDriverBinder usbDriverBinder;
+    private boolean usbIpHandoffActive;
     private ServiceConnection usbDriverServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             UsbDriverService.UsbDriverBinder binder = (UsbDriverService.UsbDriverBinder) iBinder;
             binder.setListener(controllerHandler);
             binder.setStateListener(Game.this);
+            usbDriverBinder = binder;
+            binder.configureUsbIp(prefConfig.usbIpMode ? getIntent().getStringExtra(EXTRA_HOST) : null, conn != null ? conn.getUsbIpImportHost() : null, conn != null ? conn.getUsbIpTlsToken() : null);
             binder.start();
+            binder.setUsbIpSessionActive(connected);
             connectedToUsbDriverService = true;
             logSessionInfo("USB", "USB gamepad service connected");
         }
@@ -284,6 +357,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         @Override
         public void onServiceDisconnected(ComponentName componentName) {
             connectedToUsbDriverService = false;
+            usbDriverBinder = null;
             logSessionWarn("USB", "USB gamepad service disconnected unexpectedly");
         }
     };
@@ -318,10 +392,27 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private boolean fsrViewLifecyclePaused;
     private boolean activityResumed;
     private volatile boolean streamSessionBackgrounded;
+    private static final long NATIVE_CONTROLLER_PCM_STATS_INTERVAL_MS = 2000L;
+    private long nativeControllerPcmStatsStartedMs;
+    private long nativeControllerPcmFrames;
+    private long nativeControllerPcmBytes;
+    private long nativeControllerPcmSequenceGaps;
+    private int nativeControllerPcmLastSequence = -1;
+    private final int[] nativeControllerPcmPeaks = new int[4];
     private boolean restoreInputGrabAfterBackground;
     private boolean restartMicAfterBackground;
     private PowerManager.WakeLock backgroundStreamWakeLock;
     private final Handler backgroundReconnectHandler = new Handler(Looper.getMainLooper());
+    private final Handler sessionTelemetryHandler = new Handler(Looper.getMainLooper());
+    private final Runnable sessionTelemetryRunnable = new Runnable() {
+        @Override
+        public void run() {
+            emitSessionTelemetry();
+            if (streamTelemetryReporter != null) {
+                sessionTelemetryHandler.postDelayed(this, SESSION_TELEMETRY_LOG_INTERVAL_MS);
+            }
+        }
+    };
     private volatile long backgroundReconnectEligibleUntilElapsedMs;
     private volatile int backgroundReconnectAttempt;
     private volatile boolean pendingBackgroundReconnect;
@@ -438,6 +529,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         pcName = getIntent().getStringExtra(EXTRA_PC_NAME);
         backgroundReconnectAttempt = getIntent().getIntExtra(EXTRA_BACKGROUND_RECONNECT_ATTEMPT, 0);
         streamSessionLogger = StreamSessionLogger.create(this, prefConfig, pcName, appName);
+        if (streamSessionLogger != null) {
+            hapticsTelemetry = new HapticsTelemetry(streamSessionLogger);
+            streamTelemetryReporter = new StreamTelemetryReporter(
+                    streamSessionLogger, hapticsTelemetry);
+            streamNetworkMonitor = new StreamNetworkMonitor(this,
+                    summary -> logSessionInfo("NETWORK_LINK", summary));
+            streamNetworkMonitor.start();
+            sessionTelemetryHandler.postDelayed(
+                    sessionTelemetryRunnable, SESSION_TELEMETRY_LOG_INTERVAL_MS);
+        }
         logSessionInfo("LIFECYCLE", "Stream view created");
         if (backgroundReconnectAttempt > 0) {
             logSessionInfo("CONNECT", "Starting background reconnect, attempt " + backgroundReconnectAttempt + "/"
@@ -591,6 +692,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         backgroundTouchView.setOnTouchListener(this);
 
         rootView=streamView.getParent();
+
+        dsTouchpadPanel = findViewById(R.id.dsTouchpadPanel);
+        dsTouchpadWindow = findViewById(R.id.dsTouchpadWindow);
+        dsTouchpadView = findViewById(R.id.dsTouchpadView);
+        dsTouchpadDragHandle = findViewById(R.id.dsTouchpadDragHandle);
+        dsTouchpadDragTouchSlop = ViewConfiguration.get(this).getScaledTouchSlop();
+        bindDsTouchpadDragHandle();
+        dsTouchpadPanel.post(this::updateDsTouchpadLayout);
 
         videoZoomGestureOverlay = findViewById(R.id.videoZoomGestureOverlay);
         videoZoomController = new VideoZoomController((View) rootView, streamView, fsrView);
@@ -879,6 +988,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 .setColorRange(decoderRenderer.getPreferredColorRange())
                 .setPPI(RazerUtils.getPPI(this))
                 .setRazerVD(prefConfig.razerVD)
+                .setControlStreamRttToleranceMs(prefConfig.touchStutterCompatibility ? 10 : 0)
+                .setUsbIpMode(prefConfig.usbIpMode)
                 .setPersistGamepadsAfterDisconnect(!prefConfig.multiController)
                 .build();
 
@@ -928,10 +1039,28 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 });
         controllerHandler = new ControllerHandler(this, conn, this, prefConfig,
                 optionalPcmHapticsBackend);
+        bindDsTouchpadView();
         keyboardTranslator = new KeyboardTranslator();
 
         InputManager inputManager = (InputManager) getSystemService(Context.INPUT_SERVICE);
         inputManager.registerInputDeviceListener(keyboardTranslator, null);
+
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] BEGIN
+        imeKeyboardExtensionController = new ImeKeyboardExtensionController(
+                this,
+                (FrameLayout) rootView,
+                (keyCode, down) -> keyboardEvent(down, (short) keyCode),
+                // EXTENSION DEVELOPMENT [EXT-IME-VIDEO-VIEWPORT] [MODIFIED] BEGIN
+                streamView,
+                fsrView,
+                () -> {
+                    if (videoZoomController != null) {
+                        videoZoomController.refreshAfterHostSizeChanged();
+                    }
+                }
+                // EXTENSION DEVELOPMENT [EXT-IME-VIDEO-VIEWPORT] [MODIFIED] END
+        );
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] END
 
         // Initialize touch contexts
 //        for (int i = 0; i < touchContextMap.length; i++) {
@@ -958,7 +1087,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             initKeyboardController();
         }
 
-        if (prefConfig.usbDriver) {
+        if (prefConfig.usbDriver || prefConfig.usbIpMode) {
             // Start the USB driver
             bindService(new Intent(this, UsbDriverService.class),
                     usbDriverServiceConnection, Service.BIND_AUTO_CREATE);
@@ -1021,6 +1150,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         keyBoardController=new KeyBoardController(controllerHandler, (FrameLayout) rootView, this,prefConfig,false);
 //        keyBoardController.refreshLayout();
         keyBoardController.show();
+        bringDsTouchpadToFront();
     }
 
 
@@ -1028,12 +1158,14 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         virtualController = new KeyBoardController(controllerHandler,(FrameLayout) rootView, this,prefConfig,true);
 //        virtualController.refreshLayout();
         virtualController.show();
+        bringDsTouchpadToFront();
     }
 
     private void initkeyBoardLayoutController(){
         keyBoardLayoutController=new KeyBoardLayoutController(controllerHandler,(FrameLayout)rootView, this,prefConfig);
         keyBoardLayoutController.refreshLayout();
         keyBoardLayoutController.show();
+        bringDsTouchpadToFront();
     }
 
     //显示隐藏虚拟特殊按键
@@ -1060,12 +1192,395 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     //显示隐藏虚拟手柄控制器
     public void showHideVirtualController(){
+        if (usbIpHandoffActive) {
+            return;
+        }
         if(virtualController==null){
             initVirtualController();
             prefConfig.onscreenController=true;
             return;
         }
         prefConfig.onscreenController= virtualController.switchShowHide() != 0;
+        bringDsTouchpadToFront();
+    }
+
+    public boolean isDsTouchpadVisible() {
+        return dsTouchpadVisible;
+    }
+
+    public boolean isDsTouchpadSupported() {
+        return prefConfig != null && !usbIpHandoffActive &&
+                ControllerHandler.isDsGamepadEmulation(prefConfig.gamepadEmulation);
+    }
+
+    public boolean toggleDsTouchpad() {
+        if (usbIpHandoffActive) {
+            return false;
+        }
+        boolean show = !dsTouchpadVisible;
+        if (show && (controllerHandler == null ||
+                !controllerHandler.prepareVirtualDsTouchpad())) {
+            return false;
+        }
+        if (show) {
+            dsTouchpadSessionPrepared = true;
+        }
+
+        if (!show) {
+            cancelDsTouchpadDrag();
+            releaseDsTouchpadInput();
+        }
+        dsTouchpadVisible = show;
+        updateDsTouchpadVisibility();
+        Toast.makeText(this, show ? R.string.game_menu_ds_touchpad_shown :
+                R.string.game_menu_ds_touchpad_hidden,
+                show ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT).show();
+        return dsTouchpadVisible;
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void bindDsTouchpadView() {
+        if (dsTouchpadView == null) {
+            return;
+        }
+
+        dsTouchpadView.setOnTouchListener((view, event) -> {
+            if (event == null) {
+                return false;
+            }
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    dsTouchpadTouchActive = true;
+                    revealDsTouchpad();
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    if (dsTouchpadTouchActive) {
+                        revealDsTouchpad();
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    dsTouchpadTouchActive = false;
+                    scheduleDsTouchpadAutoHide();
+                    break;
+                default:
+                    break;
+            }
+            // Observe the gesture without consuming it. DsTouchpadView still owns DS input.
+            return false;
+        });
+
+        dsTouchpadView.setListener(new DsTouchpadView.Listener() {
+            @Override
+            public void onTouchBegin(int pointerId, float normalizedX, float normalizedY) {
+                reportDsTouchpadEvent(MoonBridge.LI_TOUCH_EVENT_DOWN, pointerId,
+                        normalizedX, normalizedY, 1.0f);
+            }
+
+            @Override
+            public void onTouchMove(int pointerId, float normalizedX, float normalizedY) {
+                reportDsTouchpadEvent(MoonBridge.LI_TOUCH_EVENT_MOVE, pointerId,
+                        normalizedX, normalizedY, 1.0f);
+            }
+
+            @Override
+            public void onTouchEnd(int pointerId, float normalizedX, float normalizedY) {
+                reportDsTouchpadEvent(MoonBridge.LI_TOUCH_EVENT_UP, pointerId,
+                        normalizedX, normalizedY, 0.0f);
+            }
+
+            @Override
+            public void onCancelAll() {
+                reportDsTouchpadEvent(MoonBridge.LI_TOUCH_EVENT_CANCEL_ALL,
+                        0, 0.0f, 0.0f, 0.0f);
+            }
+
+            @Override
+            public void onTap() {
+                if (controllerHandler == null ||
+                        !controllerHandler.reportVirtualDsTouchpadButton(true)) {
+                    return;
+                }
+                dsTouchpadView.removeCallbacks(dsTouchpadButtonReleaseRunnable);
+                dsTouchpadView.postDelayed(dsTouchpadButtonReleaseRunnable,
+                        DS_TOUCHPAD_CLICK_DURATION_MS);
+            }
+
+            @Override
+            public void onLongPressStart() {
+                dsTouchpadView.removeCallbacks(dsTouchpadButtonReleaseRunnable);
+                if (controllerHandler != null) {
+                    controllerHandler.reportVirtualDsTouchpadButton(true);
+                }
+            }
+
+            @Override
+            public void onLongPressEnd() {
+                dsTouchpadView.removeCallbacks(dsTouchpadButtonReleaseRunnable);
+                if (controllerHandler != null) {
+                    controllerHandler.reportVirtualDsTouchpadButton(false);
+                }
+            }
+        });
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private void bindDsTouchpadDragHandle() {
+        if (dsTouchpadDragHandle == null) {
+            return;
+        }
+
+        dsTouchpadDragHandle.setOnTouchListener((view, event) -> {
+            if (event == null || isStylusMotionEvent(event)) {
+                return false;
+            }
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN: {
+                    if (!dsTouchpadVisible || dsTouchpadWindow == null ||
+                            dsTouchpadPanel == null ||
+                            dsTouchpadPanel.getVisibility() != View.VISIBLE) {
+                        return false;
+                    }
+
+                    releaseDsTouchpadInput();
+                    dsTouchpadDragging = true;
+                    dsTouchpadDragMoved = false;
+                    dsTouchpadDragStartRawX = event.getRawX();
+                    dsTouchpadDragStartRawY = event.getRawY();
+                    FrameLayout.LayoutParams params =
+                            (FrameLayout.LayoutParams) dsTouchpadWindow.getLayoutParams();
+                    dsTouchpadDragStartLeft = params.leftMargin;
+                    dsTouchpadDragStartTop = params.topMargin;
+                    ViewParent parent = view.getParent();
+                    if (parent != null) {
+                        parent.requestDisallowInterceptTouchEvent(true);
+                    }
+                    revealDsTouchpad();
+                    return true;
+                }
+                case MotionEvent.ACTION_MOVE:
+                    if (dsTouchpadDragging) {
+                        updateDsTouchpadDragPosition(event.getRawX(), event.getRawY());
+                    }
+                    return true;
+                case MotionEvent.ACTION_POINTER_UP:
+                    finishDsTouchpadDrag(true);
+                    return true;
+                case MotionEvent.ACTION_UP:
+                    finishDsTouchpadDrag(true);
+                    return true;
+                case MotionEvent.ACTION_CANCEL:
+                    finishDsTouchpadDrag(true);
+                    return true;
+                default:
+                    return dsTouchpadDragging;
+            }
+        });
+    }
+
+    private static boolean isStylusMotionEvent(MotionEvent event) {
+        if (event.isFromSource(InputDevice.SOURCE_STYLUS)) {
+            return true;
+        }
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            int toolType = event.getToolType(i);
+            if (toolType == MotionEvent.TOOL_TYPE_STYLUS ||
+                    toolType == MotionEvent.TOOL_TYPE_ERASER) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void reportDsTouchpadEvent(byte eventType, int pointerId,
+                                       float x, float y, float pressure) {
+        if (controllerHandler != null) {
+            controllerHandler.reportVirtualDsTouchpadEvent(
+                    eventType, pointerId, x, y, pressure);
+        }
+    }
+
+    private void releaseDsTouchpadInput() {
+        dsTouchpadTouchActive = false;
+        cancelDsTouchpadAutoHide();
+        if (dsTouchpadView != null) {
+            dsTouchpadView.removeCallbacks(dsTouchpadButtonReleaseRunnable);
+            dsTouchpadView.releaseTouches();
+        }
+        if (dsTouchpadSessionPrepared && controllerHandler != null && isDsTouchpadSupported()) {
+            controllerHandler.reportVirtualDsTouchpadButton(false);
+            controllerHandler.reportVirtualDsTouchpadEvent(MoonBridge.LI_TOUCH_EVENT_CANCEL_ALL,
+                    0, 0.0f, 0.0f, 0.0f);
+        }
+    }
+
+    private void updateDsTouchpadVisibility() {
+        if (dsTouchpadPanel == null) {
+            return;
+        }
+
+        boolean show = dsTouchpadVisible && isDsTouchpadSupported() && !isHidingOverlays;
+        dsTouchpadPanel.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            dsTouchpadPanel.post(() -> {
+                updateDsTouchpadLayout();
+                revealDsTouchpadAndScheduleAutoHide();
+            });
+            dsTouchpadPanel.bringToFront();
+        }
+        else {
+            cancelDsTouchpadAutoHide();
+            if (dsTouchpadWindow != null) {
+                dsTouchpadWindow.setAlpha(1.0f);
+            }
+        }
+    }
+
+    private void bringDsTouchpadToFront() {
+        if (dsTouchpadPanel != null && dsTouchpadPanel.getVisibility() == View.VISIBLE) {
+            dsTouchpadPanel.bringToFront();
+        }
+    }
+
+    private void updateDsTouchpadLayout() {
+        if (dsTouchpadWindow == null || dsTouchpadPanel == null) {
+            return;
+        }
+
+        boolean portrait = getResources().getConfiguration().orientation ==
+                Configuration.ORIENTATION_PORTRAIT;
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int width = Math.min(Math.round(metrics.widthPixels * (portrait ? 0.52f : 0.28f)),
+                UiHelper.dpToPx(this, 300));
+        int height = Math.max(UiHelper.dpToPx(this, 118), Math.round(width * 0.56f));
+        int panelWidth = dsTouchpadPanel.getWidth() > 0 ?
+                dsTouchpadPanel.getWidth() : metrics.widthPixels;
+        int panelHeight = dsTouchpadPanel.getHeight() > 0 ?
+                dsTouchpadPanel.getHeight() : metrics.heightPixels;
+        int maxLeft = Math.max(0, panelWidth - width);
+        int maxTop = Math.max(0, panelHeight - height);
+        int left;
+        int top;
+        if (dsTouchpadPositionCustomized) {
+            left = Math.round(maxLeft * clampUnit(dsTouchpadPositionRatioX));
+            top = Math.round(maxTop * clampUnit(dsTouchpadPositionRatioY));
+        }
+        else {
+            left = maxLeft / 2;
+            top = Math.min(maxTop, UiHelper.dpToPx(this, portrait ? 100 : 48));
+        }
+
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) dsTouchpadWindow.getLayoutParams();
+        params.width = width;
+        params.height = height;
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.leftMargin = left;
+        params.topMargin = top;
+        params.rightMargin = 0;
+        params.bottomMargin = 0;
+        dsTouchpadWindow.setLayoutParams(params);
+    }
+
+    private void updateDsTouchpadDragPosition(float rawX, float rawY) {
+        if (!dsTouchpadDragging || dsTouchpadWindow == null || dsTouchpadPanel == null) {
+            return;
+        }
+
+        float deltaX = rawX - dsTouchpadDragStartRawX;
+        float deltaY = rawY - dsTouchpadDragStartRawY;
+        if (!dsTouchpadDragMoved && Math.hypot(deltaX, deltaY) < dsTouchpadDragTouchSlop) {
+            return;
+        }
+        dsTouchpadDragMoved = true;
+        if (dsTouchpadDragHandle != null) {
+            dsTouchpadDragHandle.setPressed(true);
+        }
+
+        int maxLeft = Math.max(0, dsTouchpadPanel.getWidth() - dsTouchpadWindow.getWidth());
+        int maxTop = Math.max(0, dsTouchpadPanel.getHeight() - dsTouchpadWindow.getHeight());
+        int left = clampInt(dsTouchpadDragStartLeft + Math.round(deltaX), 0, maxLeft);
+        int top = clampInt(dsTouchpadDragStartTop + Math.round(deltaY), 0, maxTop);
+        FrameLayout.LayoutParams params =
+                (FrameLayout.LayoutParams) dsTouchpadWindow.getLayoutParams();
+        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.leftMargin = left;
+        params.topMargin = top;
+        dsTouchpadWindow.setLayoutParams(params);
+        rememberDsTouchpadPosition(left, top, maxLeft, maxTop);
+    }
+
+    private void rememberDsTouchpadPosition(int left, int top, int maxLeft, int maxTop) {
+        dsTouchpadPositionCustomized = true;
+        dsTouchpadPositionRatioX = maxLeft > 0 ? clampUnit((float) left / maxLeft) : 0.5f;
+        dsTouchpadPositionRatioY = maxTop > 0 ? clampUnit((float) top / maxTop) : 0.0f;
+    }
+
+    private void finishDsTouchpadDrag(boolean scheduleAutoHide) {
+        if (dsTouchpadDragHandle != null) {
+            dsTouchpadDragHandle.setPressed(false);
+        }
+        dsTouchpadDragging = false;
+        dsTouchpadDragMoved = false;
+        if (scheduleAutoHide) {
+            scheduleDsTouchpadAutoHide();
+        }
+    }
+
+    private void cancelDsTouchpadDrag() {
+        finishDsTouchpadDrag(false);
+    }
+
+    private void revealDsTouchpad() {
+        if (dsTouchpadWindow == null) {
+            return;
+        }
+        dsTouchpadWindow.removeCallbacks(dsTouchpadAutoHideRunnable);
+        dsTouchpadWindow.animate().cancel();
+        dsTouchpadWindow.setAlpha(1.0f);
+    }
+
+    private void revealDsTouchpadAndScheduleAutoHide() {
+        revealDsTouchpad();
+        scheduleDsTouchpadAutoHide();
+    }
+
+    private void scheduleDsTouchpadAutoHide() {
+        if (dsTouchpadWindow == null) {
+            return;
+        }
+        dsTouchpadWindow.removeCallbacks(dsTouchpadAutoHideRunnable);
+        if (isDsTouchpadAutoHideEligible() && !dsTouchpadTouchActive && !dsTouchpadDragging) {
+            dsTouchpadWindow.postDelayed(dsTouchpadAutoHideRunnable,
+                    DS_TOUCHPAD_AUTO_HIDE_DELAY_MS);
+        }
+    }
+
+    private void cancelDsTouchpadAutoHide() {
+        if (dsTouchpadWindow == null) {
+            return;
+        }
+        dsTouchpadWindow.removeCallbacks(dsTouchpadAutoHideRunnable);
+        dsTouchpadWindow.animate().cancel();
+    }
+
+    private boolean isDsTouchpadAutoHideEligible() {
+        boolean gameMenuShowing = dialogGameMenu != null &&
+                dialogGameMenu.getDialog() != null && dialogGameMenu.getDialog().isShowing();
+        return dsTouchpadWindow != null && dsTouchpadPanel != null && dsTouchpadVisible &&
+                isDsTouchpadSupported() && !isHidingOverlays && activityResumed &&
+                hasWindowFocus() && !gameMenuShowing &&
+                dsTouchpadPanel.getVisibility() == View.VISIBLE;
+    }
+
+    private static float clampUnit(float value) {
+        return Math.max(0.0f, Math.min(1.0f, value));
+    }
+
+    private static int clampInt(int value, int min, int max) {
+        return Math.max(min, Math.min(max, value));
     }
 
     private void setPreferredOrientationForCurrentDisplay() {
@@ -1119,6 +1634,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
+        cancelDsTouchpadDrag();
+        releaseDsTouchpadInput();
         if (virtualMouseOverlay != null) {
             virtualMouseOverlay.cancelActiveInteractions();
         }
@@ -1148,6 +1665,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             if (isInPictureInPictureMode()) {
                 isHidingOverlays = true;
+                updateDsTouchpadVisibility();
 
                 if (virtualController != null) {
                     virtualController.hide();
@@ -1174,6 +1692,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             }
             else {
                 isHidingOverlays = false;
+                updateDsTouchpadVisibility();
 
                 // Restore overlays to previous state when leaving PiP
 //                if (virtualController != null) {
@@ -1200,6 +1719,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 UiHelper.notifyStreamExitingPiP(this);
             }
         }
+
+        updateDsTouchpadLayout();
+        revealDsTouchpadAndScheduleAutoHide();
 
         if (virtualMouseOverlay != null) {
             setVirtualMouseInputSuppressed(isHidingOverlays);
@@ -1322,6 +1844,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
+        if (!hasFocus) cancelStylusInput();
+
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] BEGIN
+        if (!hasFocus && imeKeyboardExtensionController != null) {
+            imeKeyboardExtensionController.releasePressedKeys();
+        }
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] END
 
         // We can't guarantee the state of modifiers keys which may have
         // lifted while focus was not on us. Clear the modifier state.
@@ -1335,6 +1864,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
         if (videoZoomGestureOverlay != null) {
             setVideoZoomInputSuppressed(!hasFocus);
+        }
+        if (hasFocus) {
+            revealDsTouchpadAndScheduleAutoHide();
+        }
+        else {
+            cancelDsTouchpadDrag();
+            releaseDsTouchpadInput();
         }
     }
 
@@ -1636,12 +2172,29 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     protected void onDestroy() {
         logSessionInfo("LIFECYCLE", "Stream view destroying");
         backgroundReconnectHandler.removeCallbacksAndMessages(null);
+        sessionTelemetryHandler.removeCallbacksAndMessages(null);
+        emitSessionTelemetry();
         releaseExternalDisplayRouting();
+        cancelDsTouchpadDrag();
+        releaseDsTouchpadInput();
+
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] BEGIN
+        if (imeKeyboardExtensionController != null) {
+            imeKeyboardExtensionController.destroy();
+            imeKeyboardExtensionController = null;
+        }
+        // EXTENSION DEVELOPMENT [EXT-IME-ACCESSORY-BAR] [MODIFIED] END
 
         if (virtualMouseOverlay != null) {
             virtualMouseOverlay.destroy();
             virtualMouseOverlay = null;
         }
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+        if (multiGestureTouchpadController != null) {
+            multiGestureTouchpadController.destroy();
+            multiGestureTouchpadController = null;
+        }
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
         if (videoZoomGestureOverlay != null) {
             videoZoomGestureOverlay.destroy();
             videoZoomGestureOverlay = null;
@@ -1660,6 +2213,15 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             stopConnection();
         }
 
+        String finalSessionState = buildSessionStateText();
+        if (controllerHandler != null) {
+            stopControllerHandler("activity-destroy");
+        }
+        if (streamTelemetryReporter != null) {
+            streamTelemetryReporter.finish(reportedCrash
+                            ? "decoder-error" : "activity-destroy",
+                    finalSessionState);
+        }
         if (controllerHandler != null) {
             controllerHandler.destroy();
         }
@@ -1678,6 +2240,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (connectedToUsbDriverService) {
             // Unbind from the discovery service
             unbindService(usbDriverServiceConnection);
+            usbDriverBinder = null;
         }
 
         if (fsrInputSurface != null) {
@@ -1692,6 +2255,10 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         // Destroy the capture provider
         inputCaptureProvider.destroy();
 
+        if (streamNetworkMonitor != null) {
+            streamNetworkMonitor.stop();
+            streamNetworkMonitor = null;
+        }
         if (streamSessionLogger != null) {
             streamSessionLogger.close(reportedCrash ? "Ended due to decoder error" : "Stream view closed");
             streamSessionLogger = null;
@@ -1703,6 +2270,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     protected void onResume() {
         super.onResume();
         activityResumed = true;
+        revealDsTouchpadAndScheduleAutoHide();
 
         if (virtualMouseOverlay != null) {
             setVirtualMouseInputSuppressed(false);
@@ -1722,7 +2290,10 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     protected void onPause() {
+        cancelStylusInput();
         activityResumed = false;
+        cancelDsTouchpadDrag();
+        releaseDsTouchpadInput();
 
         if (!isFinishing()) {
             suspendStreamForBackground();
@@ -1743,7 +2314,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         if (isFinishing()) {
             // Stop any further input device notifications before we lose focus (and pointer capture)
             if (controllerHandler != null) {
-                controllerHandler.stop();
+                stopControllerHandler("activity-finishing");
             }
 
             // Ungrab input to prevent further input device notifications
@@ -1863,6 +2434,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     private void setInputGrabState(boolean grab) {
+        if (!grab) cancelStylusInput();
         // Grab/ungrab the mouse cursor
         if (grab) {
             inputCaptureProvider.enableCapture();
@@ -2022,6 +2594,46 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         return (byte) modifierFlags;
     }
 
+    // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+    private void sendImeCommittedText(String text) {
+        ImeAsciiInputExtension.KeyStroke[] keyStrokes = ImeAsciiInputExtension.mapText(text);
+        if (keyStrokes == null || !dispatchImeAsciiKeyStrokes(keyStrokes)) {
+            conn.sendUtf8Text(text);
+        }
+    }
+
+    private String getPrintableAsciiImeKeyEventText(KeyEvent event) {
+        if (event.getDeviceId() != KeyCharacterMap.VIRTUAL_KEYBOARD) {
+            return null;
+        }
+
+        int unicodeCharacter = event.getUnicodeChar();
+        if (!ImeAsciiInputExtension.isPrintableAscii(unicodeCharacter)) {
+            return null;
+        }
+
+        return String.valueOf((char) unicodeCharacter);
+    }
+
+    private boolean dispatchImeAsciiKeyStrokes(ImeAsciiInputExtension.KeyStroke[] keyStrokes) {
+        short[] keyMaps = new short[keyStrokes.length];
+        for (int i = 0; i < keyStrokes.length; i++) {
+            keyMaps[i] = keyboardTranslator.translate(keyStrokes[i].getAndroidKeyCode(), -1);
+            if (keyMaps[i] == 0) {
+                return false;
+            }
+        }
+
+        for (int i = 0; i < keyStrokes.length; i++) {
+            byte modifiers = (byte) ((getModifierState() & ~KeyboardPacket.MODIFIER_SHIFT)
+                    | keyStrokes[i].getRequiredModifiers());
+            conn.sendKeyboardInput(keyMaps[i], KeyboardPacket.KEY_DOWN, modifiers, (byte) 0);
+            conn.sendKeyboardInput(keyMaps[i], KeyboardPacket.KEY_UP, modifiers, (byte) 0);
+        }
+        return true;
+    }
+    // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
+
     private boolean isPhysicalKeyboardEscapeMenuEvent(KeyEvent event) {
         if (!prefConfig.keyboardEscOpensGameMenu || !connected
                 || event.getKeyCode() != KeyEvent.KEYCODE_ESCAPE
@@ -2107,6 +2719,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 return false;
             }
 
+            // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+            // Some IMEs emit printable symbols as mapped key codes without their required Shift
+            // state. For example, KEYCODE_PLUS otherwise takes the raw '=' mapping below.
+            String imeAsciiText = getPrintableAsciiImeKeyEventText(event);
+            if (imeAsciiText != null) {
+                sendImeCommittedText(imeAsciiText);
+                return true;
+            }
+            // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
+
             // We'll send it as a raw key event if we have a key mapping, otherwise we'll send it
             // as UTF-8 text (if it's a printable character).
             short translated = keyboardTranslator.translate(event.getKeyCode(), event.getDeviceId());
@@ -2118,7 +2740,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 // UTF-8 events don't auto-repeat on the host side.
                 int unicodeChar = event.getUnicodeChar();
                 if ((unicodeChar & KeyCharacterMap.COMBINING_ACCENT) == 0 && (unicodeChar & KeyCharacterMap.COMBINING_ACCENT_MASK) != 0) {
-                    conn.sendUtf8Text(""+(char)unicodeChar);
+                    // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+                    sendImeCommittedText(""+(char)unicodeChar);
+                    // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
                     return true;
                 }
 
@@ -2194,6 +2818,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 return false;
             }
 
+            // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+            // Key down was emitted as a complete normalized stroke by the ASCII extension.
+            if (getPrintableAsciiImeKeyEventText(event) != null) {
+                return true;
+            }
+            // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
+
             short translated = keyboardTranslator.translate(event.getKeyCode(), event.getDeviceId());
             if (translated == 0) {
                 // If we sent this event as UTF-8 on key down, also report that it was handled
@@ -2227,7 +2858,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             return false;
         }
 
-        conn.sendUtf8Text(event.getCharacters());
+        // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] BEGIN
+        sendImeCommittedText(event.getCharacters());
+        // EXTENSION DEVELOPMENT [EXT-IME-ASCII-INPUT] [MODIFIED] END
         return true;
     }
 
@@ -2548,48 +3181,223 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
     }
 
-    private boolean trySendPenEvent(View view, MotionEvent event) {
-        byte eventType = getLiTouchTypeFromEvent(event);
-        if (eventType < 0) {
-            return false;
-        }
+    private final StylusInputRouter stylusRouter = new StylusInputRouter();
+    private TouchContext stylusTouchContext;
+    private int currentMouseMode;
+    private int stylusMouseButtons;
+    private int stylusTipButton;
+    private int stylusPointerId;
+    private float stylusX, stylusY;
 
-        if (event.getActionMasked() == MotionEvent.ACTION_MOVE) {
-            // Move events may impact all active pointers
-            boolean handledStylusEvent = false;
-            for (int i = 0; i < event.getPointerCount(); i++) {
-                byte toolType = convertToolTypeToStylusToolType(event, i);
-                if (toolType == MoonBridge.LI_TOOL_TYPE_UNKNOWN) {
-                    // Not a stylus pointer, so skip it
-                    continue;
-                }
-                else {
-                    // This pointer is a stylus, so we'll report that we handled this event
-                    handledStylusEvent = true;
-                }
+    public void setStylusMode(int mode) {
+        cancelStylusInput();
+        prefConfig.stylusMode = StylusInputRouter.normalizeMode(mode);
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putInt(PreferenceConfiguration.STYLUS_MODE_PREF_STRING, prefConfig.stylusMode).apply();
+    }
 
-                if (!sendPenEventForPointer(view, event, eventType, toolType, i)) {
-                    // Pen events aren't supported by the host
-                    return false;
-                }
+    public void setTouchpadRotation(int rotation) {
+        prefConfig.touchpadRotation = TouchpadRotation.normalize(rotation);
+        externalTouchpadScrollRemainderX = 0f;
+        externalTouchpadScrollRemainderY = 0f;
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putInt(PreferenceConfiguration.TOUCHPAD_ROTATION_PREF, prefConfig.touchpadRotation).apply();
+    }
+
+    public void setMouseRotation(int rotation) {
+        prefConfig.mouseRotation = TouchpadRotation.normalize(rotation);
+        PreferenceManager.getDefaultSharedPreferences(this).edit()
+                .putInt(PreferenceConfiguration.MOUSE_ROTATION_PREF, prefConfig.mouseRotation).apply();
+    }
+
+    private void cancelStylusInput() {
+        if (conn != null) {
+            stylusRouter.cancel((transport, action) -> sendStylusTransport(transport, action, null, null, 0));
+        }
+        if (stylusTouchContext != null) {
+            stylusTouchContext.cancelTouch();
+            stylusTouchContext = null;
+        }
+    }
+
+    private StylusInputRouter.TouchMode stylusFollowMode() {
+        if (disableMouseModel) return StylusInputRouter.TouchMode.DISABLED;
+        if (prefConfig.touchscreenTrackpad) return StylusInputRouter.TouchMode.TRACKPAD;
+        return prefConfig.enableMultiTouchScreen ? StylusInputRouter.TouchMode.MULTITOUCH
+                : StylusInputRouter.TouchMode.ABSOLUTE;
+    }
+
+    private byte stylusEventType(StylusInputRouter.Action action) {
+        switch (action) {
+            case DOWN: return MoonBridge.LI_TOUCH_EVENT_DOWN;
+            case UP: return MoonBridge.LI_TOUCH_EVENT_UP;
+            case CANCEL: return MoonBridge.LI_TOUCH_EVENT_CANCEL;
+            case HOVER: return MoonBridge.LI_TOUCH_EVENT_HOVER;
+            case LEAVE: return MoonBridge.LI_TOUCH_EVENT_HOVER_LEAVE;
+            case BUTTON: return MoonBridge.LI_TOUCH_EVENT_BUTTON_ONLY;
+            default: return MoonBridge.LI_TOUCH_EVENT_MOVE;
+        }
+    }
+
+    private void setStylusMouseButtons(int buttons) {
+        int changed = stylusMouseButtons ^ buttons;
+        byte[] ids = {MouseButtonPacket.BUTTON_LEFT, MouseButtonPacket.BUTTON_RIGHT, MouseButtonPacket.BUTTON_MIDDLE};
+        for (int i = 0; i < ids.length; i++) {
+            if ((changed & (1 << i)) != 0) {
+                if ((buttons & (1 << i)) != 0) conn.sendMouseButtonDown(ids[i]);
+                else conn.sendMouseButtonUp(ids[i]);
             }
-            return handledStylusEvent;
         }
-        else if (event.getActionMasked() == MotionEvent.ACTION_CANCEL) {
-            // Cancel impacts all active pointers
-            return conn.sendPenEvent(MoonBridge.LI_TOUCH_EVENT_CANCEL_ALL, MoonBridge.LI_TOOL_TYPE_UNKNOWN, (byte)0,
-                    0, 0, 0, 0, 0,
-                    MoonBridge.LI_ROT_UNKNOWN, MoonBridge.LI_TILT_UNKNOWN) != MoonBridge.LI_ERR_UNSUPPORTED;
-        }
-        else {
-            // Up, Down, and Hover events are specific to the action index
-            byte toolType = convertToolTypeToStylusToolType(event, event.getActionIndex());
-            if (toolType == MoonBridge.LI_TOOL_TYPE_UNKNOWN) {
-                // Not a stylus event
-                return false;
+        stylusMouseButtons = buttons;
+    }
+
+    private boolean sendStylusTransport(StylusInputRouter.Transport transport, StylusInputRouter.Action action,
+                                        View view, MotionEvent event, int index) {
+        byte type = stylusEventType(action);
+        if (transport == StylusInputRouter.Transport.PEN) {
+            if (action == StylusInputRouter.Action.CANCEL || action == StylusInputRouter.Action.LEAVE) {
+                return conn.sendPenEvent(action == StylusInputRouter.Action.CANCEL
+                                ? MoonBridge.LI_TOUCH_EVENT_CANCEL_ALL : type,
+                        MoonBridge.LI_TOOL_TYPE_PEN, (byte) 0, stylusX, stylusY, 0, 0, 0,
+                        MoonBridge.LI_ROT_UNKNOWN, MoonBridge.LI_TILT_UNKNOWN) != MoonBridge.LI_ERR_UNSUPPORTED;
             }
-            return sendPenEventForPointer(view, event, eventType, toolType, event.getActionIndex());
+            return sendPenEventForPointer(view, event, type, convertToolTypeToStylusToolType(event, index), index);
         }
+        if (transport == StylusInputRouter.Transport.TOUCH_SCREEN) {
+            if (event != null && action != StylusInputRouter.Action.CANCEL) {
+                float[] xy = getStreamViewRelativeNormalizedXY(view, event, index, true);
+                stylusX = xy[0];
+                stylusY = xy[1];
+            }
+            return conn.sendTouchEvent(type, stylusPointerId, stylusX, stylusY,
+                    event == null ? 0 : getPressureOrDistance(event, index), 0, 0,
+                    MoonBridge.LI_ROT_UNKNOWN) != MoonBridge.LI_ERR_UNSUPPORTED;
+        }
+        if (transport == StylusInputRouter.Transport.MOUSE) {
+            if (action == StylusInputRouter.Action.CANCEL || action == StylusInputRouter.Action.LEAVE) {
+                stylusTipButton = 0;
+                setStylusMouseButtons(0);
+                return true;
+            }
+            conn.sendMousePosition((short) (stylusX * 32767), (short) (stylusY * 32767),
+                    (short) 32767, (short) 32767);
+            if (action == StylusInputRouter.Action.DOWN) {
+                stylusTipButton = event.getToolType(index) == MotionEvent.TOOL_TYPE_ERASER ? 2 : 1;
+            }
+            if (action == StylusInputRouter.Action.UP) stylusTipButton = 0;
+            int buttons = stylusTipButton;
+            if (action == StylusInputRouter.Action.UP) buttons = 0;
+            else {
+                if ((event.getButtonState() & MotionEvent.BUTTON_STYLUS_PRIMARY) != 0) buttons |= 2;
+                if ((event.getButtonState() & MotionEvent.BUTTON_STYLUS_SECONDARY) != 0) buttons |= 4;
+            }
+            setStylusMouseButtons(buttons);
+            return true;
+        }
+        if (action == StylusInputRouter.Action.CANCEL) {
+            if (stylusTouchContext != null) stylusTouchContext.cancelTouch();
+            stylusTouchContext = null;
+            return true;
+        }
+        if (action == StylusInputRouter.Action.DOWN && stylusTouchContext == null) {
+            if (prefConfig.touchscreenTrackpad) {
+                stylusTouchContext = currentMouseMode == 5 || currentMouseMode == 6
+                        ? new RelativeTouchSwitchContext(conn, 0, REFERENCE_HORIZ_RES, REFERENCE_VERT_RES,
+                                streamView, prefConfig, currentMouseMode == 6)
+                        : new RelativeTouchContext(conn, 0, REFERENCE_HORIZ_RES, REFERENCE_VERT_RES, streamView, prefConfig);
+            } else {
+                stylusTouchContext = currentMouseMode == 4 ? new AbsoluteTouchSwitchContext(conn, 0, streamView)
+                        : new AbsoluteTouchContext(conn, 0, streamView);
+            }
+        }
+        if (stylusTouchContext != null && event != null) {
+            int x = prefConfig.touchscreenTrackpad ? (int) event.getX(index) : (int) (stylusX * streamView.getWidth());
+            int y = prefConfig.touchscreenTrackpad ? (int) event.getY(index) : (int) (stylusY * streamView.getHeight());
+            if (action == StylusInputRouter.Action.DOWN) {
+                stylusTouchContext.setPointerCount(1);
+                stylusTouchContext.touchDownEvent(x, y, event.getEventTime(), true);
+            } else if (action == StylusInputRouter.Action.MOVE) {
+                stylusTouchContext.touchMoveEvent(x, y, event.getEventTime());
+            } else if (action == StylusInputRouter.Action.UP) {
+                stylusTouchContext.touchUpEvent(x, y, event.getEventTime());
+            }
+        }
+        return true;
+    }
+
+    // MotionEvent.split() is hidden from the public Android SDK.
+    private static MotionEvent copyMotionPointers(MotionEvent event, int idBits) {
+        int count = Integer.bitCount(idBits);
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[count];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[count];
+        int actionIndex = -1;
+        for (int i = 0, j = 0; i < event.getPointerCount(); i++) {
+            if ((idBits & (1 << event.getPointerId(i))) == 0) continue;
+            properties[j] = new MotionEvent.PointerProperties();
+            coords[j] = new MotionEvent.PointerCoords();
+            event.getPointerProperties(i, properties[j]);
+            event.getPointerCoords(i, coords[j]);
+            if (i == event.getActionIndex()) actionIndex = j;
+            j++;
+        }
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_POINTER_UP) {
+            if (actionIndex < 0) action = MotionEvent.ACTION_MOVE;
+            else if (count == 1) action = action == MotionEvent.ACTION_POINTER_DOWN
+                    ? MotionEvent.ACTION_DOWN : MotionEvent.ACTION_UP;
+            else action |= actionIndex << MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        }
+        return MotionEvent.obtain(event.getDownTime(), event.getEventTime(), action, count, properties, coords,
+                event.getMetaState(), event.getButtonState(), event.getXPrecision(), event.getYPrecision(),
+                event.getDeviceId(), event.getEdgeFlags(), event.getSource(), event.getFlags());
+    }
+
+    private boolean handleStylusMotion(View view, MotionEvent event) {
+        int remainingBits = 0;
+        for (int i = 0; i < event.getPointerCount(); i++) {
+            if (convertToolTypeToStylusToolType(event, i) == MoonBridge.LI_TOOL_TYPE_UNKNOWN) {
+                remainingBits |= 1 << event.getPointerId(i);
+                continue;
+            }
+            if (view == null || conn == null || !hasWindowFocus()
+                    || !inputCaptureProvider.isCapturingActive()) {
+                cancelStylusInput();
+                continue;
+            }
+            int masked = event.getActionMasked();
+            if (masked != MotionEvent.ACTION_MOVE && masked != MotionEvent.ACTION_CANCEL
+                    && i != event.getActionIndex()) continue;
+            StylusInputRouter.Action action;
+            switch (masked) {
+                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_POINTER_DOWN: action = StylusInputRouter.Action.DOWN; break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_POINTER_UP:
+                    action = (event.getFlags() & MotionEvent.FLAG_CANCELED) != 0
+                            ? StylusInputRouter.Action.CANCEL : StylusInputRouter.Action.UP; break;
+                case MotionEvent.ACTION_MOVE: action = StylusInputRouter.Action.MOVE; break;
+                case MotionEvent.ACTION_CANCEL: action = StylusInputRouter.Action.CANCEL; break;
+                case MotionEvent.ACTION_HOVER_ENTER:
+                case MotionEvent.ACTION_HOVER_MOVE: action = StylusInputRouter.Action.HOVER; break;
+                case MotionEvent.ACTION_HOVER_EXIT: action = StylusInputRouter.Action.LEAVE; break;
+                case MotionEvent.ACTION_BUTTON_PRESS:
+                case MotionEvent.ACTION_BUTTON_RELEASE: action = StylusInputRouter.Action.BUTTON; break;
+                default: continue;
+            }
+            float[] xy = getStreamViewRelativeNormalizedXY(view, event, i, false);
+            stylusX = xy[0];
+            stylusY = xy[1];
+            stylusPointerId = event.getPointerId(i);
+            final int index = i;
+            stylusRouter.handle(action, prefConfig.stylusMode, stylusFollowMode(),
+                    (transport, routedAction) -> sendStylusTransport(transport, routedAction, view, event, index));
+        }
+        if (remainingBits != 0) {
+            MotionEvent remaining = copyMotionPointers(event, remainingBits);
+            try { handleMotionEventWithoutStylus(view, remaining); }
+            finally { remaining.recycle(); }
+        }
+        return true;
     }
 
     private boolean sendTouchEventForPointer(View view, MotionEvent event, byte eventType, int pointerIndex) {
@@ -2632,6 +3440,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     // Returns true if the event was consumed
     // NB: View is only present if called from a view callback
     private boolean handleMotionEvent(View view, MotionEvent event) {
+        if (grabbedInput && isStylusMotionEvent(event)) return handleStylusMotion(view, event);
+        return handleMotionEventWithoutStylus(view, event);
+    }
+
+    private boolean handleMotionEventWithoutStylus(View view, MotionEvent event) {
         // Pass through mouse/touch/joystick input if we're not grabbing
         if (!grabbedInput) {
             return false;
@@ -2713,10 +3526,20 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 // Always update the position before sending any button events. If we're
                 // dealing with a stylus without hover support, our position might be
                 // significantly different than before.
+                boolean mouseSource = eventSource == InputDevice.SOURCE_MOUSE ||
+                        eventSource == InputDevice.SOURCE_MOUSE_RELATIVE;
+                int mouseRotation = mouseSource ? prefConfig.mouseRotation : 0;
                 if (inputCaptureProvider.eventHasRelativeMouseAxes(event)) {
                     // Send the deltas straight from the motion event
                     float rawDeltaX = inputCaptureProvider.getRelativeAxisX(event);
                     float rawDeltaY = inputCaptureProvider.getRelativeAxisY(event);
+                    int rotation = eventSource == InputDevice.SOURCE_TOUCHPAD
+                            ? prefConfig.touchpadRotation : mouseRotation;
+                    if (rotation != 0) {
+                        float originalX = rawDeltaX;
+                        rawDeltaX = TouchpadRotation.x(originalX, rawDeltaY, rotation);
+                        rawDeltaY = TouchpadRotation.y(originalX, rawDeltaY, rotation);
+                    }
                     short deltaX = (short)(rawDeltaX * prefConfig.externalTouchPadSensitityX * 0.01f);
                     short deltaY = (short)(rawDeltaY * prefConfig.externalTouchPadSensitityY * 0.01f);
 
@@ -2791,13 +3614,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         }
                     }
                 }
-                else if (view != null && trySendPenEvent(view, event)) {
-                    // If our host supports pen events, send it directly
-                    return true;
-                }
                 else if (view != null) {
                     // Otherwise send absolute position based on the view for SOURCE_CLASS_POINTER
-                    updateMousePosition(view, event);
+                    updateMousePosition(view, event, mouseRotation);
                 }
 
                 if (event.getActionMasked() == MotionEvent.ACTION_SCROLL) {
@@ -2947,6 +3766,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                                 for (TouchContext aTouchContext : touchContextMap) {
                                     aTouchContext.cancelTouch();
                                 }
+                                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                                if (multiGestureTouchpadController != null) {
+                                    multiGestureTouchpadController.cancelUntilNextGesture();
+                                }
+                                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
                                 return true;
                             }
                             break;
@@ -2996,8 +3820,23 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                         aTouchContext.cancelTouch();
                     }
 
+                    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                    if (multiGestureTouchpadController != null) {
+                        multiGestureTouchpadController.cancelUntilNextGesture();
+                    }
+                    // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
+
                     return true;
                 }
+
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                // This mode needs the complete MotionEvent to classify scroll and pinch before
+                // the legacy path splits it into independent per-pointer contexts.
+                if (multiGestureTouchpadController != null
+                        && multiGestureTouchpadController.onTouchEvent(view, event)) {
+                    return true;
+                }
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
 
                 TouchContext context = getTouchContext(actionIndex);
                 if (context == null) {
@@ -3108,7 +3947,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     }
 
-    private void updateMousePosition(View touchedView, MotionEvent event) {
+    private void updateMousePosition(View touchedView, MotionEvent event, int rotation) {
         // X and Y are already relative to the provided view object
         float eventX, eventY;
 
@@ -3163,7 +4002,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         eventX = Math.min(Math.max(eventX, 0), streamView.getWidth());
         eventY = Math.min(Math.max(eventY, 0), streamView.getHeight());
 
-        conn.sendMousePosition((short)eventX, (short)eventY, (short)streamView.getWidth(), (short)streamView.getHeight());
+        int width = streamView.getWidth();
+        int height = streamView.getHeight();
+        if (rotation != 0 && width > 0 && height > 0) {
+            // Rotate in normalized coordinates so a quarter turn still spans the full viewport.
+            float x = eventX / width - 0.5f;
+            float y = eventY / height - 0.5f;
+            eventX = (TouchpadRotation.x(x, y, rotation) + 0.5f) * width;
+            eventY = (TouchpadRotation.y(x, y, rotation) + 0.5f) * height;
+        }
+        conn.sendMousePosition((short)eventX, (short)eventY, (short)width, (short)height);
     }
 
     @Override
@@ -3212,7 +4060,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             updatePipAutoEnter();
             audioRenderer = null;
 
-            controllerHandler.stop();
+            stopControllerHandler("connection-stop");
 
             // Update GameManager state to indicate we're no longer in game
             UiHelper.notifyStreamEnded(this);
@@ -3320,7 +4168,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
                 // Stop processing controller input
-                controllerHandler.stop();
+                stopControllerHandler("connection-terminated-" + errorCode);
 
                 // Ungrab input
                 setInputGrabState(false);
@@ -3438,11 +4286,21 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void connectionStarted() {
         logSessionInfo("CONNECT", "Stream connection established");
+        if (streamSessionLogger != null) {
+            int appliedToleranceMs = MoonBridge.getControlStreamRttToleranceMs();
+            logSessionInfo("CONTROL", appliedToleranceMs >= 0
+                    ? "transport=ENet, rttToleranceMs=" + appliedToleranceMs
+                    : "rttToleranceMs=unavailable_or_not_applicable");
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 connected = true;
                 connecting = false;
+                if (usbDriverBinder != null) {
+                    usbDriverBinder.configureUsbIp(prefConfig.usbIpMode ? getIntent().getStringExtra(EXTRA_HOST) : null, conn != null ? conn.getUsbIpImportHost() : null, conn != null ? conn.getUsbIpTlsToken() : null);
+                    usbDriverBinder.setUsbIpSessionActive(true);
+                }
                 streamStartElapsedMs = SystemClock.elapsedRealtime();
                 if (backgroundReconnectAttempt > 0) {
                     final int completedAttempt = backgroundReconnectAttempt;
@@ -3519,10 +4377,20 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void rumble(short controllerNumber, short lowFreqMotor, short highFreqMotor) {
         if (streamSessionBackgrounded) {
+            if (hapticsTelemetry != null) {
+                hapticsTelemetry.recordRumble(controllerNumber, lowFreqMotor, highFreqMotor,
+                        controllerHandler != null
+                                ? controllerHandler.getNativeGameHapticsOutputRouteDisplayName() : "",
+                        true);
+            }
             return;
         }
         LimeLog.info(String.format((Locale)null, "Rumble on gamepad %d: %04x %04x", controllerNumber, lowFreqMotor, highFreqMotor));
         controllerHandler.handleRumble(controllerNumber, lowFreqMotor, highFreqMotor);
+        if (hapticsTelemetry != null) {
+            hapticsTelemetry.recordRumble(controllerNumber, lowFreqMotor, highFreqMotor,
+                    controllerHandler.getNativeGameHapticsOutputRouteDisplayName(), false);
+        }
         //联动扳机震动
         if(prefConfig.gameTriggerRumbleLink){
             rumbleTriggers(controllerNumber,lowFreqMotor,highFreqMotor);
@@ -3551,6 +4419,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void setHdrMode(boolean enabled, byte[] hdrMetadata) {
         LimeLog.info("Display HDR mode: " + (enabled ? "enabled" : "disabled"));
+        currentHdrMasteringPeakLuminanceNits = enabled
+                ? parseHdrMasteringPeakLuminance(hdrMetadata) : 0;
         decoderRenderer.setHdrMode(enabled, hdrMetadata);
         if (fsrVideoProcessor != null) {
             fsrVideoProcessor.setHdrToneMappingEnabled(enabled);
@@ -3567,6 +4437,115 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     @Override
     public void setControllerLED(short controllerNumber, byte r, byte g, byte b) {
         controllerHandler.handleSetControllerLED(controllerNumber, r, g, b);
+    }
+
+    @Override
+    public void setAdaptiveTriggers(short controllerNumber, byte eventFlags,
+                                    byte typeLeft, byte typeRight,
+                                    byte[] left, byte[] right) {
+        if (streamSessionBackgrounded) {
+            return;
+        }
+        LimeLog.info(String.format((Locale)null,
+                "Adaptive triggers on gamepad %d: flags=%02x left=%02x right=%02x",
+                controllerNumber, eventFlags, typeLeft, typeRight));
+        controllerHandler.handleSetAdaptiveTriggers(controllerNumber, eventFlags,
+                typeLeft, typeRight, left, right);
+    }
+
+    @Override
+    public void setPlayerIndicator(short controllerNumber, byte playerIndicator) {
+        LimeLog.info(String.format((Locale)null,
+                "Player indicator on gamepad %d: %02x", controllerNumber, playerIndicator));
+        controllerHandler.handleSetPlayerIndicator(controllerNumber, playerIndicator);
+    }
+
+    @Override
+    public void controllerPcm(short controllerNumber, short sequence, int sampleRate,
+                              byte channels, byte bitsPerSample, byte[] pcm) {
+        if (streamSessionBackgrounded) {
+            return;
+        }
+        if (controllerHandler.handleControllerNativePcm(controllerNumber, sampleRate,
+                channels, bitsPerSample, pcm)) {
+            recordNativeControllerPcmStats(controllerNumber, sequence, sampleRate,
+                    channels, bitsPerSample, pcm);
+        }
+    }
+
+    /**
+     * Records low-rate transport and channel-level diagnostics for native controller PCM.
+     *
+     * @param controllerNumber Controller slot receiving the PCM.
+     * @param sequence Rolling unsigned 16-bit window sequence.
+     * @param sampleRate PCM sample rate in Hz.
+     * @param channels Interleaved channel count.
+     * @param bitsPerSample Bits stored for each sample.
+     * @param pcm Interleaved little-endian PCM bytes.
+     */
+    private void recordNativeControllerPcmStats(short controllerNumber, short sequence,
+                                                int sampleRate, byte channels,
+                                                byte bitsPerSample, byte[] pcm) {
+        int unsignedSequence = sequence & 0xFFFF;
+        if (nativeControllerPcmLastSequence >= 0) {
+            int expectedSequence = (nativeControllerPcmLastSequence + 1) & 0xFFFF;
+            nativeControllerPcmSequenceGaps += (unsignedSequence - expectedSequence) & 0xFFFF;
+        }
+        nativeControllerPcmLastSequence = unsignedSequence;
+        nativeControllerPcmFrames++;
+        nativeControllerPcmBytes += pcm != null ? pcm.length : 0;
+
+        if ((channels & 0xFF) == 4 && (bitsPerSample & 0xFF) == 16 && pcm != null) {
+            for (int offset = 0; offset + 8 <= pcm.length; offset += 8) {
+                for (int channel = 0; channel < 4; channel++) {
+                    int sampleOffset = offset + channel * 2;
+                    int sample = (short) ((pcm[sampleOffset] & 0xFF) |
+                            (pcm[sampleOffset + 1] << 8));
+                    nativeControllerPcmPeaks[channel] = Math.max(
+                            nativeControllerPcmPeaks[channel], Math.abs(sample));
+                }
+            }
+        }
+
+        long nowMs = SystemClock.uptimeMillis();
+        if (nativeControllerPcmStatsStartedMs == 0L) {
+            nativeControllerPcmStatsStartedMs = nowMs;
+            LimeLog.info(String.format((Locale)null,
+                    "Native controller PCM started on gamepad %d: %d Hz %dch %dbit bytes=%d",
+                    controllerNumber, sampleRate, channels & 0xFF, bitsPerSample & 0xFF,
+                    pcm != null ? pcm.length : 0));
+            logSessionInfo("HAPTICS_PCM", String.format(Locale.US,
+                    "state=start, pad=%d, sampleRate=%d, channels=%d, bits=%d, bytes=%d, route=%s",
+                    controllerNumber & 0xFFFF, sampleRate, channels & 0xFF,
+                    bitsPerSample & 0xFF, pcm != null ? pcm.length : 0,
+                    controllerHandler != null
+                            ? nonEmpty(controllerHandler.getNativeGameHapticsOutputRouteDisplayName(), "none")
+                            : "none"));
+        }
+        else if (nowMs - nativeControllerPcmStatsStartedMs >=
+                NATIVE_CONTROLLER_PCM_STATS_INTERVAL_MS) {
+            LimeLog.info(String.format((Locale)null,
+                    "Native controller PCM stats gamepad %d: windows=%d bytes=%d seq=%d gaps=%d peak=[%d,%d,%d,%d]",
+                    controllerNumber, nativeControllerPcmFrames, nativeControllerPcmBytes,
+                    unsignedSequence, nativeControllerPcmSequenceGaps,
+                    nativeControllerPcmPeaks[0], nativeControllerPcmPeaks[1],
+                    nativeControllerPcmPeaks[2], nativeControllerPcmPeaks[3]));
+            logSessionInfo("HAPTICS_PCM", String.format(Locale.US,
+                    "state=periodic, pad=%d, windows=%d, bytes=%d, sequence=%d, gaps=%d, "
+                            + "peak=%d/%d/%d/%d, route=%s",
+                    controllerNumber & 0xFFFF, nativeControllerPcmFrames,
+                    nativeControllerPcmBytes, unsignedSequence, nativeControllerPcmSequenceGaps,
+                    nativeControllerPcmPeaks[0], nativeControllerPcmPeaks[1],
+                    nativeControllerPcmPeaks[2], nativeControllerPcmPeaks[3],
+                    controllerHandler != null
+                            ? nonEmpty(controllerHandler.getNativeGameHapticsOutputRouteDisplayName(), "none")
+                            : "none"));
+            nativeControllerPcmStatsStartedMs = nowMs;
+            nativeControllerPcmFrames = 0;
+            nativeControllerPcmBytes = 0;
+            nativeControllerPcmSequenceGaps = 0;
+            java.util.Arrays.fill(nativeControllerPcmPeaks, 0);
+        }
     }
 
     @Override
@@ -3711,6 +4690,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     @Override
+    public void evdevMouseMove(int deltaX, int deltaY) {
+        int rotation = prefConfig.mouseRotation;
+        mouseMove((int) TouchpadRotation.x(deltaX, deltaY, rotation),
+                (int) TouchpadRotation.y(deltaX, deltaY, rotation));
+    }
+
     public void mouseMove(int deltaX, int deltaY) {
         conn.sendMouseMove((short) deltaX, (short) deltaY);
     }
@@ -3765,6 +4750,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void keyboardEvent(boolean buttonDown, short keyCode) {
+        // App-owned keys use the fixed Android/QWERTY mapping and retain their real
+        // down/up lifetime. Do not route them through onKey(): synthetic KeyEvents
+        // are also VIRTUAL_KEYBOARD events and can be mistaken for IME text strokes.
         short keyMap = keyboardTranslator.translate(keyCode, -1);
         if (keyMap != 0) {
             // handleSpecialKeys() takes the Android keycode
@@ -3799,21 +4787,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public void onPerfUpdate(final PerfOverlayStats stats) {
-        long now = SystemClock.elapsedRealtime();
-        if (stats != null && now - lastSessionPerfLogElapsedMs >= 10000) {
-            lastSessionPerfLogElapsedMs = now;
-            logSessionInfo("PERF", String.format(Locale.US,
-                    "%dx%d %s, FPS %.1f/%.1f, Net %.0f Kbps, Video %.0f Kbps, Audio %.0f Kbps, "
-                            + "Latency %d±%d ms, Loss %.2f%%, Decode %.2f ms, Host %.2f ms",
-                    stats.width, stats.height, nonEmpty(stats.codecName, "--"),
-                    stats.renderedFps, stats.receivedFps, stats.networkRateKbps,
-                    stats.videoRateKbps, stats.audioRateKbps, stats.networkLatencyMs,
-                    stats.networkLatencyVarianceMs, stats.packetLossPercent,
-                    stats.decodeTimeMs, stats.hostProcessingLatencyMs));
-            logSessionInfo("STATE", "Render=" + buildRenderPipelineText()
-                    + "; USB Gamepad=" + buildUsbControllerStatusText()
-                    + "; Game Rumble=" + buildNativeGameHapticsStatusText()
-                    + "; Audio Haptics=" + buildAudioHapticsStatusText());
+        if (streamTelemetryReporter != null && stats != null) {
+            latestSessionPerfStatsElapsedMs = SystemClock.elapsedRealtime();
+            latestSessionPerfStats = stats;
         }
         runOnUiThread(new Runnable() {
             @Override
@@ -3854,7 +4830,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
         builder.append("Latency/Decode: ");
         builder.append(stats.networkLatencyMs).append(" ms / ");
-        builder.append(stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
+        builder.append(stats.decodeTimeMs >= 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
         builder.append("  Loss: ").append(String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
         builder.append("  FPS：").append(String.format(Locale.US, "%.2f", stats.totalFps));
         if (micStatus == 1) {
@@ -3879,6 +4855,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         if (stats == null) {
             addPerfRow("Status", "--");
+            addPerfRow("USB/IP", buildUsbIpStatusText());
+            addPerfRow("USB/IP地址", buildUsbIpAddressText(), true);
             return;
         }
 
@@ -3886,6 +4864,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 ? stats.width + "x" + stats.height + (stats.hdr ? " HDR" : "")
                 : prefConfig.width + "x" + prefConfig.height
                 + (prefConfig.enableHdr && !stereo3dEnabled ? " HDR" : ""));
+        if (stats.hdr) {
+            Display hdrDisplay = getActiveRenderDisplay();
+            addPerfRow("系统HDR峰值亮度", buildHdrTargetPeakLuminanceText(hdrDisplay));
+            String hdrSdrRatioText = buildHdrSdrRatioText(hdrDisplay);
+            if (hdrSdrRatioText != null) {
+                addPerfRow("HDR/SDR比率", hdrSdrRatioText);
+            }
+            addPerfRow("主机HDR母版峰值",
+                    formatHdrMetadataLuminance(currentHdrMasteringPeakLuminanceNits));
+        }
         addPerfRow("Codec", nonEmpty(stats.codecName, "--"));
         addPerfRow("Target Bitrate", formatMbps(stats.targetBitrateKbps > 0 ? stats.targetBitrateKbps : prefConfig.bitrate));
         addPerfRow("Target FPS", (stats.targetFps > 0 ? stats.targetFps : prefConfig.fps) + " FPS");
@@ -3908,18 +4896,41 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 ? stats.networkLatencyMs + " ms / Jitter " + stats.networkLatencyVarianceMs + " ms"
                 : "--");
         addPerfRow("Packet Loss", String.format(Locale.US, "%.2f%%", stats.packetLossPercent));
-        addPerfRow("Decode Latency", stats.decodeTimeMs > 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
+        addPerfRow("Decode Latency", stats.decodeTimeMs >= 0 ? String.format(Locale.US, "%.2f ms", stats.decodeTimeMs) : "--");
         addPerfRow("Host Latency", stats.hostProcessingLatencyMs > 0 ? String.format(Locale.US, "%.1f ms", stats.hostProcessingLatencyMs) : "--");
         addPerfRow("Microphone", micStatus == 1 ? "On" : "Off");
         addPerfRow("Game Rumble", buildNativeGameHapticsStatusText());
         addPerfRow("Audio Haptics", buildAudioHapticsStatusText());
         addPerfRow("USB Gamepad", buildUsbControllerStatusText());
+        addPerfRow("USB/IP", buildUsbIpStatusText());
+        addPerfRow("USB/IP地址", buildUsbIpAddressText(), true);
     }
 
+    /** Read the service-owned USB/IP state without retaining an old handoff state in the UI. */
+    private String buildUsbIpStatusText() {
+        if (!prefConfig.usbIpMode) {
+            return getString(R.string.usbip_disabled);
+        }
+        return usbDriverBinder != null ? usbDriverBinder.getUsbIpStatus()
+                : getString(R.string.usbip_waiting_session);
+    }
+
+    /** Show the Android export endpoint used by Windows to import the controller. */
+    private String buildUsbIpAddressText() {
+        return prefConfig.usbIpMode && usbDriverBinder != null ? usbDriverBinder.getUsbIpAddress() : "--";
+    }
+
+    /** Add an ordinary single-line performance metric. */
     private void addPerfRow(String label, String value) {
+        addPerfRow(label, value, true);
+    }
+
+    /** Wrap overflowing performance values without changing text, font size or the HUD container geometry. */
+    private void addPerfRow(String label, String value, boolean wrapValue) {
+        boolean multiline = wrapValue;
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setGravity(multiline ? Gravity.TOP : Gravity.CENTER_VERTICAL);
         LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -3941,11 +4952,99 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         valueView.setTextColor(Color.WHITE);
         valueView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f);
         valueView.setGravity(Gravity.END);
-        valueView.setSingleLine(true);
+        valueView.setSingleLine(!multiline);
+        if (multiline) {
+            valueView.setHorizontallyScrolling(false);
+            valueView.setEllipsize(null);
+            valueView.setTextDirection(View.TEXT_DIRECTION_LTR);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                valueView.setBreakStrategy(android.text.Layout.BREAK_STRATEGY_SIMPLE);
+                valueView.setHyphenationFrequency(android.text.Layout.HYPHENATION_FREQUENCY_NONE);
+            }
+        }
 
         row.addView(labelView);
         row.addView(valueView);
         performanceOverlayBigContent.addView(row);
+    }
+
+    private Display getActiveRenderDisplay() {
+        if (activeExternalDisplayId != Display.INVALID_DISPLAY) {
+            DisplayManager displayManager = externalDisplayManager;
+            if (displayManager == null) {
+                displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+            }
+            if (displayManager != null) {
+                Display externalDisplay = displayManager.getDisplay(activeExternalDisplayId);
+                if (externalDisplay != null && externalDisplay.isValid()) {
+                    return externalDisplay;
+                }
+            }
+        }
+        return getWindowManager().getDefaultDisplay();
+    }
+
+    private String buildHdrTargetPeakLuminanceText(Display display) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N || display == null) {
+            return "系统未报告";
+        }
+
+        try {
+            Display.HdrCapabilities hdrCapabilities = display.getHdrCapabilities();
+            if (hdrCapabilities == null) {
+                return "系统未报告";
+            }
+            float peakLuminance = hdrCapabilities.getDesiredMaxLuminance();
+            if (!isValidPositiveDisplayValue(peakLuminance)
+                    || peakLuminance == Display.HdrCapabilities.INVALID_LUMINANCE) {
+                return "系统未报告";
+            }
+            return String.format(Locale.US, "%,.0f nit", peakLuminance);
+        }
+        catch (RuntimeException e) {
+            return "系统未报告";
+        }
+    }
+
+    private String buildHdrSdrRatioText(Display display) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE || display == null) {
+            return null;
+        }
+
+        try {
+            if (!display.isHdrSdrRatioAvailable()) {
+                return null;
+            }
+            float hdrSdrRatio = display.getHdrSdrRatio();
+            return isValidPositiveDisplayValue(hdrSdrRatio)
+                    ? String.format(Locale.US, "%.2f:1", hdrSdrRatio)
+                    : null;
+        }
+        catch (RuntimeException e) {
+            return null;
+        }
+    }
+
+    private static boolean isValidPositiveDisplayValue(float value) {
+        return value > 0.0f && !Float.isNaN(value) && !Float.isInfinite(value);
+    }
+
+    private static int parseHdrMasteringPeakLuminance(byte[] metadata) {
+        if (metadata == null || metadata.length < HDR_METADATA_MASTERING_PEAK_REQUIRED_LENGTH) {
+            return 0;
+        }
+
+        return readUnsignedShortLittleEndian(metadata, HDR_METADATA_MASTERING_PEAK_OFFSET);
+    }
+
+    private static int readUnsignedShortLittleEndian(byte[] data, int offset) {
+        return (data[offset] & 0xFF) | ((data[offset + 1] & 0xFF) << 8);
+    }
+
+    private static String formatHdrMetadataLuminance(int luminanceNits) {
+        return luminanceNits > 0
+                ? String.format(Locale.US, "%,d nit", luminanceNits)
+                : "主机未提供";
     }
 
     private String buildUpscaleStatusText() {
@@ -4204,7 +5303,15 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     public void switchMouseModel(int which){
+        cancelStylusInput();
+        currentMouseMode = which;
         disableMouseModel=false;
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+        if (multiGestureTouchpadController != null) {
+            multiGestureTouchpadController.destroy();
+            multiGestureTouchpadController = null;
+        }
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
         //多点触控
         if(which==0){
             prefConfig.enableMultiTouchScreen=true;
@@ -4223,6 +5330,11 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         //禁用鼠标
         if(which==3){
             disableMouseModel=true;
+            // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+            // Refresh overlay routing after the extension controller was detached above.
+            setVirtualMouseInputSuppressed(false);
+            setVideoZoomInputSuppressed(false);
+            // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
             return;
         }
         //普通鼠标 左右键互换
@@ -4242,6 +5354,21 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             prefConfig.enableMultiTouchScreen=false;
             prefConfig.touchscreenTrackpad=true;
         }
+
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+        // Dedicated mode for the isolated multi-gesture touchpad extension.
+        if(which==MultiGestureTouchpadExtensionController.MODE_ID){
+            prefConfig.enableMultiTouchScreen=false;
+            prefConfig.touchscreenTrackpad=true;
+            multiGestureTouchpadController = new MultiGestureTouchpadExtensionController(
+                    this,
+                    conn,
+                    streamView,
+                    (View) rootView,
+                    prefConfig,
+                    videoZoomController);
+        }
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
 
         for (int i = 0; i < touchContextMap.length; i++) {
             if (!prefConfig.touchscreenTrackpad) {
@@ -4263,6 +5390,12 @@ public class Game extends Activity implements SurfaceHolder.Callback,
                 }
             }
         }
+
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+        // Hide other full-screen touch layers while this mode owns touchscreen gestures.
+        setVirtualMouseInputSuppressed(false);
+        setVideoZoomInputSuppressed(false);
+        // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
     }
 
     public void showHUD(){
@@ -4436,7 +5569,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
 
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (controllerHandler != null) {
-            controllerHandler.stop();
+            stopControllerHandler("background-reconnect-" + errorCode);
         }
         if (grabbedInput) {
             setInputGrabState(false);
@@ -4571,6 +5704,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             setInputGrabState(false);
         }
         if (controllerHandler != null) {
+            recordExplicitHapticsStop("background-suspend");
+            controllerHandler.stopAllHaptics();
             controllerHandler.disableSensors();
         }
 
@@ -4606,12 +5741,16 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             }
         }
 
-        decoderRenderer.setRenderTarget(renderTarget);
+        // SurfaceView may reuse its Java Surface after replacing the native BufferQueue.
+        // Rebind direct output on resume even when the Java object is unchanged. GLES owns
+        // a separate input Surface, so its unchanged target can remain attached.
+        decoderRenderer.setRenderTarget(renderTarget, !glesRenderingEnabled);
         decoderRenderer.notifyVideoForeground();
         if (audioRenderer != null) {
             audioRenderer.setBackgrounded(false);
         }
         if (controllerHandler != null) {
+            controllerHandler.refreshAudioHapticsState();
             controllerHandler.enableSensors();
         }
 
@@ -4668,6 +5807,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         virtualMouseOverlay.setInputSuppressed(suppressed
                 || disableMouseModel
                 || getScreenMoveZoom()
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                || multiGestureTouchpadController != null
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
                 || isHidingOverlays
                 || gameMenuShowing
                 || fullKeyboardShowing
@@ -4685,6 +5827,9 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         boolean fullKeyboardShowing = keyBoardLayoutController != null
                 && keyBoardLayoutController.isVisible();
         videoZoomGestureOverlay.setInputSuppressed(suppressed
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] BEGIN
+                || multiGestureTouchpadController != null
+                // EXTENSION DEVELOPMENT [EXT-TOUCHPAD-MULTI-GESTURE] [MODIFIED] END
                 || isHidingOverlays
                 || gameMenuShowing
                 || fullKeyboardShowing
@@ -4831,10 +5976,13 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     private GameMenuFragment dialogGameMenu;
     @Override
     public void showGameMenu() {
+        cancelStylusInput();
         if (dialogGameMenu != null && dialogGameMenu.getDialog() != null &&
                 dialogGameMenu.getDialog().isShowing()) {
             return;
         }
+        cancelDsTouchpadDrag();
+        releaseDsTouchpadInput();
         setVirtualMouseInputSuppressed(true);
         setVideoZoomInputSuppressed(true);
         if (controllerHandler != null) {
@@ -4871,6 +6019,7 @@ public class Game extends Activity implements SurfaceHolder.Callback,
             controllerHandler.setGameMenuVisible(false);
         }
         dialogGameMenu = null;
+        revealDsTouchpadAndScheduleAutoHide();
     }
 
     @Override
@@ -5444,6 +6593,125 @@ public class Game extends Activity implements SurfaceHolder.Callback,
         }
     }
 
+    private void emitSessionTelemetry() {
+        StreamTelemetryReporter reporter = streamTelemetryReporter;
+        PerfOverlayStats stats = latestSessionPerfStats;
+        if (reporter == null || stats == null) {
+            return;
+        }
+
+        long nowMs = SystemClock.elapsedRealtime();
+        long statsAgeMs = Math.max(0L, nowMs - latestSessionPerfStatsElapsedMs);
+        long rttInfo = MoonBridge.getEstimatedRttInfo();
+        int rttMs = rttInfo == -1L ? -1 : (int) (rttInfo >> 32);
+        int rttVarianceMs = rttInfo == -1L ? -1 : (int) rttInfo;
+        logSessionInfo("PERF", String.format(Locale.US,
+                "%dx%d %s, FPS %.1f/%.1f, Net %.0f Kbps, Video %.0f Kbps, Audio %.0f Kbps, "
+                        + "延迟 %d±%d ms, 视频帧丢失 %.2f%%, 解码 %.2f ms, 主机 %.2f ms, "
+                        + "统计年龄 %d ms",
+                stats.width, stats.height, nonEmpty(stats.codecName, "--"),
+                stats.renderedFps, stats.receivedFps, stats.networkRateKbps,
+                stats.videoRateKbps, stats.audioRateKbps, rttMs, rttVarianceMs,
+                stats.frameLossPercent, stats.decodeTimeMs, stats.hostProcessingLatencyMs,
+                statsAgeMs));
+        reporter.record(stats, MoonBridge.getRtpStats(), rttMs, rttVarianceMs, statsAgeMs,
+                streamNetworkMonitor != null
+                        ? streamNetworkMonitor.getCurrentSummary() : "unavailable",
+                buildSessionStateText());
+    }
+
+    private String buildSessionStateText() {
+        return "Render=" + buildRenderPipelineText()
+                + "；系统手柄=" + (controllerHandler != null
+                        ? controllerHandler.getSystemControllerDiagnosticsDisplayName() : "未初始化")
+                + "; USB Gamepad=" + buildUsbControllerStatusText()
+                + "; Game Rumble=" + buildNativeGameHapticsStatusText()
+                + "; Audio Haptics=" + buildAudioHapticsStatusText();
+    }
+
+    private void recordExplicitHapticsStop(String reason) {
+        if (hapticsTelemetry == null) {
+            return;
+        }
+        hapticsTelemetry.recordExplicitStop(reason,
+                controllerHandler != null
+                        ? controllerHandler.getNativeGameHapticsOutputRouteDisplayName() : "");
+    }
+
+    @Override
+    public void onUsbIpHandoffStarted(android.hardware.usb.UsbDevice device) {
+        if (controllerHandler != null) {
+            controllerHandler.beginUsbIpHandoff(device);
+        }
+    }
+
+    private boolean hostDisplayApiUnavailable;
+
+    /** Remember an explicitly unsupported display API for this streaming session only. */
+    public void markHostDisplayApiUnavailable() {
+        hostDisplayApiUnavailable = true;
+    }
+
+    /** Skip repeated endpoint probes when this host already selected the legacy operations sheet. */
+    public boolean isHostDisplayApiUnavailable() {
+        return hostDisplayApiUnavailable;
+    }
+
+
+    /** Query or change PC display settings from a game-menu worker thread. */
+    public org.json.JSONObject requestHostDisplays(org.json.JSONObject operation)
+            throws java.io.IOException, org.json.JSONException {
+        StreamReqBean request = streamReqBean;
+        if (!connected || request == null) {
+            throw new java.io.IOException("串流已断开");
+        }
+        NvHTTP http = new NvHTTP(request.getActiveAddress(), request.getHttpsPort(), request.getUniqueId(),
+                request.getServerCert(), request.getCryptoProvider());
+        return http.requestDisplays(operation);
+    }
+
+    @Override
+    public void onUsbIpHandoffConfirmed() {
+        if (!connected || controllerHandler == null || controllerHandlerStopped) {
+            return;
+        }
+        usbIpHandoffActive = true;
+        controllerHandler.confirmUsbIpHandoff();
+        if (virtualController != null) {
+            virtualController.hide();
+        }
+        cancelDsTouchpadDrag();
+        releaseDsTouchpadInput();
+        updateDsTouchpadVisibility();
+    }
+
+    @Override
+    public void onUsbIpHandoffFinished() {
+        boolean wasActive = usbIpHandoffActive;
+        usbIpHandoffActive = false;
+        if (controllerHandler != null) {
+            controllerHandler.finishUsbIpHandoff();
+        }
+        if (wasActive && connected && !controllerHandlerStopped) {
+            if (virtualController != null && prefConfig.onscreenController) {
+                virtualController.show();
+            }
+            updateDsTouchpadVisibility();
+        }
+    }
+
+    private void stopControllerHandler(String reason) {
+        if (usbDriverBinder != null) {
+            usbDriverBinder.setUsbIpSessionActive(false);
+        }
+        if (controllerHandler == null || controllerHandlerStopped) {
+            return;
+        }
+        recordExplicitHapticsStop(reason);
+        controllerHandler.stop();
+        controllerHandlerStopped = true;
+    }
+
     private boolean isRecordAudioPermissionGranted() {
         return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
                 checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
@@ -5543,10 +6811,8 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     public void setMotionForceGyro(){
-        if(prefConfig.gameForceGyro){
-            if(controllerHandler!=null){
-                controllerHandler.handleSetMotionEventState((short) 0, MoonBridge.LI_MOTION_TYPE_GYRO, (short) 100);
-            }
+        if(controllerHandler!=null){
+            controllerHandler.refreshMotionSettings();
         }
     }
 
@@ -5555,12 +6821,19 @@ public class Game extends Activity implements SurfaceHolder.Callback,
     }
 
     public void setPerformanceOverlayLiteMagin(){
-        if(prefConfig.performanceOverlayLiteMaginTop==4){
-            return;
+        boolean atBottom = prefConfig.performanceOverlayLiteAtBottom;
+        LinearLayout target = findViewById(atBottom
+                ? R.id.performanceOverlayBottom : R.id.performanceOverlayTop);
+        if (performanceOverlayLite.getParent() != target) {
+            ((ViewGroup) performanceOverlayLite.getParent()).removeView(performanceOverlayLite);
+            // Keep the compact bar ahead of the other top overlays when returning to the top.
+            target.addView(performanceOverlayLite, atBottom ? 0 : 1);
         }
-        LinearLayout.LayoutParams params1= (LinearLayout.LayoutParams) performanceOverlayLite.getLayoutParams();
-        params1.setMargins(0,UiHelper.dpToPx(this,prefConfig.performanceOverlayLiteMaginTop),0,0);
-        performanceOverlayLite.setLayoutParams(params1);
+        int margin = UiHelper.dpToPx(this, prefConfig.performanceOverlayLiteMaginTop);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) performanceOverlayLite.getLayoutParams();
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.setMargins(0, atBottom ? 0 : margin, 0, atBottom ? margin : 0);
+        performanceOverlayLite.setLayoutParams(params);
     }
 
     public void setAudioHapticsSettings() {

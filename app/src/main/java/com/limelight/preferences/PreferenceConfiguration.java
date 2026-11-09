@@ -10,6 +10,12 @@ import android.view.Display;
 import com.limelight.nvstream.jni.MoonBridge;
 
 public class PreferenceConfiguration {
+    public static final String TOUCHPAD_ROTATION_PREF = "external_touchpad_rotation";
+    public int touchpadRotation;
+    public static final String MOUSE_ROTATION_PREF = "external_mouse_rotation";
+    public volatile int mouseRotation;
+    public static final String STYLUS_MODE_PREF_STRING = "stylus_mode";
+    public int stylusMode = com.limelight.binding.input.StylusInputRouter.NATIVE_PEN;
     public enum FormatOption {
         AUTO,
         FORCE_AV1,
@@ -65,6 +71,20 @@ public class PreferenceConfiguration {
         }
         return STEREO_3D_MODE_OFF;
     }
+
+    /**
+     * Returns a supported host virtual gamepad preference.
+     *
+     * @param value persisted preference value
+     * @return normalized preference value
+     */
+    public static String normalizeGamepadEmulation(String value) {
+        if (GAMEPAD_EMULATION_X360.equals(value) || GAMEPAD_EMULATION_DS4.equals(value) ||
+                GAMEPAD_EMULATION_DS5.equals(value)) {
+            return value;
+        }
+        return GAMEPAD_EMULATION_AUTO;
+    }
     private static final String STRETCH_PREF_STRING = "checkbox_stretch_video";
     private static final String SOPS_PREF_STRING = "checkbox_enable_sops";
     private static final String DISABLE_TOASTS_PREF_STRING = "checkbox_disable_warnings";
@@ -76,6 +96,7 @@ public class PreferenceConfiguration {
     private static final String MULTI_CONTROLLER_PREF_STRING = "checkbox_multi_controller";
     static final String AUDIO_CONFIG_PREF_STRING = "list_audio_config";
     private static final String USB_DRIVER_PREF_SRING = "checkbox_usb_driver";
+    public static final String USBIP_MODE_PREF_STRING = "checkbox_usbip_mode";
     private static final String VIDEO_FORMAT_PREF_STRING = "video_format";
     private static final String ONSCREEN_CONTROLLER_PREF_STRING = "checkbox_show_onscreen_controls";
     private static final String ONLY_L3_R3_PREF_STRING = "checkbox_only_show_L3R3";
@@ -96,6 +117,7 @@ public class PreferenceConfiguration {
     private static final String VIBRATE_FALLBACK_STRENGTH_PREF_STRING = "seekbar_vibrate_fallback_strength";
     private static final String FLIP_FACE_BUTTONS_PREF_STRING = "checkbox_flip_face_buttons";
     static final String TOUCHSCREEN_TRACKPAD_PREF_STRING = "checkbox_touchscreen_trackpad";
+    private static final String TOUCH_STUTTER_COMPATIBILITY_PREF_STRING = "checkbox_touch_stutter_compatibility";
     private static final String LATENCY_TOAST_PREF_STRING = "checkbox_enable_post_stream_toast";
     private static final String FRAME_PACING_PREF_STRING = "frame_pacing";
     public static final String ENABLE_XIAOMI_XRING_O1_OPTIMIZATION_PREF_STRING = "checkbox_enable_xiaomi_xring_o1_optimization";
@@ -111,6 +133,13 @@ public class PreferenceConfiguration {
     private static final String GAMEPAD_TOUCHPAD_AS_MOUSE_PREF_STRING = "checkbox_gamepad_touchpad_as_mouse";
     private static final String GAMEPAD_MOTION_SENSORS_PREF_STRING = "checkbox_gamepad_motion_sensors";
     private static final String GAMEPAD_MOTION_FALLBACK_PREF_STRING = "checkbox_gamepad_motion_fallback";
+    public static final String GAMEPAD_EMULATION_PREF_STRING = "list_gamepad_emulation";
+    public static final String DS5_CONTROLLER_SPEAKER_PREF_STRING = "checkbox_ds5_controller_speaker";
+    public static final String DS5_NATIVE_PCM_PREF_STRING = "checkbox_ds5_native_pcm";
+    public static final String GAMEPAD_EMULATION_AUTO = "auto";
+    public static final String GAMEPAD_EMULATION_X360 = "x360";
+    public static final String GAMEPAD_EMULATION_DS4 = "ds4";
+    public static final String GAMEPAD_EMULATION_DS5 = "ds5";
     public static final String KEEP_VIDEO_ZOOM_ON_DISABLE_PREF_STRING = "checkbox_keep_video_zoom_on_disable";
     public static final String KEYBOARD_ESC_OPENS_GAME_MENU_PREF_STRING = "checkbox_keyboard_esc_opens_game_menu";
 
@@ -178,7 +207,7 @@ public class PreferenceConfiguration {
     private static final boolean DEFAULT_GAMEPAD_TOUCHPAD_AS_MOUSE = false;
     private static final boolean DEFAULT_GAMEPAD_MOTION_SENSORS = true;
     private static final boolean DEFAULT_GAMEPAD_MOTION_FALLBACK = false;
-    private static final boolean DEFAULT_KEEP_VIDEO_ZOOM_ON_DISABLE = false;
+    private static final boolean DEFAULT_KEEP_VIDEO_ZOOM_ON_DISABLE = true;
     private static final boolean DEFAULT_KEYBOARD_ESC_OPENS_GAME_MENU = false;
 
     public static final int FRAME_PACING_MIN_LATENCY = 0;
@@ -209,6 +238,7 @@ public class PreferenceConfiguration {
     public boolean stretchVideo, enableSops, playHostAudio, disableWarnings;
     public String language;
     public boolean smallIconMode, multiController, usbDriver, flipFaceButtons;
+    public boolean usbIpMode;
     public boolean onscreenController;
     public boolean onlyL3R3;
     public boolean showGuideButton;
@@ -269,6 +299,7 @@ public class PreferenceConfiguration {
 
     //多点触控模式
     public boolean enableMultiTouchScreen;
+    public boolean touchStutterCompatibility;
 
     //物理光标捕获
     public boolean enableMouseLocalCursor;
@@ -319,6 +350,9 @@ public class PreferenceConfiguration {
     public boolean gamepadMotionSensors;
     public boolean gamepadTouchpadAsMouse;
     public boolean gamepadMotionSensorsFallbackToDevice;
+    public String gamepadEmulation;
+    public boolean ds5ControllerSpeakerEnabled;
+    public boolean ds5NativePcmEnabled = true;
 
     //开启虚拟手柄的陀螺仪功能
     public boolean enableVirtualControllerMotion;
@@ -426,13 +460,14 @@ public class PreferenceConfiguration {
 
     //精简性能信息顶部边距
     public int performanceOverlayLiteMaginTop;
+    public boolean performanceOverlayLiteAtBottom;
 
     //鼠标滚轮移动距离
     public int mouseSCAmount;
     //强制体感模拟右摇杆
     public boolean gameForceGyro;
     //按住左扳机生效
-    public boolean gameForceGyroLeftTrigger;
+    public int gameForceGyroActivation;
     //强制体感反转xy轴方向
     public boolean gameForceGyroXYSwitch;
     //强制体感灵敏度
@@ -749,6 +784,13 @@ public class PreferenceConfiguration {
     public static PreferenceConfiguration readPreferences(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         PreferenceConfiguration config = new PreferenceConfiguration();
+        config.touchpadRotation = com.limelight.binding.input.TouchpadRotation.normalize(
+                prefs.getInt(TOUCHPAD_ROTATION_PREF, 0));
+        config.mouseRotation = com.limelight.binding.input.TouchpadRotation.normalize(
+                prefs.getInt(MOUSE_ROTATION_PREF, 0));
+        config.stylusMode = com.limelight.binding.input.StylusInputRouter.normalizeMode(
+                prefs.getInt(STYLUS_MODE_PREF_STRING,
+                        com.limelight.binding.input.StylusInputRouter.NATIVE_PEN));
 
         // Migrate legacy preferences to the new locations
         if (prefs.contains(LEGACY_ENABLE_51_SURROUND_PREF_STRING)) {
@@ -922,6 +964,7 @@ public class PreferenceConfiguration {
         config.smallIconMode = prefs.getBoolean(SMALL_ICONS_PREF_STRING, getDefaultSmallMode(context));
         config.multiController = prefs.getBoolean(MULTI_CONTROLLER_PREF_STRING, DEFAULT_MULTI_CONTROLLER);
         config.usbDriver = prefs.getBoolean(USB_DRIVER_PREF_SRING, DEFAULT_USB_DRIVER);
+        config.usbIpMode = prefs.getBoolean(USBIP_MODE_PREF_STRING, false);
         config.onscreenController = prefs.getBoolean(ONSCREEN_CONTROLLER_PREF_STRING, ONSCREEN_CONTROLLER_DEFAULT);
         config.onlyL3R3 = prefs.getBoolean(ONLY_L3_R3_PREF_STRING, ONLY_L3_R3_DEFAULT);
         config.showGuideButton = prefs.getBoolean(SHOW_GUIDE_BUTTON_PREF_STRING, SHOW_GUIDE_BUTTON_DEFAULT);
@@ -942,6 +985,7 @@ public class PreferenceConfiguration {
         config.vibrateFallbackToDeviceStrength = prefs.getInt(VIBRATE_FALLBACK_STRENGTH_PREF_STRING, DEFAULT_VIBRATE_FALLBACK_STRENGTH);
         config.flipFaceButtons = prefs.getBoolean(FLIP_FACE_BUTTONS_PREF_STRING, DEFAULT_FLIP_FACE_BUTTONS);
         config.touchscreenTrackpad = prefs.getBoolean(TOUCHSCREEN_TRACKPAD_PREF_STRING, DEFAULT_TOUCHSCREEN_TRACKPAD);
+        config.touchStutterCompatibility = prefs.getBoolean(TOUCH_STUTTER_COMPATIBILITY_PREF_STRING, false);
         config.enableLatencyToast = prefs.getBoolean(LATENCY_TOAST_PREF_STRING, DEFAULT_LATENCY_TOAST);
         //软键盘
         config.enablePortrait = prefs.getBoolean(CHECKBOX_ENABLE_PORTRAIT,false);
@@ -1075,8 +1119,15 @@ public class PreferenceConfiguration {
         config.gamepadTouchpadAsMouse = prefs.getBoolean(GAMEPAD_TOUCHPAD_AS_MOUSE_PREF_STRING, DEFAULT_GAMEPAD_TOUCHPAD_AS_MOUSE);
         config.gamepadMotionSensors = prefs.getBoolean(GAMEPAD_MOTION_SENSORS_PREF_STRING, DEFAULT_GAMEPAD_MOTION_SENSORS);
         config.gamepadMotionSensorsFallbackToDevice = prefs.getBoolean(GAMEPAD_MOTION_FALLBACK_PREF_STRING, DEFAULT_GAMEPAD_MOTION_FALLBACK);
+        config.gamepadEmulation = normalizeGamepadEmulation(prefs.getString(
+                GAMEPAD_EMULATION_PREF_STRING, GAMEPAD_EMULATION_AUTO));
+        config.ds5ControllerSpeakerEnabled = prefs.getBoolean(
+                DS5_CONTROLLER_SPEAKER_PREF_STRING, false);
+        config.ds5NativePcmEnabled = prefs.getBoolean(DS5_NATIVE_PCM_PREF_STRING, true);
 
         config.performanceOverlayLiteMaginTop=prefs.getInt("performance_overlayLite_magin_top",4);
+        config.performanceOverlayLiteAtBottom = "bottom".equals(
+                prefs.getString("list_perf_overlay_lite_position", "top"));
 
         config.axFloatingPostionAuto =prefs.getBoolean("ax_floating_postion_auto",false);
         config.axFloatingPostionX =prefs.getFloat("ax_floating_postion_x",-1);
@@ -1085,7 +1136,8 @@ public class PreferenceConfiguration {
 
         config.mouseSCAmount=prefs.getInt("mouse_sc_amount",5);
 
-        config.gameForceGyroLeftTrigger=prefs.getBoolean("gameForceGyroLeftTrigger",false);
+        config.gameForceGyroActivation = com.limelight.binding.input.GyroActivation.normalize(
+                prefs.getInt("gameForceGyroActivation", prefs.getBoolean("gameForceGyroLeftTrigger", false) ? 1 : 0));
         config.gameForceGyro=prefs.getBoolean("gameForceGyro",false);
         config.gameForceGyroXYSwitch=prefs.getBoolean("gameForceGyroXYSwitch",true);
 

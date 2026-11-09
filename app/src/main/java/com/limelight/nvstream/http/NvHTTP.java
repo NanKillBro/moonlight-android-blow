@@ -480,13 +480,22 @@ public class NvHTTP {
             resp.close();
 
             if (verbose && !path.equals("serverinfo")) {
-                LimeLog.info(getCompleteUrl(baseUrl, path, query)+" -> "+respString);
+                if (path.equals("launch") || path.equals("resume")) {
+                    // Requests include streaming keys; responses may contain the USB/IP session credential.
+                    LimeLog.info("Paired " + path + " response received");
+                } else {
+                    LimeLog.info(getCompleteUrl(baseUrl, path, query)+" -> "+respString);
+                }
             }
 
             return respString;
         } catch (IOException e) {
             if (verbose && !path.equals("serverinfo")) {
-                LimeLog.warning(getCompleteUrl(baseUrl, path, query)+" -> "+e.getMessage());
+                if (path.equals("launch") || path.equals("resume")) {
+                    LimeLog.warning("Paired " + path + " request failed: " + e.getClass().getSimpleName());
+                } else {
+                    LimeLog.warning(getCompleteUrl(baseUrl, path, query)+" -> "+e.getMessage());
+                }
                 e.printStackTrace();
             }
             
@@ -826,12 +835,20 @@ public class NvHTTP {
             "&remoteControllersBitmap=" + context.streamConfig.getAttachedGamepadMask() +
             "&gcmap=" + context.streamConfig.getAttachedGamepadMask() +
             "&gcpersist="+(context.streamConfig.getPersistGamepadsAfterDisconnect() ? 1 : 0) +
+             usbIpLaunchQuery(context.streamConfig.getUsbIpMode()) +
              RazerUtils.getUrlParams(context.streamConfig)+
             MoonBridge.getLaunchUrlQueryParameters());
         if ((verb.equals("launch") && !getXmlString(xmlStr, "gamesession", true).equals("0") ||
                 (verb.equals("resume") && !getXmlString(xmlStr, "resume", true).equals("0")))) {
             // sessionUrl0 will be missing for older GFE versions
             context.rtspSessionUrl = getXmlString(xmlStr, "sessionUrl0", false);
+            context.usbIpImportHost = context.streamConfig.getUsbIpMode()
+                    ? getXmlString(xmlStr, "axiUsbIpHost", false) : null;
+            context.usbIpTlsToken = null;
+            if (context.streamConfig.getUsbIpMode() && "1".equals(getXmlString(xmlStr, "axiUsbIpTls", false))) {
+                String credential = getXmlString(xmlStr, "axiUsbIpToken", false);
+                context.usbIpTlsToken = credential == null ? "" : credential;
+            }
             return true;
         }
         else {
@@ -854,6 +871,43 @@ public class NvHTTP {
         }
 
         return true;
+    }
+
+    /** Keep unsupported/older hosts compatible by advertising only an explicit enabled preference. */
+    static String usbIpLaunchQuery(boolean enabled) {
+        return enabled ? "&usbipMode=1&usbipTls=1" : "";
+    }
+
+
+    /** Query or update the PC displays using this paired client's pinned HTTPS connection. */
+    public org.json.JSONObject requestDisplays(org.json.JSONObject operation) throws IOException, org.json.JSONException {
+        HttpUrl url = getCompleteUrl(getHttpsUrl(true), "display-devices", null);
+        Request.Builder builder = new Request.Builder().url(url);
+        if (operation != null) {
+            builder.post(okhttp3.RequestBody.create(okhttp3.MediaType.parse("application/json"), operation.toString()));
+        }
+        try (Response response = performAndroidTlsHack(httpClientLongConnectTimeout).newCall(builder.build()).execute()) {
+            if (!response.isSuccessful()) {
+                throw HostDisplayApiUnavailableException.forStatus(response.code());
+            }
+            if (response.body() == null) {
+                throw new IOException("主机返回空的显示器管理响应");
+            }
+            String payload = response.body().string();
+            if (payload.trim().startsWith("<")) {
+                try {
+                    // Older Sunshine responds HTTP 200 with an XML root status_code of 404.
+                    getXmlString(payload, "devices", false);
+                } catch (HostHttpResponseException error) {
+                    IOException classified = HostDisplayApiUnavailableException.forStatus(error.getErrorCode());
+                    classified.initCause(error);
+                    throw classified;
+                } catch (XmlPullParserException | NumberFormatException error) {
+                    throw new IOException("主机返回无效的显示器管理响应", error);
+                }
+            }
+            return new org.json.JSONObject(payload);
+        }
     }
 
     public boolean requestMicUplink(ConnectionContext context) throws IOException, XmlPullParserException {

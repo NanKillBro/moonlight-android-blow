@@ -22,7 +22,7 @@
             android:key="seekbar_bitrate_kbps"
             android:dialogMessage="@string/summary_seekbar_bitrate"
             seekbar:min="500"
-            android:max="300000"
+            android:max="99999000"
             seekbar:step="500"
             seekbar:keyStep="1000"
             seekbar:divisor="1000"
@@ -38,6 +38,12 @@
             android:summary="Manually input video bitrate instead of using the slider.\nValues exceeding slider maximum still take effect during stream."
             android:dialogMessage="Enter a number (supports .5 increments)"
             android:title="Force Custom Video Bitrate" />
+
+        <Preference
+            android:key="vdValue"
+            android:persistent="false"
+            android:title="@string/title_virtual_display"
+            android:summary="@string/summary_virtual_display" />
 
         <ListPreference
             android:key="frame_pacing"
@@ -139,7 +145,7 @@
 
         <ListPreference
             android:key="screen_gravity_list"
-            android:title="Screen Alignment (Default Center)"
+            android:title="画面显示位置"
             android:summary="Aligns video stream on foldable devices or tablets with custom resolutions."
             android:entries="@array/screen_gravity_list_names"
             android:entryValues="@array/screen_gravity_list_values"
@@ -170,6 +176,18 @@
 
     <PreferenceCategory android:title="@string/category_gamepad_settings"
         android:key="category_gamepad_settings">
+        <CheckBoxPreference
+            android:key="checkbox_usbip_mode"
+            android:title="@string/title_usbip_mode"
+            android:summary="@string/summary_usbip_mode"
+            android:defaultValue="false" />
+        <ListPreference
+            android:key="list_gamepad_emulation"
+            android:title="@string/title_gamepad_emulation"
+            android:summary="@string/summary_gamepad_emulation"
+            android:entries="@array/gamepad_emulation_names"
+            android:entryValues="@array/gamepad_emulation_values"
+            android:defaultValue="auto" />
         <com.limelight.preferences.SeekBarPreference
             android:key="seekbar_deadzone"
             android:defaultValue="7"
@@ -260,11 +278,17 @@
 
         <ListPreference
             android:key="mouse_model_list_axi"
-            android:title="Touch / Mouse Mode"
+            android:title="触控/鼠标模式"
             android:summary="Select mouse/touch mode (multi-touch requires Sunshine host)."
             android:entries="@array/mouse_model_names_axi"
             android:entryValues="@array/mouse_model_values_axi"
             android:defaultValue="0" />
+
+        <CheckBoxPreference
+            android:key="checkbox_touch_stutter_compatibility"
+            android:title="@string/title_touch_stutter_compatibility"
+            android:summary="@string/summary_touch_stutter_compatibility"
+            android:defaultValue="false" />
 
         <CheckBoxPreference
             android:key="checkbox_mouse_local_cursor"
@@ -446,27 +470,35 @@
         <CheckBoxPreference
             android:key="checkbox_enable_perf_overlay_lite_dialog"
             android:dependency="checkbox_enable_perf_overlay_lite"
-            android:title="Tap Lite Overlay for Quick Menu"
+            android:title="精简模式点击选项"
             android:summary="Opens in-game quick menu instead of back button behavior."
             android:defaultValue="true" />
+
+        <ListPreference
+            android:key="list_perf_overlay_lite_position"
+            android:dependency="checkbox_enable_perf_overlay_lite"
+            android:title="@string/title_perf_overlay_lite_position"
+            android:entries="@array/perf_overlay_lite_positions"
+            android:entryValues="@array/perf_overlay_lite_position_values"
+            android:defaultValue="top" />
 
         <CheckBoxPreference
             android:key="checkbox_enable_perf_overlay_lite_ext"
             android:dependency="checkbox_enable_perf_overlay_lite"
-            android:title="Lite Overlay Extended Stats"
+            android:title="精简模式扩展参数"
             android:summary="Adds resolution, HDR, decoder, and other details to the overlay."
             android:defaultValue="true" />
 
         <com.limelight.preferences.SeekBarPreference
             android:key="performance_overlayLite_magin_top"
-            android:dialogMessage="Set the top margin for Lite performance overlay, default is 4dp"
+            android:dialogMessage="@string/summary_perf_overlay_lite_margin"
             seekbar:min="0"
             android:max="100"
             seekbar:step="2"
             android:defaultValue="4"
-            android:summary="Set the top margin for Lite performance overlay, default is 4dp"
+            android:summary="@string/summary_perf_overlay_lite_margin"
             android:text="dp"
-            android:title="Lite Overlay Top Margin" />
+            android:title="@string/title_perf_overlay_lite_margin" />
 
         <CheckBoxPreference
             android:key="checkbox_enable_post_stream_toast"
@@ -507,7 +539,7 @@
 
         <CheckBoxPreference
             android:key="checkbox_enable_ax_floating"
-            android:title="Enable Floating Button (Beta)"
+            android:title="启用悬浮球"
             android:summary="When enabled, tap floating button to open quick menu."
             android:defaultValue="true"/>
 
@@ -662,44 +694,18 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="Backup &amp; Restore Data"
+    <PreferenceCategory android:title="@string/pairing_backup_category"
         android:key="category_axixi_back_data">
 
         <Preference
-            android:key="export_computers_data_file"
-            android:title="Export Paired Host Database"
-            android:summary="Export host pairings as an SQLite .db file"
-            />
+            android:key="export_pairing_backup"
+            android:title="@string/pairing_backup_export"
+            android:summary="@string/pairing_backup_export_summary" />
 
         <Preference
-            android:key="export_https_data_crt_file"
-            android:title="Export Network Certificate"
-            android:summary="Export client certificate (.crt file)"
-            />
-
-        <Preference
-            android:key="export_https_data_key_file"
-            android:title="Export Network Key"
-            android:summary="Export client private key (.key file)"
-            />
-
-        <Preference
-            android:key="import_computers_data_file"
-            android:title="Import Paired Host Database"
-            android:summary="Import host SQLite database file (overwrites current list, restart app to apply)."
-            />
-
-        <Preference
-            android:key="import_https_data_crt_file"
-            android:title="Import Network Certificate"
-            android:summary="Import client certificate (.crt file)"
-            />
-
-        <Preference
-            android:key="import_https_data_key_file"
-            android:title="Import Network Key"
-            android:summary="Import client private key (.key file)"
-            />
+            android:key="import_pairing_backup"
+            android:title="@string/pairing_backup_import"
+            android:summary="@string/pairing_backup_import_summary" />
 
     </PreferenceCategory>
 
@@ -745,11 +751,13 @@
         android:key="category_axi_about">
 
         <com.limelight.preferences.WebLauncherPreference
+            android:key="settings_about"
             android:title="About"
             android:summary="Version info, updates, and credits"
             url="about"/>
 
         <com.limelight.preferences.WebLauncherPreference
+            android:key="settings_help"
             android:title="Moonlight Setup Guide"
             android:summary="Official documentation and guides"
             url="https://github.com/moonlight-stream/moonlight-docs/wiki/Setup-Guide"/>
@@ -773,6 +781,40 @@
 
     </PreferenceCategory>
 
+
+    <!-- Additional persistent controls also available through the in-stream quick menu. -->
+    <PreferenceCategory android:key="category_settings_additional" android:title="其他配置">
+        <CheckBoxPreference
+            android:key="checkbox_enable_hdr_high_brightness"
+            android:title="HDR 高亮度"
+            android:summary="在支持的设备上提高 HDR 画面亮度"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="checkbox_enforce_display_mode"
+            android:title="强制显示模式"
+            android:summary="优先使用匹配串流帧率的显示模式；显示异常时可关闭"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="checkbox_keep_video_zoom_on_disable"
+            android:title="保留画面缩放"
+            android:summary="关闭缩放调节时保留已调整的画面比例"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="checkbox_keyboard_esc_opens_game_menu"
+            android:title="Esc 打开游戏菜单"
+            android:summary="使用实体键盘 Esc 键打开串流快捷菜单"
+            android:defaultValue="false" />
+        <CheckBoxPreference
+            android:key="checkbox_ds5_native_pcm"
+            android:title="DualSense 原生音频震动"
+            android:summary="接收支持的主机发送的原生 PCM 触觉数据"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="checkbox_ds5_controller_speaker"
+            android:title="DualSense 手柄扬声器"
+            android:summary="向支持的 DualSense 手柄输出游戏扬声器音频"
+            android:defaultValue="false" />
+    </PreferenceCategory>
 
     <!--PreferenceCategory android:title="@string/category_help"
         android:key="category_help">

@@ -89,6 +89,8 @@ public class NvConnection {
     }
 
     public void stop() {
+        context.usbIpImportHost = null;
+        context.usbIpTlsToken = null;
         if (micUplinkConnection != null) {
             micUplinkConnection.stop();
             micUplinkConnection = null;
@@ -106,6 +108,16 @@ public class NvConnection {
 
         // Now a pending connection can be processed
         connectionAllowed.release();
+    }
+
+    /** Return the paired launch response's USB/IP source; absent on older hosts and IPv4 sessions. */
+    public String getUsbIpImportHost() {
+        return context.usbIpImportHost;
+    }
+
+    /** Return the short-lived credential delivered only by a successful paired launch/resume response. */
+    public String getUsbIpTlsToken() {
+        return context.usbIpTlsToken;
     }
 
     public String getLastMicUplinkMessage() {
@@ -537,7 +549,8 @@ public class NvConnection {
                             context.riKey.getEncoded(), ib.array(),
                             context.videoCapabilities,
                             context.streamConfig.getColorSpace(),
-                            context.streamConfig.getColorRange());
+                            context.streamConfig.getColorRange(),
+                            context.streamConfig.getControlStreamRttToleranceMs());
                     if (ret != 0) {
                         // LiStartConnection() failed, so the caller is not expected
                         // to stop the connection themselves. We need to release their
@@ -660,6 +673,10 @@ public class NvConnection {
     public int sendControllerArrivalEvent(byte controllerNumber, short activeGamepadMask, byte type,
                                           int supportedButtonFlags, short capabilities) {
         return MoonBridge.sendControllerArrivalEvent(controllerNumber, activeGamepadMask, type, supportedButtonFlags, capabilities);
+    }
+
+    public void cancelPendingControllerArrivalEvent(byte controllerNumber) {
+        MoonBridge.cancelPendingControllerArrivalEvent(controllerNumber);
     }
 
     public int sendControllerTouchEvent(byte controllerNumber, byte eventType, int pointerId,
