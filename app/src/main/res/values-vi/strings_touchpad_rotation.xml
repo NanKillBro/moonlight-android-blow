@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="touchpad_rotation_title">Hướng touchpad</string>
+    <string name="touchpad_rotation_description">Hiệu chỉnh hướng của touchpad bên ngoài; áp dụng ngay lập tức. Góc tính ngược chiều kim đồng hồ.</string>
+    <string name="touchpad_rotation_normal">Bình thường</string>
+    <string name="touchpad_rotation_90">90°</string>
+    <string name="touchpad_rotation_180">180°</string>
+    <string name="touchpad_rotation_270">270°</string>
+    <string name="mouse_rotation_title">Hướng chuột vật lý</string>
+    <string name="mouse_rotation_description">Hiệu chỉnh hướng di chuyển của chuột vật lý; áp dụng ngay lập tức. Góc tính ngược chiều kim đồng hồ.</string>
+</resources>

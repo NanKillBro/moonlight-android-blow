@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gamepad_emulation_names">
+        <item>Tự động</item>
+        <item>Xbox 360</item>
+        <item>DualShock 4</item>
+        <item>DualSense</item>
+    </string-array>
+    <string-array name="gamepad_emulation_values" translatable="false">
+        <item>auto</item>
+        <item>x360</item>
+        <item>ds4</item>
+        <item>ds5</item>
+    </string-array>
+
+    <string-array name="resolution_names">
+        <item>@string/resolution_360p</item>
+        <item>@string/resolution_480p</item>
+        <item>@string/resolution_720p</item>
+        <item>@string/resolution_1080p</item>
+        <item>@string/resolution_1440p</item>
+        <item>@string/resolution_4k</item>
+    </string-array>
+
+    <string-array name="resolution_values" translatable="false">
+        <item>640x360</item>
+        <item>854x480</item>
+        <item>1280x720</item>
+        <item>1920x1080</item>
+        <item>2560x1440</item>
+        <item>3840x2160</item>
+    </string-array>
+
+    <string-array name="fps_names">
+        <item>@string/fps_30</item>
+        <item>@string/fps_60</item>
+        <item>@string/fps_90</item>
+        <item>@string/fps_120</item>
+    </string-array>
+    <string-array name="fps_values" translatable="false">
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>120</item>
+    </string-array>
+
+    <string-array name="video_render_mode_names">
+        <item>Kết xuất hệ thống</item>
+        <item>Kết xuất GLES</item>
+    </string-array>
+    <string-array name="video_render_mode_values" translatable="false">
+        <item>system</item>
+        <item>gles</item>
+    </string-array>
+
+    <string-array name="stereo_3d_mode_names">
+        <item>Tắt</item>
+        <item>Cạnh nhau đầy đủ</item>
+        <item>Cạnh nhau một nửa</item>
+    </string-array>
+    <string-array name="stereo_3d_mode_values" translatable="false">
+        <item>off</item>
+        <item>sbs</item>
+        <item>sbs_half</item>
+    </string-array>
+
+    <string-array name="stereo_3d_depth_names">
+        <item>Yếu</item>
+        <item>Tiêu chuẩn</item>
+        <item>Mạnh</item>
+    </string-array>
+    <string-array name="stereo_3d_depth_values" translatable="false">
+        <item>soft</item>
+        <item>standard</item>
+        <item>strong</item>
+    </string-array>
+
+    <string-array name="stereo_3d_convergence_names">
+        <item>Gần</item>
+        <item>Tiêu chuẩn</item>
+        <item>Xa</item>
+    </string-array>
+    <string-array name="stereo_3d_convergence_values" translatable="false">
+        <item>near</item>
+        <item>standard</item>
+        <item>far</item>
+    </string-array>
+
+    <string-array name="fsr_target_names">
+        <item>Tắt</item>
+        <item>2K</item>
+        <item>4K</item>
+    </string-array>
+    <string-array name="fsr_target_values" translatable="false">
+        <item>off</item>
+        <item>2k</item>
+        <item>4k</item>
+    </string-array>
+
+    <string-array name="fsr_sharpness_names">
+        <item>Mềm</item>
+        <item>Tiêu chuẩn</item>
+        <item>Mạnh</item>
+        <item>Siêu nét</item>
+    </string-array>
+    <string-array name="fsr_sharpness_values" translatable="false">
+        <item>soft</item>
+        <item>standard</item>
+        <item>strong</item>
+        <item>max</item>
+    </string-array>
+
+    <string-array name="fsr_hdr_output_names">
+        <item>Ánh xạ tông màu SDR tương thích</item>
+        <item>Đầu ra HDR gốc</item>
+    </string-array>
+    <string-array name="fsr_hdr_output_values" translatable="false">
+        <item>sdr</item>
+        <item>native</item>
+    </string-array>
+
+    <string-array name="audio_config_names">
+        <item>@string/audioconf_stereo</item>
+        <item>@string/audioconf_51surround</item>
+        <item>@string/audioconf_71surround</item>
+    </string-array>
+    <string-array name="audio_config_values" translatable="false">
+        <item>2</item>
+        <item>51</item>
+        <item>71</item>
+    </string-array>
+
+    <string-array name="audio_haptics_voice_filter_names">
+        <item>Tắt</item>
+        <item>Thấp</item>
+        <item>Trung bình</item>
+        <item>Cao</item>
+    </string-array>
+    <string-array name="audio_haptics_voice_filter_values" translatable="false">
+        <item>off</item>
+        <item>low</item>
+        <item>medium</item>
+        <item>high</item>
+    </string-array>
+
+    <string-array name="audio_haptics_output_target_names">
+        <item>Điện thoại</item>
+        <item>Tay cầm</item>
+    </string-array>
+    <string-array name="audio_haptics_output_target_values" translatable="false">
+        <item>phone</item>
+        <item>controller</item>
+    </string-array>
+
+    <string-array name="language_names" translatable="false">
+        <item>Default</item>
+        <item>English</item>
+        <item>Italiano</item>
+        <item>日本語</item>
+        <item>Русский</item>
+        <item>Nederlands</item>
+        <item>中文(简体)</item>
+        <item>中文(繁體)</item>
+        <item>한국어</item>
+        <item>Español</item>
+        <item>Français</item>
+        <item>Deutsch</item>
+        <item>Română</item>
+        <item>Українська</item>
+        <item>Norsk bokmål</item>
+        <item>Tiếng Việt</item>
+        <item>Magyar</item>
+        <item>Ελληνικά</item>
+        <item>Português do Brasil</item>
+        <item>Čeština</item>
+        <item>עִבְרִית</item>
+        <item>Svenska</item>
+        <item>Indonesia</item>
+    </string-array>
+    <string-array name="language_values" translatable="false">
+        <item>default</item>
+        <item>en</item>
+        <item>it</item>
+        <item>ja</item>
+        <item>ru</item>
+        <item>nl</item>
+        <item>zh-CN</item>
+        <item>zh-TW</item>
+        <item>ko</item>
+        <item>es</item>
+        <item>fr</item>
+        <item>de</item>
+        <item>ro</item>
+        <item>uk</item>
+        <item>nb-NO</item>
+        <item>vi</item>
+        <item>hu</item>
+        <item>el</item>
+        <item>pt-BR</item>
+        <item>cs</item>
+        <item>iw</item>
+        <item>sv</item>
+        <item>in</item>
+    </string-array>
+
+    <string-array name="video_format_names">
+        <item>@string/videoformat_auto</item>
+        <item>@string/videoformat_av1always</item>
+        <item>@string/videoformat_hevcalways</item>
+        <item>@string/videoformat_h264always</item>
+    </string-array>
+    <string-array name="video_format_values" translatable="false">
+        <item>auto</item>
+        <item>forceav1</item>
+        <item>forceh265</item>
+        <item>neverh265</item>
+    </string-array>
+
+    <string-array name="video_frame_pacing_names">
+        <item>@string/pacing_latency</item>
+        <item>@string/pacing_balanced</item>
+        <item>@string/pacing_balanced_alt</item>
+        <item>@string/pacing_smoothness</item>
+    </string-array>
+    <string-array name="video_frame_pacing_values" translatable="false">
+        <item>latency</item>
+        <item>balanced</item>
+        <item>cap-fps</item>
+        <item>smoothness</item>
+    </string-array>
+
+    <string-array name="analog_scrolling_names">
+        <item>@string/analogscroll_none</item>
+        <item>@string/analogscroll_right</item>
+        <item>@string/analogscroll_left</item>
+    </string-array>
+    <string-array name="analog_scrolling_values" translatable="false">
+        <item>none</item>
+        <item>right</item>
+        <item>left</item>
+    </string-array>
+
+    <string-array name="keyboard_axi_names">
+        <item>Cấu hình sẵn 1</item>
+        <item>Cấu hình sẵn 2</item>
+        <item>Cấu hình sẵn 3</item>
+        <item>Cấu hình sẵn 4</item>
+        <item>Cấu hình sẵn 5</item>
+    </string-array>
+    <string-array name="keyboard_axi_values" translatable="false">
+        <item>OSC_Keyboard</item>
+        <item>OSC_Keyboard_2</item>
+        <item>OSC_Keyboard_3</item>
+        <item>OSC_Keyboard_4</item>
+        <item>OSC_Keyboard_5</item>
+    </string-array>
+
+    <string-array name="mouse_model_names_axi">
+        <item>Chế độ đa chạm</item>
+        <item>Chế độ chuột thường</item>
+        <item>Chế độ touchpad</item>
+        <item>Tắt chuột/cảm ứng</item>
+        <item>Chuột thường (Đảo trái/phải)</item>
+        <item>Touchpad (Chỉ di chuyển)</item>
+        <item>Touchpad (Di chuyển + Nhấp trái)</item>
+        <item>Touchpad (Đa cử chỉ)</item>
+    </string-array>
+
+    <string-array name="mouse_model_values_axi" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <string-array name="screen_gravity_list_names">
+        <item>Giữa mặc định</item>
+        <item>Trên giữa</item>
+        <item>Trên trái</item>
+        <item>Trên phải</item>
+        <item>Dưới giữa</item>
+        <item>Dưới trái</item>
+        <item>Dưới phải</item>
+    </string-array>
+
+    <string-array name="screen_gravity_list_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
+
+    <string-array name="gamepad_axi_names">
+        <item>Cấu hình sẵn 1</item>
+        <item>Cấu hình sẵn 2</item>
+        <item>Cấu hình sẵn 3</item>
+        <item>Cấu hình sẵn 4</item>
+        <item>Cấu hình sẵn 5</item>
+    </string-array>
+    <string-array name="gamepad_axi_values" translatable="false">
+        <item>gamePad</item>
+        <item>gamePad_2</item>
+        <item>gamePad_3</item>
+        <item>gamePad_4</item>
+        <item>gamePad_5</item>
+    </string-array>
+
+    <string-array name="perf_overlay_lite_positions">
+        <item>@string/perf_overlay_position_top</item>
+        <item>@string/perf_overlay_position_bottom</item>
+    </string-array>
+    <string-array name="perf_overlay_lite_position_values" translatable="false">
+        <item>top</item>
+        <item>bottom</item>
+    </string-array>
+    <string-array name="virtual_display_modes">
+        <item>@string/virtual_display_off</item>
+        <item>@string/virtual_display_extend</item>
+        <item>@string/virtual_display_only</item>
+    </string-array>
+</resources>

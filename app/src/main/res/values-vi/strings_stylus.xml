@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="stylus_mode_title">Chế độ bút cảm ứng</string>
+    <string name="stylus_follow">Theo chế độ cảm ứng</string>
+    <string name="stylus_native">Bút gốc</string>
+    <string name="stylus_mouse">Chuột</string>
+    <string name="stylus_follow_description">Do chế độ cảm ứng hiện tại xử lý; được coi là đầu vào cảm ứng khi đang bật đa chạm.</string>
+    <string name="stylus_native_description">Gửi trạng thái rê, áp lực và độ nghiêng; chuyển sang chuột khi máy chủ không hỗ trợ.</string>
+    <string name="stylus_mouse_description">Đầu bút định vị con trỏ; giữ nút trái khi chạm và kéo, nhả khi nhấc bút.</string>
+</resources>

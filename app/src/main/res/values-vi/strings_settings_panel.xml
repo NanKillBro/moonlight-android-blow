@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_panel_title">Cài đặt</string>
+    <string name="settings_panel_back">Quay lại</string>
+    <string name="settings_panel_close">Đóng</string>
+    <string name="settings_panel_hint">Các tuỳ chọn áp dụng cho phiên stream tiếp theo</string>
+    <string name="settings_panel_custom">Độ phân giải tuỳ chỉnh</string>
+    <string name="settings_panel_apply">Lưu</string>
+    <string name="settings_panel_reset">Dùng mặc định</string>
+    <string name="settings_panel_resolution_hint">Chiều rộng × chiều cao, ví dụ 1920x1080</string>
+    <string name="settings_panel_resolution_error">Nhập chiều rộng và chiều cao là số chẵn trong khoảng 2–16384, ví dụ 1920x1080</string>
+    <string name="settings_panel_range_error">Nhập giá trị trong khoảng %1$s–%2$s</string>
+    <string name="settings_panel_empty">Không có tuỳ chọn nào cho thiết bị này</string>
+    <string name="settings_panel_width">Chiều rộng</string>
+    <string name="settings_panel_height">Chiều cao</string>
+    <string name="settings_panel_swap">Hoán đổi chiều rộng và chiều cao</string>
+    <string name="settings_panel_pixels">pixel</string>
+    <string name="settings_panel_bitrate_hint">Nhập thủ công, tối đa 99999 Mbps</string>
+    <string name="settings_panel_bitrate_presets">Tốc độ bit thông dụng · Mbps</string>
+    <string name="settings_profile_switch">Chuyển hồ sơ</string>
+    <string name="settings_profile_name">Hồ sơ %1$s</string>
+    <string name="settings_profile_current">Hiện tại: Hồ sơ %1$s</string>
+    <string name="settings_profile_title">Cài đặt · %1$s</string>
+    <string name="settings_profile_reset">Đặt lại dữ liệu</string>
+    <string name="settings_profile_reset_hint">Khôi phục cài đặt mặc định cho hồ sơ hiện tại</string>
+    <string name="settings_profile_reset_confirm">Đặt lại cài đặt của hồ sơ %1$s về mặc định. Các hồ sơ khác, ghép đôi máy chủ, nhật ký và tệp đã nhập sẽ được giữ lại.</string>
+    <string name="settings_profile_reset_action">Khôi phục mặc định</string>
+    <string name="settings_profile_working">Đang lưu hồ sơ…</string>
+    <string name="settings_profile_failed">Lưu hồ sơ thất bại. Hãy thử lại.</string>
+    <string name="settings_profile_choose_hint">Hồ sơ hiện tại được tự động lưu khi chuyển; hồ sơ mới bắt đầu với cài đặt mặc định.</string>
+</resources>
