@@ -16,6 +16,11 @@ For full architectural instructions and maintenance guidelines, see **[`TRANSLAT
   python tools/apply_clean_translation.py
   ```
 
+- **Re-apply the 261107 upstream sync translations**:
+  ```bash
+  python tools/translate_upstream_261107.py
+  ```
+
 - **Scan for remaining Chinese characters**:
   ```bash
   python tools/find_chinese.py --exclude-locales

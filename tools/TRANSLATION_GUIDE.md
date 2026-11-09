@@ -63,6 +63,27 @@ When maintaining this fork against upstream commits:
 - **Gradle Command**: `./gradlew assembleDebug assembleRelease`
 - **Artifacts Output**: `app/build/outputs/apk/**/*.apk`
 
+## 5. Upstream Sync Workflow
+
+1. `git fetch upstream`
+2. `git merge upstream/master` (never push).
+3. On conflicts in `app/`, prefer upstream code over the translated side, then re-apply translations instead of hand-resolving every line:
+   ```bash
+   git rm -rf -q app && git checkout upstream/master -- app
+   python tools/apply_clean_translation.py
+   ```
+4. Keep fork-only code changes such as the `RazerUtils` robustness fix when resetting `app/`.
+5. Run `python tools/verify_translation.py` and translate any new leftovers with AI. Store the new exact line mappings in a `tools/translate_upstream_<tag>.py` script and call it from `apply_clean_translation.py`, so the next sync is automatic.
+6. All translation scripts must open files with `newline=''` and replace whole lines, preserving the original mixed CRLF/LF line endings from upstream.
+
+## 6. Vietnamese Localization (`values-vi`)
+
+- Default `values/` holds English; `values-vi/` mirrors every translatable default resource.
+- Keep `values-vi/strings.xml` in sync with `values/strings.xml` (493 entries as of upstream tag 261107), plus `values-vi/arrays.xml`, `strings_settings_panel.xml`, `strings_stylus.xml`, and `strings_touchpad_rotation.xml`.
+- Preserve format specifiers, escapes, XML entities, and the CRLF line endings used by `values-vi/strings.xml`.
+- Hardcoded Java/layout strings are translated to English in place only. They are not localized per-locale, to avoid restructuring code and creating upstream conflicts.
+- `values-zh-rCN`, `values-zh-rTW`, and `values-ja` are intentionally left as upstream.
+
 ## Custom instruction (original promt)
 help me translate this project to english
 just ignore the chinese, we don't need it so you can delete it if you want.
